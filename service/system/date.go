@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"github.com/NubeIO/lib-date/datectl"
 	"github.com/NubeIO/lib-date/datelib"
+	log "github.com/sirupsen/logrus"
+	"os/exec"
+	"time"
 )
 
 type DateBody struct {
@@ -41,10 +44,29 @@ func (inst *System) UpdateTimezone(body DateBody) (*Message, error) {
 	}, nil
 }
 
-func (inst *System) SetSystemTime(body DateBody) (*datelib.Time, error) {
-	err := inst.datectl.SetSystemTime(body.DateTime)
+func (inst *System) SetSystemTime(dateTime DateBody) (*datelib.Time, error) {
+	layout := "2006-01-02 15:04:05"
+	// parse time
+	t, err := time.Parse(layout, dateTime.DateTime)
+	if err != nil {
+		return nil, fmt.Errorf("could not parse date try 2006-01-02 15:04:05 %s", err)
+	}
+	log.Infof("set time to %s", t.String())
+	timeString := fmt.Sprintf("%s", dateTime.DateTime)
+	cmd := exec.Command("sudo", "date", "-s", timeString)
+	output, err := cmd.Output()
+	cleanCommand(string(output), cmd, err, debug)
 	if err != nil {
 		return nil, err
 	}
 	return datelib.New(&datelib.Date{}).SystemTime(), nil
 }
+
+//
+//func (inst *System) SetSystemTime(body DateBody) (*datelib.Time, error) {
+//	err := inst.datectl.SetSystemTime(body.DateTime)
+//	if err != nil {
+//		return nil, err
+//	}
+//	return datelib.New(&datelib.Date{}).SystemTime(), nil
+//}
