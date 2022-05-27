@@ -3,7 +3,7 @@ package cmd
 import (
 	"github.com/NubeIO/lib-systemctl-go/builder"
 	"github.com/spf13/cobra"
-	"gthub.com/NubeIO/rubix-cli-app/service/installer"
+	"gthub.com/NubeIO/rubix-cli-app/service/apps"
 )
 
 var appsCmd = &cobra.Command{
@@ -14,16 +14,16 @@ var appsCmd = &cobra.Command{
 }
 
 type InstallResp struct {
-	RespDownload *installer.RespDownload `json:"response_download"`
-	RespBuilder  *installer.RespBuilder  `json:"response_builder"`
-	RespInstall  *installer.RespInstall  `json:"response_install"`
+	RespDownload *apps.RespDownload `json:"response_download"`
+	RespBuilder  *apps.RespBuilder  `json:"response_builder"`
+	RespInstall  *apps.RespInstall  `json:"response_install"`
 }
 
 func runApps(cmd *cobra.Command, args []string) {
 
 	serviceFile := &builder.SystemDBuilder{}
 
-	inst := &installer.Installer{
+	inst := &apps.Installer{
 		Token:              flgApp.token,
 		Owner:              flgApp.owner,
 		Repo:               flgApp.repo,
@@ -33,7 +33,7 @@ func runApps(cmd *cobra.Command, args []string) {
 		DownloadPathSubDir: flgApp.target,
 		ServiceFile:        serviceFile,
 	}
-	newInstall := installer.New(inst)
+	newInstall := apps.New(inst)
 	resp := &InstallResp{}
 
 	//DOWNLOAD
@@ -53,7 +53,7 @@ func runApps(cmd *cobra.Command, args []string) {
 	install, err := newInstall.InstallService("nubeio-rubix-bios", "/home/aidan/bios-test/nubeio-rubix-bios.service")
 	resp.RespInstall = install
 
-	//inst := &installer.Installer{
+	//inst := &apps.Installer{
 	//	Token:    flgApp.token,
 	//	Owner:    flgApp.owner,
 	//	Repo:     flgApp.repo,
@@ -63,7 +63,7 @@ func runApps(cmd *cobra.Command, args []string) {
 	//	Target:   flgApp.target,
 	//}
 	//
-	//install := installer.New(inst)
+	//install := apps.New(inst)
 	//
 	//downloadInstall, _ := install.Download()
 	//pprint.PrintJOSN(downloadInstall)
