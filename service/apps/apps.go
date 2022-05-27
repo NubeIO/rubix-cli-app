@@ -13,7 +13,7 @@ import (
 
 var err error
 
-func New(inst *Installer) *Installer {
+func New(inst *Apps) *Apps {
 	opts := &git.AssetOptions{
 		Owner:    inst.Owner,
 		Repo:     inst.Repo,
@@ -40,7 +40,7 @@ type RespInstall struct {
 	InstallResp *ctl.InstallResp `json:"install_resp"`
 }
 
-type Installer struct {
+type Apps struct {
 	Token              string                  `json:"token"`
 	Owner              string                  `json:"owner"`
 	Repo               string                  `json:"repo"`
@@ -52,7 +52,7 @@ type Installer struct {
 	gitClient          *git.Client
 }
 
-func (inst *Installer) GitDownload() (*RespDownload, error) {
+func (inst *Apps) GitDownload() (*RespDownload, error) {
 	ret := &RespDownload{}
 	//download and unzip to /data
 	resp, err := inst.gitClient.DownloadOnly()
@@ -64,7 +64,7 @@ func (inst *Installer) GitDownload() (*RespDownload, error) {
 	return ret, nil
 }
 
-func (inst *Installer) GenerateServiceFile() (*RespBuilder, error) {
+func (inst *Apps) GenerateServiceFile() (*RespBuilder, error) {
 	ret := &RespBuilder{}
 	newService := "nubeio-rubix-bios"
 	description := "BIOS comes with default OS, non-upgradable"
@@ -96,7 +96,7 @@ func (inst *Installer) GenerateServiceFile() (*RespBuilder, error) {
 //InstallService a new linux service
 //	- service: the service name (eg: rubix-bios)
 //	- path: the service file path and name (eg: "/tmp/rubix-bios.service")
-func (inst *Installer) InstallService(service, path string) (*RespInstall, error) {
+func (inst *Apps) InstallService(service, path string) (*RespInstall, error) {
 	ret := &RespInstall{}
 	//path := "/tmp/nubeio-rubix-bios.service"
 	timeOut := 30

@@ -1,5 +1,7 @@
 module gthub.com/NubeIO/rubix-cli-app
 
+replace github.com/NubeIO/lib-systemctl-go => /home/aidan/code/go/nube/lib/lib-systemctl-go
+
 go 1.18
 
 require (

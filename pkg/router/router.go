@@ -11,15 +11,24 @@ import (
 	dbase "gthub.com/NubeIO/rubix-cli-app/database"
 	dbhandler "gthub.com/NubeIO/rubix-cli-app/pkg/handler"
 	"gthub.com/NubeIO/rubix-cli-app/pkg/logger"
+	"gthub.com/NubeIO/rubix-cli-app/service/apps"
 	"gthub.com/NubeIO/rubix-cli-app/service/auth"
 	"io"
 	"os"
 	"time"
 )
 
+func initApps() *apps.Apps {
+	return apps.New(&apps.Apps{})
+}
+
+func initWs() *melody.Melody {
+	return melody.New()
+}
+
 func Setup(db *gorm.DB) *gin.Engine {
 	r := gin.New()
-	var ws = melody.New()
+	var ws = initWs()
 	// Write gin access log to file
 	f, err := os.OpenFile("rubix.access.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
@@ -50,7 +59,8 @@ func Setup(db *gorm.DB) *gin.Engine {
 		DB: appDB,
 	}
 	dbhandler.Init(dbHandler)
-	api := controller.Controller{DB: appDB, WS: ws}
+
+	api := controller.Controller{DB: appDB, WS: ws, Apps: initApps()}
 	identityKey := "uuid"
 
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
@@ -101,17 +111,15 @@ func Setup(db *gorm.DB) *gin.Engine {
 		users.DELETE("/drop", api.DropUsers)
 	}
 
-	//bios := r.Group("/api/bios")
-	//{
-	//	//bios.POST("/install", api.InstallBios)
-	//	//bios.GET("/update_check", api.RubixServiceCheck)
-	//	//bios.PUT("/upgrade_and_check", api.RubixServiceUpdate)
-	//}
-	//
-	//git := r.Group("/api/git")
-	//{
-	//	//git.GET("/:uuid", api.GitGetRelease)
-	//}
+	apps := admin.Group("/apps")
+	{
+		apps.GET("/", api.GetApps)
+		apps.POST("/", api.CreateApp)
+		apps.GET("/:uuid", api.GetApp)
+		apps.PATCH("/:uuid", api.UpdateApp)
+		apps.DELETE("/:uuid", api.DeleteApp)
+		apps.DELETE("/drop", api.DropApps)
+	}
 
 	return r
 }

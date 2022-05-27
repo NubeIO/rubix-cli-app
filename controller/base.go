@@ -4,11 +4,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"gopkg.in/olahol/melody.v1"
 	dbase "gthub.com/NubeIO/rubix-cli-app/database"
+	"gthub.com/NubeIO/rubix-cli-app/service/apps"
 )
 
 type Controller struct {
-	DB *dbase.DB
-	WS *melody.Melody //web socket
+	DB   *dbase.DB
+	WS   *melody.Melody //web socket
+	Apps *apps.Apps
 }
 
 type WsMsg struct {
@@ -26,18 +28,6 @@ func bodyAsJSON(ctx *gin.Context) (interface{}, error) {
 		return nil, err
 	}
 	return body, err
-}
-
-func useHostNameOrID(ctx *gin.Context) (idName string, useID bool) {
-	hostID := resolveHeaderHostID(ctx)
-	hostName := resolveHeaderHostName(ctx)
-	if hostID != "" {
-		return hostID, true
-	} else if hostName != "" {
-		return hostName, false
-	} else {
-		return "", false
-	}
 }
 
 func resolveHeaderHostID(ctx *gin.Context) string {
@@ -94,21 +84,4 @@ func reposeHandler(body interface{}, err error, ctx *gin.Context) {
 
 type Message struct {
 	Message string `json:"message"`
-}
-
-func reposeMessage(code int, body interface{}, err error, ctx *gin.Context) {
-	if err != nil {
-		if err == nil {
-			ctx.JSON(code, Message{Message: "unknown error"})
-		} else {
-			if body != nil {
-				ctx.JSON(code, body)
-			} else {
-				ctx.JSON(code, Message{Message: err.Error()})
-			}
-
-		}
-	} else {
-		ctx.JSON(code, body)
-	}
 }

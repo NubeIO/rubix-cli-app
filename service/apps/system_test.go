@@ -1,15 +1,34 @@
 package apps
 
 import (
+	"fmt"
 	pprint "gthub.com/NubeIO/rubix-cli-app/pkg/helpers/print"
 	"testing"
 )
 
 func TestLocalConnection(t *testing.T) {
-	inst := &Installer{}
+	inst := &Apps{}
 	timeout := 5
 	service := "mosquitto"
 	apps := New(inst)
-	resp, _ := apps.ServiceStats(service, timeout)
+	stats, _ := apps.ServiceStats(service, timeout)
+	pprint.PrintJOSN(stats)
+	resp := apps.IsInstalled(service, timeout)
 	pprint.PrintJOSN(resp)
+
+	massApps := []string{"mosquitto", "snap.node-red.node-red"}
+	mass := &Mass{
+		Action:  "status",
+		Apps:    massApps,
+		Timeout: 5,
+	}
+
+	responses, err := apps.Mass(mass)
+	if err != nil {
+		//return
+	}
+
+	fmt.Println(err)
+
+	pprint.PrintJOSN(responses)
 }

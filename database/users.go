@@ -1,7 +1,8 @@
 package dbase
 
 import (
-	"gthub.com/NubeIO/rubix-cli-app/pkg/config"
+	"fmt"
+	"gthub.com/NubeIO/rubix-cli-app/pkg/helpers/uuid"
 	"gthub.com/NubeIO/rubix-cli-app/pkg/logger"
 	"gthub.com/NubeIO/rubix-cli-app/pkg/model"
 )
@@ -24,12 +25,12 @@ func (d *DB) GetUsers() ([]*model.User, error) {
 	}
 }
 
-func (d *DB) CreateUser(User *model.User) (*model.User, error) {
-	User.UUID, _ = config.MakeUUID()
-	if err := d.DB.Create(&User).Error; err != nil {
+func (d *DB) CreateUser(user *model.User) (*model.User, error) {
+	user.UUID = fmt.Sprintf("usr_%s", uuid.SmallUUID())
+	if err := d.DB.Create(&user).Error; err != nil {
 		return nil, err
 	} else {
-		return User, nil
+		return user, nil
 	}
 }
 

@@ -44,8 +44,6 @@ github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym
 github.com/Masterminds/semver/v3 v3.1.1/go.mod h1:VPu/7SZ7ePZ3QOrcuXROw5FAcLl4a0cBrbBpGY/8hQs=
 github.com/NubeIO/git v0.0.2 h1:65Kv6m34gCb3lv7LceyOPiJHWDuHZ21WyXlFT24LMXc=
 github.com/NubeIO/git v0.0.2/go.mod h1:qd7e1uVFo7AD6Zmhr2P8zgj+j9JGIsRW7+fUgCg8keA=
-github.com/NubeIO/lib-systemctl-go v0.0.3 h1:EbWUwegJq+K+++cv+YU5uMUFufMt4WnNAA9y6hYSoFM=
-github.com/NubeIO/lib-systemctl-go v0.0.3/go.mod h1:QjGuQupfENF8Aix+4Lvh6rC8sAWsGueG6Z6QpXfGnzk=
 github.com/NubeIO/nubeio-rubix-lib-helpers-go v0.2.7 h1:QKgcOjDkVujyAXWK+OysVFnQKzpZx335vGPG95UNXuI=
 github.com/NubeIO/nubeio-rubix-lib-helpers-go v0.2.7/go.mod h1:oLI6n9wuko0KIEzrLc8saOquiQvtMUUBrUjXf0TLDVQ=
 github.com/NubeIO/nubeio-rubix-lib-models-go v1.0.4/go.mod h1:A1BPuc3UpE1EF3ugdf+8QIIKTT8s3eK+pfUcheJX2JM=
