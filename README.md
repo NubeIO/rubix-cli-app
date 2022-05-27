@@ -1,26 +1,11 @@
 # rubix-cli-app
 
-
 ## install
 
 ```
 go mod tidy
 ```
 
+## command docs
 
-
-## usage
-
-```
-cd cli
-go run main.go
-```
-
-
-### example
-
-```
-go run main.go read
-```
-
-
+[CLI](docs/cli.md)
