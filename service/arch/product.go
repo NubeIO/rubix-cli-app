@@ -1,6 +1,8 @@
-package model
+package arch
 
-import "errors"
+import (
+	"errors"
+)
 
 type ProductType int
 
@@ -15,6 +17,11 @@ const (
 )
 
 func CheckProduct(s string) error {
+
+	//cmd := &remote.Admin{}
+	//run := remote.New(cmd)
+	//_, host := run.DetectArch()
+	//host.IsAMD64
 
 	switch s {
 	case RubixCompute.String():

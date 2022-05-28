@@ -111,14 +111,19 @@ func Setup(db *gorm.DB) *gin.Engine {
 		users.DELETE("/drop", api.DropUsers)
 	}
 
-	apps := admin.Group("/apps")
+	app := admin.Group("/apps")
 	{
-		apps.GET("/", api.GetApps)
-		apps.POST("/", api.CreateApp)
-		apps.GET("/:uuid", api.GetApp)
-		apps.PATCH("/:uuid", api.UpdateApp)
-		apps.DELETE("/:uuid", api.DeleteApp)
-		apps.DELETE("/drop", api.DropApps)
+		app.GET("/", api.GetApps)
+		app.POST("/", api.CreateApp)
+		app.GET("/:uuid", api.GetApp)
+		app.PATCH("/:uuid", api.UpdateApp)
+		app.DELETE("/:uuid", api.DeleteApp)
+		app.DELETE("/drop", api.DropApps)
+	}
+	appControl := admin.Group("/apps/control")
+	{
+		appControl.POST("/", api.AppService)
+		appControl.POST("/bulk", api.AppService)
 	}
 
 	return r

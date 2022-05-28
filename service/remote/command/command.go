@@ -23,9 +23,6 @@ func Builder(args ...string) []string {
 	return args
 }
 
-//str := []string{"ls", "/home/pi"}
-//newStr := strings.Join(str[:], " ")
-//fmt.Println(newStr)
 //TODO need to make its easier to build commands as the remote.SSH only takes in one arg as a string
 
 func (inst *Command) RunCommand() (res *Response) {

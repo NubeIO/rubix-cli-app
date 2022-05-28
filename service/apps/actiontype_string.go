@@ -13,11 +13,16 @@ func _() {
 	_ = x[status-2]
 	_ = x[enable-3]
 	_ = x[disable-4]
+	_ = x[isRunning-5]
+	_ = x[isInstalled-6]
+	_ = x[isEnabled-7]
+	_ = x[isActive-8]
+	_ = x[isFailed-9]
 }
 
-const _ActionType_name = "startstopstatusenabledisable"
+const _ActionType_name = "startstopstatusenabledisableisRunningisInstalledisEnabledisActiveisFailed"
 
-var _ActionType_index = [...]uint8{0, 5, 9, 15, 21, 28}
+var _ActionType_index = [...]uint8{0, 5, 9, 15, 21, 28, 37, 48, 57, 65, 73}
 
 func (i ActionType) String() string {
 	if i < 0 || i >= ActionType(len(_ActionType_index)-1) {

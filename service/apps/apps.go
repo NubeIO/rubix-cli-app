@@ -8,29 +8,41 @@ import (
 	"github.com/NubeIO/lib-systemctl-go/ctl"
 	"github.com/NubeIO/lib-systemctl-go/systemctl"
 	log "github.com/sirupsen/logrus"
+	pprint "gthub.com/NubeIO/rubix-cli-app/pkg/helpers/print"
+	"gthub.com/NubeIO/rubix-cli-app/service/apps/app"
 	"time"
 )
 
 var err error
 
-func New(inst *Apps) *Apps {
+func New(inst *Apps) (*Apps, error) {
+
+	a := &app.App{}
+	selection := &app.Selection{
+		AppName: inst.AppName,
+		Version: "latest",
+	}
+	selectApp, err := a.SelectApp(selection)
+	if err != nil {
+		return nil, err
+	}
+	selectApp = selectApp.GetApp()
+	pprint.PrintJOSN(selectApp)
 	opts := &git.AssetOptions{
-		Owner:    inst.Owner,
-		Repo:     inst.Repo,
-		Tag:      inst.Tag,
-		Arch:     inst.Arch,
-		DestPath: inst.DownloadPath,
-		Target:   inst.DownloadPathSubDir,
+		Owner: selectApp.Owner,
+		Repo:  selectApp.Repo,
+		Tag:   selectApp.Version,
+		Arch:  selectApp.Arch,
 	}
 	ctx := context.Background()
 	inst.gitClient = git.NewClient(inst.Token, opts, ctx)
-	return inst
+	return inst, err
 }
 
-type RespDownload struct {
-	AssetName string `json:"asset_name"`
-	GitError  string `json:"git_error"`
-}
+//type RespDownload struct {
+//	AssetName string `json:"asset_name"`
+//	GitError  string `json:"git_error"`
+//}
 
 type RespBuilder struct {
 	BuilderErr string `json:"builder_err"`
@@ -41,27 +53,16 @@ type RespInstall struct {
 }
 
 type Apps struct {
-	Token              string                  `json:"token"`
-	Owner              string                  `json:"owner"`
-	Repo               string                  `json:"repo"`
-	Arch               string                  `json:"arch"`
-	Tag                string                  `json:"tag"`
-	DownloadPath       string                  `json:"download_path"`         //home/user
-	DownloadPathSubDir string                  `json:"download_path_sub_dir"` //home/user /bios
-	ServiceFile        *builder.SystemDBuilder `json:"service"`
+	Token              string `json:"git_token"`
+	Version            string `json:"tag"`
+	AppName            string
+	DownloadPath       string `json:"download_path"`         //home/user
+	DownloadPathSubDir string `json:"download_path_sub_dir"` //home/user /bios
 	gitClient          *git.Client
 }
 
-func (inst *Apps) GitDownload() (*RespDownload, error) {
-	ret := &RespDownload{}
-	//download and unzip to /data
-	resp, err := inst.gitClient.DownloadOnly()
-	if err != nil {
-		ret.GitError = err.Error()
-		return ret, err
-	}
-	ret.AssetName = resp.ReleaseAsset.GetName()
-	return ret, nil
+func (inst *Apps) GitDownload(destination string) (*git.DownloadResponse, error) {
+	return inst.gitClient.Download(destination)
 }
 
 func (inst *Apps) GenerateServiceFile() (*RespBuilder, error) {

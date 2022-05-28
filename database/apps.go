@@ -5,6 +5,7 @@ import (
 	"gthub.com/NubeIO/rubix-cli-app/pkg/helpers/uuid"
 	"gthub.com/NubeIO/rubix-cli-app/pkg/logger"
 	"gthub.com/NubeIO/rubix-cli-app/pkg/model"
+	"gthub.com/NubeIO/rubix-cli-app/service/arch"
 )
 
 func (d *DB) GetApps() ([]*model.Apps, error) {
@@ -27,7 +28,7 @@ func (d *DB) GetApp(uuid string) (*model.Apps, error) {
 
 func (d *DB) CreateApp(app *model.Apps) (*model.Apps, error) {
 	app.UUID = fmt.Sprintf("app_%s", uuid.SmallUUID())
-	err := model.CheckProduct(app.ProductType)
+	err := arch.CheckProduct(app.ProductType)
 	if err != nil {
 		return nil, err
 	}

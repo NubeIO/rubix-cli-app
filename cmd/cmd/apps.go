@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"github.com/NubeIO/lib-systemctl-go/builder"
 	"github.com/spf13/cobra"
 	"gthub.com/NubeIO/rubix-cli-app/service/apps"
 )
@@ -21,42 +20,42 @@ type InstallResp struct {
 
 func runApps(cmd *cobra.Command, args []string) {
 
-	serviceFile := &builder.SystemDBuilder{}
-
-	inst := &apps.Installer{
-		Token:              flgApp.token,
-		Owner:              flgApp.owner,
-		Repo:               flgApp.repo,
-		Arch:               flgApp.arch,
-		Tag:                flgApp.tag,
-		DownloadPath:       flgApp.destPath,
-		DownloadPathSubDir: flgApp.target,
-		ServiceFile:        serviceFile,
-	}
-	newInstall := apps.New(inst)
-	resp := &InstallResp{}
-
-	//DOWNLOAD
-	download, err := newInstall.GitDownload()
-	resp.RespDownload = download
-	if err != nil {
-		return
-	}
-	//Build service file
-	build, err := newInstall.GenerateServiceFile()
-	resp.RespBuilder = build
-	if err != nil {
-
-		return
-	}
-	//Install
-	install, err := newInstall.InstallService("nubeio-rubix-bios", "/home/aidan/bios-test/nubeio-rubix-bios.service")
-	resp.RespInstall = install
+	//serviceFile := &builder.SystemDBuilder{}
+	//
+	//inst := &apps.Installer{
+	//	Token:              flgApp.token,
+	//	Owner:              flgApp.owner,
+	//	Repo:               flgApp.repo,
+	//	Arch:               flgApp.arch,
+	//	Tag:                flgApp.tag,
+	//	DownloadPath:       flgApp.destPath,
+	//	DownloadPathSubDir: flgApp.target,
+	//	ServiceFile:        serviceFile,
+	//}
+	//newInstall := apps.New(inst)
+	//resp := &InstallResp{}
+	//
+	////DOWNLOAD
+	//download, err := newInstall.GitDownload()
+	//resp.RespDownload = download
+	//if err != nil {
+	//	return
+	//}
+	////Build service file
+	//build, err := newInstall.GenerateServiceFile()
+	//resp.RespBuilder = build
+	//if err != nil {
+	//
+	//	return
+	//}
+	////Install
+	//install, err := newInstall.InstallService("nubeio-rubix-bios", "/home/aidan/bios-test/nubeio-rubix-bios.service")
+	//resp.RespInstall = install
 
 	//inst := &apps.Installer{
 	//	Token:    flgApp.token,
 	//	Owner:    flgApp.owner,
-	//	Repo:     flgApp.repo,
+	//	Repo:     flgApp.app,
 	//	Arch:     flgApp.arch,
 	//	Tag:      flgApp.tag,
 	//	DestPath: flgApp.destPath,
@@ -86,7 +85,7 @@ func init() {
 	flagSet := appsCmd.Flags()
 	flagSet.StringVar(&flgApp.token, "token", "", "github oauth2 token value (optional)")
 	flagSet.StringVarP(&flgApp.owner, "owner", "", "NubeIO", "github repository (OWNER/name)")
-	flagSet.StringVarP(&flgApp.repo, "repo", "", "rubix-bios", "github repository (owner/NAME)")
+	flagSet.StringVarP(&flgApp.repo, "app", "", "rubix-bios", "github repository (owner/NAME)")
 	flagSet.StringVar(&flgApp.tag, "tag", "latest", "version of build")
 	flagSet.StringVar(&flgApp.destPath, "dest", "/data", "destination path")
 	flagSet.StringVar(&flgApp.target, "target", "", "rename destination file (optional)")

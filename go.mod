@@ -2,10 +2,15 @@ module gthub.com/NubeIO/rubix-cli-app
 
 replace github.com/NubeIO/lib-systemctl-go => /home/aidan/code/go/nube/lib/lib-systemctl-go
 
+replace github.com/NubeIO/lib-dirs => /home/aidan/code/go/nube/lib/lib-dirs
+
+replace github.com/NubeIO/git => /home/aidan/code/go/nube/lib/git
+
 go 1.18
 
 require (
-	github.com/NubeIO/git v0.0.2
+	github.com/NubeIO/git v0.0.0-00010101000000-000000000000
+	github.com/NubeIO/lib-dirs v0.0.0-20220528065932-9725225676bd
 	github.com/NubeIO/lib-systemctl-go v0.0.3
 	github.com/NubeIO/nubeio-rubix-lib-helpers-go v0.2.7
 	github.com/NubeIO/rubix-assist-model v0.0.1

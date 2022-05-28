@@ -11,6 +11,11 @@ const (
 	status
 	enable
 	disable
+	isRunning
+	isInstalled
+	isEnabled
+	isActive
+	isFailed
 )
 
 func CheckAction(s string) error {
@@ -24,6 +29,16 @@ func CheckAction(s string) error {
 	case enable.String():
 		return nil
 	case disable.String():
+		return nil
+	case isRunning.String():
+		return nil
+	case isInstalled.String():
+		return nil
+	case isEnabled.String():
+		return nil
+	case isActive.String():
+		return nil
+	case isFailed.String():
 		return nil
 	}
 	return errors.New("invalid action type, try start")
