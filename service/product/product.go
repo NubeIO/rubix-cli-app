@@ -9,5 +9,6 @@ const (
 	RubixCompute5
 	Edge28
 	Nuc
+	AllLinux
 	None
 )

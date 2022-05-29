@@ -13,6 +13,7 @@ const (
 	PiGpio
 	Broker
 	LoraService
+	GoApp
 	None
 )
 

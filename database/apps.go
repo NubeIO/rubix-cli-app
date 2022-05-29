@@ -1,10 +1,13 @@
 package dbase
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"gthub.com/NubeIO/rubix-cli-app/pkg/helpers/uuid"
 	"gthub.com/NubeIO/rubix-cli-app/pkg/logger"
 	"gthub.com/NubeIO/rubix-cli-app/service/apps"
+	"gthub.com/NubeIO/rubix-cli-app/service/apps/app"
 	"gthub.com/NubeIO/rubix-cli-app/service/product"
 )
 
@@ -26,17 +29,65 @@ func (d *DB) GetApp(uuid string) (*apps.Store, error) {
 	return m, nil
 }
 
-func (d *DB) CreateApp(app *apps.Store) (*apps.Store, error) {
-	app.UUID = fmt.Sprintf("app_%s", uuid.SmallUUID())
+func checkProduct(products []string) error {
+	if len(products) == 0 {
+		return errors.New("product list can not be empty try, RubixCompute, Edge28")
+	}
+	for _, pro := range products {
+		_, err := product.CheckProduct(pro)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func validateAllowableProducts(store *apps.Store) ([]byte, []string, error) {
+	if store.AllowableProducts == nil {
+		return nil, nil, nil
+	}
+	var data []string
+	err := json.Unmarshal(store.AllowableProducts, &data)
+	if err != nil {
+		return nil, nil, err
+	}
+	valid, err := json.Marshal(data)
+	if err != nil {
+		return nil, nil, err
+	}
+	return valid, data, nil
+}
+
+func (d *DB) CreateApp(body *apps.Store) (*apps.Store, error) {
+	body.UUID = fmt.Sprintf("app_%s", uuid.SmallUUID())
 	pro, err := product.Get()
-	app.ProductType = pro.Type
+	appType, appTypeName, err := app.CheckType(body.AppTypeName)
 	if err != nil {
 		return nil, err
 	}
-	if err := d.DB.Create(&app).Error; err != nil {
+	products, productsList, err := validateAllowableProducts(body)
+	if err != nil {
+		return nil, err
+	}
+	err = checkProduct(productsList)
+	if err != nil {
+
+	}
+	body.AllowableProducts = products
+	body.AppTypeName = appTypeName
+	body.AppType = appType
+	if err != nil {
+		return nil, err
+	}
+	body.Product = pro.Type
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(body)
+	if err := d.DB.Create(&body).Error; err != nil {
 		return nil, err
 	} else {
-		return app, nil
+		return body, nil
 	}
 }
 

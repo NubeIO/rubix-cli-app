@@ -1,10 +1,24 @@
 package apps
 
+import (
+	"gorm.io/datatypes"
+	"gthub.com/NubeIO/rubix-cli-app/service/apps/app"
+)
+
 type Store struct {
-	UUID        string `json:"uuid" gorm:"primaryKey"`
-	AppName     string `json:"name"  gorm:"type:varchar(255);unique;not null"`
-	ProductType string `json:"product_type"` // model.ProductType
-	Port        int
+	UUID              string         `json:"uuid" gorm:"primaryKey"`
+	AppName           string         `json:"name"  gorm:"type:varchar(255);unique;not null"`
+	Product           string         `json:"product_type"`       // model.ProductType
+	AllowableProducts datatypes.JSON `json:"allowable_products"` // All RubixCompute RubixIO
+	Port              int
+	AppTypeName       string   `json:"app_type_name"` //go, node
+	AppType           app.Type `json:"-"`             //go, node
+
+	Repo          string `json:"repo"`         // wires-build
+	ServiceName   string `json:"service_name"` // nubeio-rubix-wires
+	RubixRootPath string // /data
+	AppsPath      string `json:"apps_path"` // /data/rubix-apps/install/flow-framework
+	AppPath       string `json:"app_path"`  // /data/flow-framework
 
 	// git details
 	Token string `json:"token"`

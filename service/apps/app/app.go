@@ -7,7 +7,6 @@ import (
 var this *Service
 
 type App struct {
-	InstallApp    string
 	AppName       string // ff, flow-framework or flow
 	Version       string //version must be the installed version as in v0.0.1
 	RubixRootPath string // /data

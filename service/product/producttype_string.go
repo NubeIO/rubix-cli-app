@@ -13,11 +13,13 @@ func _() {
 	_ = x[RubixCompute5-2]
 	_ = x[Edge28-3]
 	_ = x[Nuc-4]
+	_ = x[AllLinux-5]
+	_ = x[None-6]
 }
 
-const _ProductType_name = "RubixComputeRubixComputeIORubixCompute5Edge28Nuc"
+const _ProductType_name = "RubixComputeRubixComputeIORubixCompute5Edge28NucAllLinuxNone"
 
-var _ProductType_index = [...]uint8{0, 12, 26, 39, 45, 48}
+var _ProductType_index = [...]uint8{0, 12, 26, 39, 45, 48, 56, 60}
 
 func (i ProductType) String() string {
 	if i < 0 || i >= ProductType(len(_ProductType_index)-1) {

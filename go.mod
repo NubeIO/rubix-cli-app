@@ -23,6 +23,7 @@ require (
 	github.com/spf13/viper v1.11.0
 	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4
 	gopkg.in/olahol/melody.v1 v1.0.0-20170518105555-d52139073376
+	gorm.io/datatypes v1.0.6
 	gorm.io/driver/sqlite v1.3.2
 	gorm.io/gorm v1.23.5
 )
@@ -36,13 +37,13 @@ require (
 	github.com/go-playground/locales v0.13.0 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect
 	github.com/go-playground/validator/v10 v10.4.1 // indirect
+	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/golang-jwt/jwt/v4 v4.2.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-github/v32 v32.1.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
-	github.com/helloyi/go-sshclient v1.1.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
@@ -72,4 +73,5 @@ require (
 	gopkg.in/ini.v1 v1.66.4 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
+	gorm.io/driver/mysql v1.3.2 // indirect
 )

@@ -38,13 +38,13 @@ func read() (*Product, error) {
 	return p, err
 }
 
-func AutoCheckProduct(s string) error {
+func CheckProduct(s string) (ProductType, error) {
 	switch s {
 	case RubixCompute.String():
-		return nil
+		return RubixCompute, nil
 	case RubixComputeIO.String():
-		return nil
+		return RubixComputeIO, nil
 	}
-	return errors.New("invalid product type, try RubixCompute")
+	return None, errors.New("invalid product type, try RubixCompute")
 
 }

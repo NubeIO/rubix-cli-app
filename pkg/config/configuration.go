@@ -27,7 +27,7 @@ func Setup() error {
 	if err != nil {
 		fmt.Println(err)
 	}
-	viper.AddConfigPath(home + "/rubix-assist")
+	viper.AddConfigPath(home + "/rubix-assist-cli")
 
 	if err := viper.ReadInConfig(); err != nil {
 		logger.Errorf("Error reading config file, %s", err)
