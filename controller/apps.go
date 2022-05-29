@@ -2,51 +2,51 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"gthub.com/NubeIO/rubix-cli-app/pkg/model"
+	"gthub.com/NubeIO/rubix-cli-app/service/apps"
 )
 
-func getAppsBody(ctx *gin.Context) (dto *model.Apps, err error) {
+func getAppsBody(ctx *gin.Context) (dto *apps.Store, err error) {
 	err = ctx.ShouldBindJSON(&dto)
 	return dto, err
 }
 
 func (inst *Controller) GetApps(c *gin.Context) {
-	hosts, err := inst.DB.GetUsers()
+	data, err := inst.DB.GetApps()
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
 	}
-	reposeHandler(hosts, err, c)
+	reposeHandler(data, err, c)
 }
 
 func (inst *Controller) GetApp(c *gin.Context) {
-	host, err := inst.DB.GetApp(c.Params.ByName("uuid"))
+	data, err := inst.DB.GetApp(c.Params.ByName("uuid"))
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
 	}
-	reposeHandler(host, err, c)
+	reposeHandler(data, err, c)
 }
 
 func (inst *Controller) CreateApp(c *gin.Context) {
-	var m *model.Apps
+	var m *apps.Store
 	err = c.ShouldBindJSON(&m)
-	host, err := inst.DB.CreateApp(m)
+	data, err := inst.DB.CreateApp(m)
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
 	}
-	reposeHandler(host, err, c)
+	reposeHandler(data, err, c)
 }
 
 func (inst *Controller) UpdateApp(c *gin.Context) {
 	body, _ := getAppsBody(c)
-	host, err := inst.DB.UpdateApp(c.Params.ByName("uuid"), body)
+	data, err := inst.DB.UpdateApp(c.Params.ByName("uuid"), body)
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
 	}
-	reposeHandler(host, err, c)
+	reposeHandler(data, err, c)
 }
 
 func (inst *Controller) DeleteApp(c *gin.Context) {
@@ -59,10 +59,10 @@ func (inst *Controller) DeleteApp(c *gin.Context) {
 }
 
 func (inst *Controller) DropApps(c *gin.Context) {
-	host, err := inst.DB.DropApps()
+	data, err := inst.DB.DropApps()
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
 	}
-	reposeHandler(host, err, c)
+	reposeHandler(data, err, c)
 }

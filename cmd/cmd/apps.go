@@ -38,33 +38,30 @@ func runApps(cmd *cobra.Command, args []string) {
 		log.Errorln("new app: failed to init a new app", err)
 		return
 	}
-	err = inst.MakeDownloadDir()
-	_, err = newApp.GitDownload(inst.DownloadPath)
-	if err != nil {
+	if err = inst.MakeDownloadDir(); err != nil {
+		return
+	}
+
+	if _, err = newApp.GitDownload(inst.DownloadPath); err != nil {
 		log.Errorf("git: download error %s \n", err.Error())
 		return
 	}
-	err = inst.MakeInstallDir()
-	if err != nil {
+	if err = inst.MakeInstallDir(); err != nil {
 		return
 	}
-	err = inst.UnpackBuild()
-	if err != nil {
+	if err = inst.UnpackBuild(); err != nil {
 		return
 	}
-	tmpFileDir := "/tmp"
-	_, err = newApp.GenerateServiceFile(newApp.GeneratedApp, tmpFileDir)
-	if err != nil {
+	tmpFileDir := flgApp.downloadPath
+	if _, err = newApp.GenerateServiceFile(newApp.GeneratedApp, tmpFileDir); err != nil {
 		log.Errorf("make service file build: failed error:%s \n", err.Error())
 		return
 	}
 	tmpServiceFile := fmt.Sprintf("%s/%s.service", tmpFileDir, newApp.GeneratedApp.ServiceName)
-	_, err = newApp.InstallService(newApp.GeneratedApp.ServiceName, tmpServiceFile)
-	if err != nil {
+	if _, err = newApp.InstallService(newApp.GeneratedApp.ServiceName, tmpServiceFile); err != nil {
 		return
 	}
-	err = inst.CleanUp()
-	if err != nil {
+	if err = inst.CleanUp(); err != nil {
 		return
 	}
 

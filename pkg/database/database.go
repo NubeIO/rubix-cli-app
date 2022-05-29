@@ -8,6 +8,7 @@ import (
 	"gorm.io/gorm"
 	"gthub.com/NubeIO/rubix-cli-app/pkg/helpers/homedir"
 	"gthub.com/NubeIO/rubix-cli-app/pkg/model"
+	"gthub.com/NubeIO/rubix-cli-app/service/apps"
 	"io"
 	"os"
 	"os/user"
@@ -59,7 +60,7 @@ func Setup() error {
 	// Auto migrate project models
 	err = db.AutoMigrate(
 		&model.User{},
-		&model.Apps{},
+		&apps.Store{},
 	)
 
 	if err != nil {

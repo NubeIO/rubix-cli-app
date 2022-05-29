@@ -22,8 +22,9 @@ import (
 - clean up download dir
 */
 
+var dirs = fileutils.New()
+
 func (inst *Apps) MakeDownloadDir() error {
-	dirs := fileutils.New(&fileutils.Dirs{})
 	if !dirs.DirExists(inst.DownloadPath) {
 		log.Errorf("no dir exists %s \n", inst.DownloadPath)
 		err := dirs.MkdirAll(inst.DownloadPath, inst.Perm)
@@ -38,7 +39,7 @@ func (inst *Apps) MakeDownloadDir() error {
 }
 
 func (inst *Apps) MakeInstallDir() error {
-	action, err := inst.SystemCtlAction(stop.String(), 120)
+	action, err := inst.Stop(defaultTimeout)
 	if err != nil {
 		log.Errorf("stop app:%s failed err:%s \n", inst.AppName, err.Error())
 		return err
@@ -49,7 +50,6 @@ func (inst *Apps) MakeInstallDir() error {
 		log.Infof("stop app:%s  failed or was not running msg:%s \n", inst.AppName, action.Message)
 	}
 
-	dirs := fileutils.New(&fileutils.Dirs{})
 	installPath := fmt.Sprintf(inst.GeneratedApp.AppsPath) // /data/rubix-apps/installed/flow-framework
 	if !dirs.DirExists(installPath) {
 		log.Errorf("no dir exists %s \n", installPath)
@@ -64,7 +64,6 @@ func (inst *Apps) MakeInstallDir() error {
 }
 
 func (inst *Apps) UnpackBuild() error {
-	dirs := fileutils.New(&fileutils.Dirs{})
 	installPath := inst.GeneratedApp.AppsPath
 	zipFileAndPath := fmt.Sprintf("%s/%s", inst.DownloadPath, inst.AssetZipName)
 	_, err = dirs.UnZip(zipFileAndPath, installPath, inst.Perm)
@@ -78,7 +77,6 @@ func (inst *Apps) UnpackBuild() error {
 }
 
 func (inst *Apps) CleanUp() error {
-	dirs := fileutils.New(&fileutils.Dirs{})
 	zipFileAndPath := fmt.Sprintf("%s/%s", inst.DownloadPath, inst.AssetZipName)
 	err = dirs.Rm(zipFileAndPath)
 	if err != nil {

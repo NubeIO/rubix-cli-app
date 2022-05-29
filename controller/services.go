@@ -11,11 +11,11 @@ func getAppServiceBody(ctx *gin.Context) (dto *apps.AppService) {
 }
 
 func (inst *Controller) AppService(ctx *gin.Context) {
-	body := getAppServiceBody(ctx)
-	action, err := inst.Apps.Action(body)
-	if err != nil {
-		reposeHandler(nil, err, ctx)
-		return
-	}
-	reposeHandler(action, err, ctx)
+	//body := getAppServiceBody(ctx)
+	//action, err := inst.Apps.Action(body)
+	//if err != nil {
+	//	reposeHandler(nil, err, ctx)
+	//	return
+	//}
+	//reposeHandler(action, err, ctx)
 }

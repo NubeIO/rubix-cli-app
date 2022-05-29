@@ -18,8 +18,8 @@ import (
 	"time"
 )
 
-func initApps() *apps.Apps {
-	return apps.New(&apps.Apps{})
+func initApps() (*apps.Apps, error) {
+	return apps.New(&apps.Apps{}, "")
 }
 
 func initWs() *melody.Melody {
@@ -59,8 +59,9 @@ func Setup(db *gorm.DB) *gin.Engine {
 		DB: appDB,
 	}
 	dbhandler.Init(dbHandler)
+	initApp, err := initApps()
 
-	api := controller.Controller{DB: appDB, WS: ws, Apps: initApps()}
+	api := controller.Controller{DB: appDB, WS: ws, Apps: initApp}
 	identityKey := "uuid"
 
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
@@ -126,5 +127,9 @@ func Setup(db *gorm.DB) *gin.Engine {
 		appControl.POST("/bulk", api.AppService)
 	}
 
+	system := admin.Group("/system")
+	{
+		system.GET("/product", api.GetProduct)
+	}
 	return r
 }

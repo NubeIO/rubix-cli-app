@@ -13,11 +13,12 @@ func _() {
 	_ = x[PiGpio-2]
 	_ = x[Broker-3]
 	_ = x[LoraService-4]
+	_ = x[None-5]
 }
 
-const _Name_name = "FlowFrameworkRubixWiresPiGpioBrokerLoraService"
+const _Name_name = "FlowFrameworkRubixWiresPiGpioBrokerLoraServiceNone"
 
-var _Name_index = [...]uint8{0, 13, 23, 29, 35, 46}
+var _Name_index = [...]uint8{0, 13, 23, 29, 35, 46, 50}
 
 func (i Name) String() string {
 	if i < 0 || i >= Name(len(_Name_index)-1) {

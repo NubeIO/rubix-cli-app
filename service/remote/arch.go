@@ -60,23 +60,25 @@ func (inst *Admin) DetectArch() (arch *Arch, err error) {
 }
 
 //DetectNubeProduct can detect hardware type is in ARM or AMD and also if hardware is for example a Raspberry PI
-func (inst *Admin) DetectNubeProduct() (isRc, isEdge bool) {
+func (inst *Admin) DetectNubeProduct() (isRc, isEdge bool, productName string) {
 	inst.CMD.Commands = command.Builder("cat", "/proc/device-tree/model")
 	res := inst.CMD.RunCommand()
 	cmdOut := res.Out
 	cmdOut = str.RemoveNewLine(cmdOut)
 	if strings.Contains(cmdOut, "Raspberry Pi") {
 		isRc = true
+		productName = "rubix-compute"
 		return
 	} else if strings.Contains(cmdOut, "BeagleBone Black") {
 		isEdge = true
+		productName = "edge-28"
 		return
 	}
 	return
 }
 
 func (inst *Admin) CheckEdge28() error {
-	_, isEdge := inst.DetectNubeProduct()
+	_, isEdge, _ := inst.DetectNubeProduct()
 	if isEdge {
 	} else {
 		return errors.New("the host product is not type edge-28")

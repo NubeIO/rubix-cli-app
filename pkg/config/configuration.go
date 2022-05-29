@@ -17,6 +17,7 @@ type Configuration struct {
 
 // Setup initialize configuration
 func Setup() error {
+
 	var configuration *Configuration
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")

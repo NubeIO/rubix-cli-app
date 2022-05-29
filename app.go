@@ -13,6 +13,7 @@ import (
 )
 
 func setup() {
+
 	logger.Init()
 	logger.SetLogLevel(logrus.InfoLevel)
 	logger.InfoLn("try and start rubix-updater")

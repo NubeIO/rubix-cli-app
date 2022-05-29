@@ -2,13 +2,13 @@ package model
 
 import (
 	"fmt"
-	"gthub.com/NubeIO/rubix-cli-app/service/arch"
+	"gthub.com/NubeIO/rubix-cli-app/service/product"
 	"testing"
 )
 
 func TestProduct(t *testing.T) {
 
-	err := arch.CheckProduct("RubixCompute")
+	err := product.CheckProduct("RubixCompute")
 	fmt.Println(err)
 	if err != nil {
 		//return

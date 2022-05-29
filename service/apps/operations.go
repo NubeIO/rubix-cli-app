@@ -1,35 +1,8 @@
 package apps
 
-func (inst *Apps) SystemCtlAction(action string, timeout int) (*Response, error) {
-	actionResp := &Response{}
+func (inst *Apps) SystemCtlAction(action string, timeout int) (interface{}, error) {
 
-	err := CheckAction(action)
-	if err != nil {
-		return nil, err
-	}
-	switch action {
-	case start.String():
-		actionResp = inst.Start(timeout)
-	case stop.String():
-		actionResp = inst.Stop(timeout)
-	case status.String():
-		actionResp = inst.Status(timeout)
-	case enable.String():
-		actionResp = inst.Enable(timeout)
-	case disable.String():
-		actionResp = inst.Disable(timeout)
-	case isRunning.String():
-		actionResp, _ = inst.IsRunning(timeout)
-	case isInstalled.String():
-		actionResp, _ = inst.IsInstalled(timeout)
-	case isEnabled.String():
-		actionResp, _ = inst.IsEnabled(timeout)
-	case isActive.String():
-		actionResp, _ = inst.IsActive(timeout)
-	case isFailed.String():
-		actionResp = inst.Status(timeout)
-	}
-	return actionResp, nil
+	return nil, nil
 }
 
 type Mass struct {
