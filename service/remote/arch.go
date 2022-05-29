@@ -32,8 +32,8 @@ func (inst *Admin) ArchIsLinux() bool {
 	return false
 }
 
-//DetectModel can detect hardware type is in ARM or AMD and also if hardware is for example a Raspberry PI
-func (inst *Admin) DetectModel() (arch *Arch, err error) {
+//DetectArch can detect hardware type is in ARM or AMD
+func (inst *Admin) DetectArch() (arch *Arch, err error) {
 	arch = &Arch{}
 	inst.CMD.Commands = command.Builder("dpkg", "--print-architecture")
 	res := inst.CMD.RunCommand()
@@ -75,5 +75,14 @@ func (inst *Admin) DetectNubeProduct() (isRc, isEdge bool) {
 		return
 	}
 	return
+}
+
+func (inst *Admin) CheckEdge28() error {
+	_, isEdge := inst.DetectNubeProduct()
+	if isEdge {
+	} else {
+		return errors.New("the host product is not type edge-28")
+	}
+	return nil
 
 }

@@ -1,31 +1,30 @@
 package app
 
-import "errors"
+import (
+	"errors"
+)
 
 type Name int
 
 //go:generate stringer -type=Name
 const (
-	flowFramework Name = iota
-	rubixWires
-	piGpio
-	broker
-	loraService
+	FlowFramework Name = iota
+	RubixWires
+	PiGpio
+	Broker
+	LoraService
+	None
 )
 
-func CheckAppName(s string) error {
-	switch s {
-	case flowFramework.String():
-		return nil
-	case rubixWires.String():
-		return nil
-	case piGpio.String():
-		return nil
-	case broker.String():
-		return nil
-	case loraService.String():
-		return nil
+func (inst *Service) checkAppName(s string) (Name, error) {
+	if s == "" {
+		return None, errors.New("invalid app type selection was EMPTY, try FlowFramework, flow, flow-framework, or ff")
 	}
-	return errors.New("invalid app type, try rubixWires")
-
+	switch s {
+	case FlowFramework.String(), "flow", flow, "ff":
+		return FlowFramework, nil
+	case RubixWires.String(), "wires", wires:
+		return RubixWires, nil
+	}
+	return None, errors.New("invalid app type, try FlowFramework, flow, flow-framework, or ff")
 }

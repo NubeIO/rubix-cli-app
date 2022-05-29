@@ -21,7 +21,7 @@ func (inst *Admin) EdgeSetIP(net *EdgeNetworking) (ok bool, err error) {
 	if net == nil {
 		return false, errors.New("no values where valid")
 	}
-	arch, err := inst.DetectModel()
+	arch, err := inst.DetectArch()
 	if arch.IsBeagleBone {
 		return false, errors.New("error incorrect arch type")
 	}

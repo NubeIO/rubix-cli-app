@@ -1,21 +1,26 @@
 package app
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
-func (inst *App) flow() {
+// flow
+// can be installed on all arch types
+func (inst *Service) flow() {
 	this.Name = flow
-	this.AppName = flowFramework.String()
+	this.AppName = FlowFramework.String()
 	this.Owner = Owner
 	this.Repo = flowRepo
 	this.ServiceName = flowService
 	this.RunAsUser = User
 	this.Port = flowPort
-	this.MainDir = flow
-	this.DataDir = fmt.Sprintf("%s/%s/data", this.MainDir, wires)
-	this.ConfigDir = fmt.Sprintf("%s/%s/config", this.MainDir, wires)
-	this.ConfigFileName = configYml
-	this.ServiceWorkingDirectory = fmt.Sprintf("%s/%s/%s/%s/%s", this.MainDir, MainInstallDir, wiresRepo, this.Version, wires)
-	this.ServiceExecStart = fmt.Sprintf("/usr/bin/npm run prod:start --prod --datadir %s --envFile %s/%s", this.DataDir, this.ConfigDir, configEnv)
-	this.HasConfig = true
+	this.ServiceWorkingDirectory = fmt.Sprintf("%s/%s/%s", rootDir, mainInstallDir, this.Name)
+	this.DataDir = this.ServiceWorkingDirectory
+	this.ServiceExecStart = fmt.Sprintf("%s/app-amd64 -p %d -g %s -d data -prod", this.ServiceWorkingDirectory, this.Port, this.DataDir)
+	if this.Arch == ArchAmd64 {
+	} else {
+		this.ServiceExecStart = strings.Replace(this.ServiceExecStart, "app-amd64", "app", 1)
+	}
 	return
 }

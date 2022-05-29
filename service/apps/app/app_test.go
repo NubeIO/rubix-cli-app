@@ -1,32 +1,30 @@
 package app
 
 import (
+	"fmt"
+	log "github.com/sirupsen/logrus"
+	pprint "gthub.com/NubeIO/rubix-cli-app/pkg/helpers/print"
 	"testing"
 )
 
 func TestAppName_String(t *testing.T) {
 
-	//a := &App{}
-	//app, err := a.SelectApp("rubixWires")
-	//fmt.Println(err)
-	//if err != nil {
-	//	return
-	//}
-	//app.GetExecStart()
-	//
-	//compare := "/usr/bin/npm run prod:start --prod --datadir /data/rubix-wires/data --envFile /data/rubix-wires/config/.env"
-	//if strings.Compare(app.GetExecStart(), compare) != 0 {
-	//	fmt.Printf("fail on %s", "wires")
-	//	fmt.Println()
-	//	fmt.Println(app.GetExecStart())
-	//	fmt.Println(compare)
-	//	return
-	//} else {
-	//	fmt.Printf("pass on %s", "wires")
-	//	fmt.Println()
-	//	fmt.Println(app.GetExecStart())
-	//}
-	//
-	//fmt.Println(app.Name)
+	installer, err := New(&App{
+		AppName:       "flow",
+		Version:       "v0.0.1",
+		RubixRootPath: "/data",
+		InstallPath:   "aidan",
+	})
+	if err != nil {
+		log.Errorln(err)
+	}
+
+	app, err := installer.SelectApp()
+	fmt.Println(err)
+	if err != nil {
+		return
+	}
+
+	pprint.PrintJOSN(app)
 
 }

@@ -8,7 +8,6 @@ import (
 	"github.com/NubeIO/lib-systemctl-go/ctl"
 	"github.com/NubeIO/lib-systemctl-go/systemctl"
 	log "github.com/sirupsen/logrus"
-	pprint "gthub.com/NubeIO/rubix-cli-app/pkg/helpers/print"
 	"gthub.com/NubeIO/rubix-cli-app/service/apps/app"
 	"time"
 )
@@ -17,17 +16,21 @@ var err error
 
 func New(inst *Apps) (*Apps, error) {
 
-	a := &app.App{}
-	selection := &app.Selection{
-		AppName: inst.AppName,
-		Version: "latest",
-	}
-	selectApp, err := a.SelectApp(selection)
+	installer, err := app.New(&app.App{
+		AppName:       inst.AppName,
+		Version:       inst.Version,
+		RubixRootPath: inst.RubixRootPath,
+		InstallPath:   inst.InstallPath,
+	})
 	if err != nil {
+		log.Errorln(err)
 		return nil, err
 	}
-	selectApp = selectApp.GetApp()
-	pprint.PrintJOSN(selectApp)
+	selectApp, err := installer.SelectApp()
+	if err != nil {
+		log.Errorln(err)
+		return nil, err
+	}
 	opts := &git.AssetOptions{
 		Owner: selectApp.Owner,
 		Repo:  selectApp.Repo,
@@ -36,13 +39,9 @@ func New(inst *Apps) (*Apps, error) {
 	}
 	ctx := context.Background()
 	inst.gitClient = git.NewClient(inst.Token, opts, ctx)
+	inst.generatedApp = selectApp
 	return inst, err
 }
-
-//type RespDownload struct {
-//	AssetName string `json:"asset_name"`
-//	GitError  string `json:"git_error"`
-//}
 
 type RespBuilder struct {
 	BuilderErr string `json:"builder_err"`
@@ -53,12 +52,14 @@ type RespInstall struct {
 }
 
 type Apps struct {
-	Token              string `json:"git_token"`
-	Version            string `json:"tag"`
-	AppName            string
-	DownloadPath       string `json:"download_path"`         //home/user
-	DownloadPathSubDir string `json:"download_path_sub_dir"` //home/user /bios
-	gitClient          *git.Client
+	Token         string `json:"git_token"`
+	Version       string `json:"tag"`
+	AppName       string `json:"app_name"`
+	DownloadPath  string `json:"download_path"`   // home/user/downloads
+	RubixRootPath string `json:"rubix_root_path"` // /data
+	InstallPath   string `json:"install_path"`    // RubixRootPath/rubix-apps
+	gitClient     *git.Client
+	generatedApp  *app.Service
 }
 
 func (inst *Apps) GitDownload(destination string) (*git.DownloadResponse, error) {
@@ -86,7 +87,7 @@ func (inst *Apps) GenerateServiceFile() (*RespBuilder, error) {
 		},
 	}
 
-	err = bld.Build()
+	err = bld.Build(0700)
 	if err != nil {
 		ret.BuilderErr = err.Error()
 		return ret, err
