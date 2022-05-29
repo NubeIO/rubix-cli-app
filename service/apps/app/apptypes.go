@@ -16,15 +16,15 @@ const (
 	None
 )
 
-func (inst *Service) checkAppName(s string) (Name, error) {
+func CheckAppName(s string) (checkName Name, appName string, err error) {
 	if s == "" {
-		return None, errors.New("invalid app type selection was EMPTY, try FlowFramework, flow, flow-framework, or ff")
+		return None, "", errors.New("invalid app type selection was EMPTY, try FlowFramework, flow, flow-framework, or ff")
 	}
 	switch s {
 	case FlowFramework.String(), "flow", flow, "ff":
-		return FlowFramework, nil
+		return FlowFramework, flow, nil
 	case RubixWires.String(), "wires", wires:
-		return RubixWires, nil
+		return RubixWires, wires, nil
 	}
-	return None, errors.New("invalid app type, try FlowFramework, flow, flow-framework, or ff")
+	return None, "", errors.New("invalid app type, try FlowFramework, flow, flow-framework, or ff")
 }

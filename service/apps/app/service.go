@@ -6,14 +6,15 @@ import (
 )
 
 type Service struct {
-	Name                    string `json:"name"`     // rubix-wires
-	AppName                 string `json:"app_name"` // rubixWires
+	AppName                 string `json:"app_name"` // rubix-wires
 	Owner                   string `json:"owner"`    // NubeIO
 	Repo                    string `json:"repo"`     // wires-build
 	Version                 string `json:"version"`
 	ServiceName             string `json:"service_name"`     // nubeio-rubix-wires
 	RunAsUser               string `json:"run_as_user"`      // root
 	Port                    int    `json:"port"`             //1313
+	AppsPath                string `json:"apps_path"`        // /data/rubix-apps/install/flow-framework
+	AppPath                 string `json:"app_path"`         // /data/flow-framework
 	DataDir                 string `json:"data_dir"`         // /data
 	ConfigDir               string `json:"config_dir"`       // MainDir+Repo+config
 	ConfigFileName          string `json:"config_file_name"` // config.yml
@@ -48,8 +49,8 @@ main |installDir                 | repo         |version|cmd|port     |main/repo
 */
 
 var (
-	rootDir        = "/data"
-	mainInstallDir = "rubix-apps" // mainDir+/rubix-service
+	rootDir  = "/data"
+	appsPath = "rubix-apps" // mainDir+/rubix-service
 )
 
 const (
@@ -123,7 +124,7 @@ func (inst *Service) isLinux() (isLinux bool) {
 }
 
 func (inst *Service) SelectApp() (*Service, error) {
-	name, err := inst.checkAppName(appName)
+	name, _, err := CheckAppName(appName)
 	if err != nil {
 		return nil, err
 	}

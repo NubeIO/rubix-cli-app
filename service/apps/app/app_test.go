@@ -10,11 +10,11 @@ import (
 func TestAppName_String(t *testing.T) {
 
 	installer, err := New(&App{
-		AppName:       "flow",
+		AppName:       "flow-framework",
 		Version:       "v0.0.1",
 		RubixRootPath: "/data",
-		InstallPath:   "aidan",
-	})
+		AppsPath:      "aidan",
+	}, "ff")
 	if err != nil {
 		log.Errorln(err)
 	}

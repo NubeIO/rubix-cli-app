@@ -1,27 +1,13 @@
 package apps
 
-import "errors"
-
-type AppService struct {
-	AppName string `json:"service"`
-	Action  string `json:"action"`
-	Timeout int    `json:"timeout"`
-}
-
-func (inst *Apps) Action(appService *AppService) (*Response, error) {
+func (inst *Apps) SystemCtlAction(action string, timeout int) (*Response, error) {
 	actionResp := &Response{}
-	if appService == nil {
-		return nil, errors.New("action must not be nil")
-	}
-	app := appService.AppName
-	actionType := appService.Action
-	timeout := appService.Timeout
-	err := CheckAction(actionType)
+
+	err := CheckAction(action)
 	if err != nil {
 		return nil, err
 	}
-	inst.ServiceName = app
-	switch actionType {
+	switch action {
 	case start.String():
 		actionResp = inst.Start(timeout)
 	case stop.String():
@@ -62,21 +48,21 @@ type massResponse struct {
 
 func (inst *Apps) Mass(mass *Mass) ([]massResponse, error) {
 	var response []massResponse
-	for _, app := range mass.Apps {
-		appService := &AppService{}
-		actionType := appService.Action
-		actionResp, err := inst.Action(appService)
-		if err != nil {
-			return nil, err
-		}
-		res := massResponse{
-			AppName: app,
-			Action:  actionType,
-			Ok:      actionResp.Ok,
-			Message: actionResp.Message,
-			Err:     actionResp.Err,
-		}
-		response = append(response, res)
-	}
+	//for _, app := range mass.Apps {
+	//	appService := &AppService{}
+	//	actionType := appService.Action
+	//	actionResp, err := inst.Action(appService)
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	//	res := massResponse{
+	//		AppName: app,
+	//		Action:  actionType,
+	//		Ok:      actionResp.Ok,
+	//		Message: actionResp.Message,
+	//		Err:     actionResp.Err,
+	//	}
+	//	response = append(response, res)
+	//}
 	return response, nil
 }

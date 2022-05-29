@@ -7,10 +7,12 @@ import (
 var this *Service
 
 type App struct {
+	InstallApp    string
 	AppName       string // ff, flow-framework or flow
 	Version       string //version must be the installed version as in v0.0.1
 	RubixRootPath string // /data
-	InstallPath   string // /data/rubix-apps
+	AppsPath      string // /data/rubix-apps/install
+	AppPath       string // data/flow-framework
 }
 
 var (
@@ -18,7 +20,7 @@ var (
 	appVersion = ""
 )
 
-func New(app *App) (*Service, error) {
+func New(app *App, rubixApp string) (*Service, error) {
 	if app == nil {
 		return nil, errors.New("type app must not be nil")
 	}
@@ -30,11 +32,11 @@ func New(app *App) (*Service, error) {
 		if app.RubixRootPath != "" {
 			rootDir = app.RubixRootPath
 		}
-		if app.InstallPath != "" {
-			mainInstallDir = app.InstallPath
+		if app.AppsPath != "" {
+			appsPath = app.AppsPath
 		}
 	}
-	appName = app.AppName
+	appName = rubixApp
 	appVersion = app.Version
 	this = service
 	return this, nil

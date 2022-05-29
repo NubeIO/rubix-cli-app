@@ -1,7 +1,9 @@
 module gthub.com/NubeIO/rubix-cli-app
 
 replace github.com/NubeIO/lib-systemctl-go => /home/aidan/code/go/nube/lib/lib-systemctl-go
+
 replace github.com/NubeIO/lib-dirs => /home/aidan/code/go/nube/lib/lib-dirs
+
 replace github.com/NubeIO/git => /home/aidan/code/go/nube/lib/git
 
 go 1.18
@@ -40,6 +42,7 @@ require (
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
+	github.com/helloyi/go-sshclient v1.1.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
