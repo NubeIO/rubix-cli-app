@@ -19,19 +19,16 @@ type Apps struct {
 	RubixRootPath      string      `json:"rubix_root_path"` // /data
 	AppPath            string      `json:"app_path"`        // RubixRootPath/rubix-wires
 	ServiceFileTmpPath string      `json:"service_file_tmp_path"`
-	ServiceName        string      `json:"service_name"` // nubeio-rubix-wires
 	AssetZipName       string      `json:"asset_zip_name"`
 	Perm               os.FileMode `json:"-"`
 	gitClient          *git.Client
 	GeneratedApp       *app.Service `json:"-"`
+	serviceName        string       // nubeio-rubix-wires
 }
 
 func New(inst *Apps, rubixApp string) (*Apps, error) {
 	if inst == nil {
 		return nil, errors.New("type apps must not be nil")
-	}
-	if inst.ServiceName == "" {
-		return nil, errors.New("service-name must not be nil, try nubeio-rubix-wires")
 	}
 	if rubixApp == "" {
 		return nil, errors.New("no app was passed in, try ff, flow or flow-framework")
@@ -53,6 +50,10 @@ func New(inst *Apps, rubixApp string) (*Apps, error) {
 		log.Errorln(err)
 		return nil, err
 	}
+	if installer.ServiceName == "" {
+		return nil, errors.New("service-name must not be nil, try nubeio-rubix-wires")
+	}
+	inst.serviceName = installer.ServiceName
 	opts := &git.AssetOptions{
 		Owner: selectApp.Owner,
 		Repo:  selectApp.Repo,

@@ -2,6 +2,7 @@ package app
 
 import (
 	"errors"
+	"fmt"
 	"gthub.com/NubeIO/rubix-cli-app/service/remote"
 )
 
@@ -49,8 +50,9 @@ main |installDir                 | repo         |version|cmd|port     |main/repo
 */
 
 var (
-	rootDir  = "/data"
-	appsPath = "rubix-apps" // mainDir+/rubix-service
+	rootDir         = "/data"
+	appsPath        = "rubix-apps" // mainDir+/rubix-service
+	appsInstallPath = fmt.Sprintf("%s/installed", appsPath)
 )
 
 const (
