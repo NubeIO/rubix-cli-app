@@ -2,6 +2,7 @@ package apps
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/NubeIO/git/pkg/git"
 	"github.com/NubeIO/lib-systemctl-go/builder"
@@ -9,13 +10,36 @@ import (
 	"github.com/NubeIO/lib-systemctl-go/systemctl"
 	log "github.com/sirupsen/logrus"
 	"gthub.com/NubeIO/rubix-cli-app/service/apps/app"
+	"os"
 	"time"
 )
 
 var err error
 
-func New(inst *Apps) (*Apps, error) {
+type Apps struct {
+	Token              string      `json:"git_token"`
+	Version            string      `json:"tag"`
+	AppName            string      `json:"app_name"`
+	DownloadPath       string      `json:"download_path"`   // home/user/downloads
+	RubixRootPath      string      `json:"rubix_root_path"` // /data
+	InstallPath        string      `json:"install_path"`    // RubixRootPath/rubix-apps
+	ServiceFileTmpPath string      `json:"service_file_tmp_path"`
+	ServiceName        string      `json:"service_name"` // nubeio-rubix-wires
+	Perm               os.FileMode `json:"-"`
+	gitClient          *git.Client
+	GeneratedApp       *app.Service `json:"-"`
+}
 
+func New(inst *Apps) (*Apps, error) {
+	if inst == nil {
+		return nil, errors.New("type apps must not be nil")
+	}
+	if inst.ServiceName == "" {
+		return nil, errors.New("service-name must not be nil, try nubeio-rubix-wires")
+	}
+	if inst.Perm == 0 {
+		inst.Perm = 0700
+	}
 	installer, err := app.New(&app.App{
 		AppName:       inst.AppName,
 		Version:       inst.Version,
@@ -39,7 +63,7 @@ func New(inst *Apps) (*Apps, error) {
 	}
 	ctx := context.Background()
 	inst.gitClient = git.NewClient(inst.Token, opts, ctx)
-	inst.generatedApp = selectApp
+	inst.GeneratedApp = selectApp
 	return inst, err
 }
 
@@ -47,43 +71,30 @@ type RespBuilder struct {
 	BuilderErr string `json:"builder_err"`
 }
 
-type RespInstall struct {
-	InstallResp *ctl.InstallResp `json:"install_resp"`
-}
-
-type Apps struct {
-	Token         string `json:"git_token"`
-	Version       string `json:"tag"`
-	AppName       string `json:"app_name"`
-	DownloadPath  string `json:"download_path"`   // home/user/downloads
-	RubixRootPath string `json:"rubix_root_path"` // /data
-	InstallPath   string `json:"install_path"`    // RubixRootPath/rubix-apps
-	gitClient     *git.Client
-	generatedApp  *app.Service
-}
-
 func (inst *Apps) GitDownload(destination string) (*git.DownloadResponse, error) {
 	return inst.gitClient.Download(destination)
 }
 
-func (inst *Apps) GenerateServiceFile() (*RespBuilder, error) {
+func (inst *Apps) GenerateServiceFile(app *app.Service, tmpFilePath string) (*RespBuilder, error) {
 	ret := &RespBuilder{}
-	newService := "nubeio-rubix-bios"
-	description := "BIOS comes with default OS, non-upgradable"
-	user := "root"
-	directory := "/data/rubix-bios-app"
-	execCmd := "/data/rubix-bios-app/rubix-bios -p 1615 -g /data/rubix-bios -d data -c config -a apps --prod --auth  --device-type amd64 --token 1234"
+
+	newService := app.ServiceName
+	description := app.ServiceDescription
+	user := app.RunAsUser
+	directory := app.ServiceWorkingDirectory
+	execCmd := app.ServiceExecStart
 
 	bld := &builder.SystemDBuilder{
+		ServiceName:      app.Name,
 		Description:      description,
 		User:             user,
 		WorkingDirectory: directory,
 		ExecStart:        execCmd,
-		SyslogIdentifier: "rubix-bios",
+		SyslogIdentifier: newService,
 		WriteFile: builder.WriteFile{
 			Write:    true,
 			FileName: newService,
-			Path:     "/data",
+			Path:     tmpFilePath,
 		},
 	}
 
@@ -96,30 +107,34 @@ func (inst *Apps) GenerateServiceFile() (*RespBuilder, error) {
 }
 
 //InstallService a new linux service
-//	- service: the service name (eg: rubix-bios)
+//	- service: the service name (eg: nubeio-rubix-wires)
 //	- path: the service file path and name (eg: "/tmp/rubix-bios.service")
-func (inst *Apps) InstallService(service, path string) (*RespInstall, error) {
-	ret := &RespInstall{}
+func (inst *Apps) InstallService(service, tmpServiceFile string) (*ctl.InstallResp, error) {
+	resp := &ctl.InstallResp{}
+
 	//path := "/tmp/nubeio-rubix-bios.service"
 	timeOut := 30
-	ser := ctl.New(service, path)
-	opts := systemctl.Options{Timeout: timeOut}
-	installOpts := ctl.InstallOpts{
-		Options: opts,
+	ser := ctl.New(service, tmpServiceFile)
+	ser.InstallOpts = ctl.InstallOpts{
+		Options: systemctl.Options{Timeout: timeOut},
 	}
-	ser.InstallOpts = installOpts
-	ret.InstallResp = ser.Install()
-	fmt.Println("full install error", err)
+	err = ser.TransferFile()
 	if err != nil {
 		fmt.Println("full install error", err)
+		return nil, err
 	}
 
-	time.Sleep(8 * time.Second)
-
-	status, err := systemctl.Status(service, systemctl.Options{})
+	resp = ser.Install()
 	if err != nil {
-		log.Errorf("service found: %s: %v", service, err)
+		fmt.Println("full install error", err)
+		return nil, err
 	}
-	fmt.Println(status)
-	return ret, nil
+	time.Sleep(8 * time.Second)
+	active, status, err := systemctl.IsRunning(service, systemctl.Options{})
+	if err != nil {
+		log.Errorf("service found or failed to check IsRunning: %s: %v", service, err)
+		return nil, err
+	}
+	log.Infof("service: %s: isActive: %t status: %s", service, active, status)
+	return resp, nil
 }

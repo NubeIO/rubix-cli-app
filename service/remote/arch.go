@@ -2,7 +2,6 @@ package remote
 
 import (
 	"errors"
-	"fmt"
 	"github.com/NubeIO/nubeio-rubix-lib-helpers-go/pkg/str"
 	"gthub.com/NubeIO/rubix-cli-app/service/remote/command"
 	"runtime"
@@ -24,7 +23,6 @@ type Arch struct {
 
 func (inst *Admin) ArchIsLinux() bool {
 	s := runtime.GOOS
-	fmt.Println(s)
 	switch s {
 	case "linux":
 		return true

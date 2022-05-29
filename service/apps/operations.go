@@ -20,27 +20,28 @@ func (inst *Apps) Action(appService *AppService) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
+	inst.ServiceName = app
 	switch actionType {
 	case start.String():
-		actionResp = inst.Start(app, timeout)
+		actionResp = inst.Start(timeout)
 	case stop.String():
-		actionResp = inst.Stop(app, timeout)
+		actionResp = inst.Stop(timeout)
 	case status.String():
-		actionResp = inst.Status(app, timeout)
+		actionResp = inst.Status(timeout)
 	case enable.String():
-		actionResp = inst.Enable(app, timeout)
+		actionResp = inst.Enable(timeout)
 	case disable.String():
-		actionResp = inst.Disable(app, timeout)
+		actionResp = inst.Disable(timeout)
 	case isRunning.String():
-		actionResp = inst.IsRunning(app, timeout)
+		actionResp, _ = inst.IsRunning(timeout)
 	case isInstalled.String():
-		actionResp = inst.IsInstalled(app, timeout)
+		actionResp, _ = inst.IsInstalled(timeout)
 	case isEnabled.String():
-		actionResp = inst.IsEnabled(app, timeout)
+		actionResp, _ = inst.IsEnabled(timeout)
 	case isActive.String():
-		actionResp = inst.IsActive(app, timeout)
+		actionResp, _ = inst.IsActive(timeout)
 	case isFailed.String():
-		actionResp = inst.Status(app, timeout)
+		actionResp = inst.Status(timeout)
 	}
 	return actionResp, nil
 }

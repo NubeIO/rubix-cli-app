@@ -45,8 +45,6 @@ func (inst *Command) RunCommand() (res *Response) {
 		log.Infoln("cmd", err)
 		res.Err = err
 		return res
-	} else {
-		fmt.Println("cmd", outAsString)
 	}
 	res.Out = outAsString
 	res.Ok = true

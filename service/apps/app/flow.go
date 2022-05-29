@@ -16,7 +16,7 @@ func (inst *Service) flow() {
 	this.RunAsUser = User
 	this.Port = flowPort
 	this.ServiceWorkingDirectory = fmt.Sprintf("%s/%s/%s", rootDir, mainInstallDir, this.Name)
-	this.DataDir = this.ServiceWorkingDirectory
+	this.DataDir = fmt.Sprintf("%s/%s", rootDir, this.Name)
 	this.ServiceExecStart = fmt.Sprintf("%s/app-amd64 -p %d -g %s -d data -prod", this.ServiceWorkingDirectory, this.Port, this.DataDir)
 	if this.Arch == ArchAmd64 {
 	} else {

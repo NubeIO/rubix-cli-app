@@ -141,10 +141,16 @@ func (inst *Service) SelectApp() (*Service, error) {
 	case RubixWires:
 		//wires can be installed on any linux arch
 		inst.rubixWires()
+		if this.ServiceName == "" {
+			return nil, errors.New("service name can not be nil, try nubeio-rubix-wires")
+		}
 		return this, nil
 	case FlowFramework:
 		//wires can be installed on any linux arch
 		inst.flow()
+		if this.ServiceName == "" {
+			return nil, errors.New("service name can not be nil, try nubeio-rubix-wires")
+		}
 		return this, nil
 	}
 	return nil, errors.New("invalid app type, try rubixWires")
