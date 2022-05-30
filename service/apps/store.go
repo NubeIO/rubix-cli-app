@@ -2,26 +2,31 @@ package apps
 
 import (
 	"gorm.io/datatypes"
-	"gthub.com/NubeIO/rubix-cli-app/service/apps/app"
 )
 
 type Store struct {
-	UUID              string         `json:"uuid" gorm:"primaryKey"`
-	AppName           string         `json:"name"  gorm:"type:varchar(255);unique;not null"`
-	Product           string         `json:"product_type"`       // model.ProductType
-	AllowableProducts datatypes.JSON `json:"allowable_products"` // All RubixCompute RubixIO
-	Port              int
-	AppTypeName       string   `json:"app_type_name"` //go, node
-	AppType           app.Type `json:"-"`             //go, node
-
-	Repo          string `json:"repo"`         // wires-build
-	ServiceName   string `json:"service_name"` // nubeio-rubix-wires
-	RubixRootPath string // /data
-	AppsPath      string `json:"apps_path"` // /data/rubix-apps/install/flow-framework
-	AppPath       string `json:"app_path"`  // /data/flow-framework
+	UUID                    string         `json:"uuid" gorm:"primaryKey"`
+	Name                    string         `json:"name"  gorm:"type:varchar(255);unique;not null"`
+	AllowableProducts       datatypes.JSON `json:"allowable_products"` // All RubixCompute RubixIO
+	Port                    int            `json:"port"`
+	AppTypeName             string         `json:"app_type_name"`                                          //go, node
+	AppType                 Type           `json:"-"`                                                      //go, node
+	Repo                    string         `json:"repo"  gorm:"type:varchar(255);unique;not null"`         // wires-build
+	ServiceName             string         `json:"service_name"  gorm:"type:varchar(255);unique;not null"` // nubeio-rubix-wires
+	RubixRootPath           string         `json:"rubix_root_path"`                                        // /data
+	AppsPath                string         `json:"apps_path"`                                              // /data/rubix-apps/install/flow-framework
+	AppPath                 string         `json:"app_path"`                                               // /data/flow-framework
+	DownloadPath            string         `json:"download_path"`                                          // home/user/downloads
+	AssetZipName            string         `json:"-"`                                                      // (auto added)
+	Owner                   string         `json:"owner"`                                                  // NubeIO
+	RunAsUser               string         `json:"run_as_user"`                                            // root
+	ServiceDescription      string         `json:"description"`                                            // nube-io app
+	ServiceWorkingDirectory string         `json:"service_working_directory"`                              // MainDir/apps/install/
+	ServiceExecStart        string         `json:"service_exec_start"`                                     // npm run prod:start --prod -- --datadir /data/rubix-wires/data --envFile /data/rubix-wires/config/.env
+	ProductType             string         `json:"product_type"`                                           // RubixCompute (auto added)
+	Arch                    string         `json:"arch"`                                                   // amd64 (auto added)
 
 	// git details
-	Token string `json:"token"`
 }
 
 type InstallOptions struct {

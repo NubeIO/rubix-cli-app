@@ -112,7 +112,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 		users.DELETE("/drop", api.DropUsers)
 	}
 
-	app := admin.Group("/apps")
+	app := admin.Group("/stores")
 	{
 		app.GET("/", api.GetApps)
 		app.POST("/", api.CreateApp)

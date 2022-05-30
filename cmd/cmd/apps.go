@@ -1,12 +1,12 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	pprint "gthub.com/NubeIO/rubix-cli-app/pkg/helpers/print"
 	"gthub.com/NubeIO/rubix-cli-app/service/apps"
-	"gthub.com/NubeIO/rubix-cli-app/service/apps/app"
-	"os"
 )
 
 var appsCmd = &cobra.Command{
@@ -21,48 +21,80 @@ type InstallResp struct {
 }
 
 func runApps(cmd *cobra.Command, args []string) {
-	var err error
-	_, appName, err := app.CheckAppName(flgApp.appName)
-	log.Infof("try and install app:%s \n", appName)
-	var perm os.FileMode = 0777
-	inst := &apps.Apps{
-		AppName:       appName,
-		Token:         flgApp.token,
-		Version:       flgApp.version,
-		DownloadPath:  flgApp.downloadPath,
-		RubixRootPath: flgApp.rubixRootPath,
-		Perm:          perm,
-	}
-	newApp, err := apps.New(inst, appName)
-	if err != nil {
-		log.Errorln("new app: failed to init a new app", err)
-		return
-	}
-	if err = inst.MakeDownloadDir(); err != nil {
-		return
+	db := initDB()
+	if flgApp.addStore {
+		products, _ := json.Marshal([]string{"RubixCompute", "AllLinux"}) // product.ProductType
+		db.DropApps()
+		store := &apps.Store{
+			Name:                    "flow-framework",
+			AppTypeName:             "Go",
+			AllowableProducts:       products,
+			DownloadPath:            flgApp.downloadPath,
+			RubixRootPath:           flgApp.rubixRootPath,
+			AppPath:                 "/data/flow-framework",
+			Repo:                    "flow-framework",
+			ServiceName:             "nubeio-flow-framework",
+			RunAsUser:               "root",
+			Port:                    1660,
+			AppsPath:                "/data/rubix-apps/installed",
+			ServiceDescription:      "nubeio-app rubix flow-framework",
+			ServiceWorkingDirectory: "/data/rubix-apps/installed/flow-framework",
+			ServiceExecStart:        "/data/rubix-apps/installed/flow-framework/app-amd64 -p 1660 -g /data/flow-framework -d data -prod",
+		}
+
+		app, err := db.CreateApp(store)
+		if err != nil {
+			log.Errorln(err)
+			return
+		}
+		pprint.PrintJOSN(app)
 	}
 
-	if _, err = newApp.GitDownload(inst.DownloadPath); err != nil {
-		log.Errorf("git: download error %s \n", err.Error())
-		return
-	}
-	if err = inst.MakeInstallDir(); err != nil {
-		return
-	}
-	if err = inst.UnpackBuild(); err != nil {
-		return
-	}
-	tmpFileDir := flgApp.downloadPath
-	if _, err = newApp.GenerateServiceFile(newApp.GeneratedApp, tmpFileDir); err != nil {
-		log.Errorf("make service file build: failed error:%s \n", err.Error())
-		return
-	}
-	tmpServiceFile := fmt.Sprintf("%s/%s.service", tmpFileDir, newApp.GeneratedApp.ServiceName)
-	if _, err = newApp.InstallService(newApp.GeneratedApp.ServiceName, tmpServiceFile); err != nil {
-		return
-	}
-	if err = inst.CleanUp(); err != nil {
-		return
+	if flgApp.installApp {
+		appStore, err := db.GetAppByName("flow-framework")
+		if err != nil {
+			return
+		}
+
+		var inst = &apps.Apps{
+			Token:   flgApp.token,
+			Perm:    0700,
+			Version: flgApp.version,
+			App:     appStore,
+		}
+		newApp, err := apps.New(inst, "flow-framework")
+		if err != nil {
+			log.Errorln("new app: failed to init a new app", err)
+			return
+		}
+
+		if err = inst.MakeDownloadDir(); err != nil {
+			return
+		}
+		//
+		if _, err = newApp.GitDownload(inst.App.DownloadPath); err != nil {
+			log.Errorf("git: download error %s \n", err.Error())
+			return
+		}
+		if err = inst.MakeInstallDir(); err != nil {
+			return
+		}
+		if err = inst.UnpackBuild(); err != nil {
+			return
+		}
+		tmpFileDir := newApp.App.DownloadPath
+		if _, err = newApp.GenerateServiceFile(newApp, tmpFileDir); err != nil {
+			log.Errorf("make service file build: failed error:%s \n", err.Error())
+			return
+		}
+		tmpServiceFile := fmt.Sprintf("%s/%s.service", tmpFileDir, newApp.App.ServiceName)
+		if _, err = newApp.InstallService(newApp.App.ServiceName, tmpServiceFile); err != nil {
+			return
+		}
+		if err = inst.CleanUp(); err != nil {
+			return
+		}
+
 	}
 
 }
@@ -75,6 +107,8 @@ var flgApp struct {
 	version       string
 	downloadPath  string
 	rubixRootPath string
+	addStore      bool
+	installApp    bool
 }
 
 func init() {
@@ -83,7 +117,9 @@ func init() {
 	flagSet.StringVar(&flgApp.token, "token", "", "github oauth2 token value (optional)")
 	flagSet.StringVarP(&flgApp.appName, "app", "", "", "rubix-wires, wires or RubixWires")
 	flagSet.StringVar(&flgApp.version, "version", "latest", "version of build")
-	flagSet.StringVar(&flgApp.downloadPath, "download", "/tmp", "download path")
-	flagSet.StringVar(&flgApp.rubixRootPath, "rubix-path", "/data", "rubix main path")
+	flagSet.StringVar(&flgApp.downloadPath, "download", "", "download path")
+	flagSet.StringVar(&flgApp.rubixRootPath, "rubix-path", "", "rubix main path")
+	flagSet.BoolVarP(&flgApp.addStore, "store-add", "", false, "add a new app to the store")
+	flagSet.BoolVarP(&flgApp.installApp, "install", "", false, "install an app")
 
 }

@@ -20,14 +20,6 @@ var flgEdgeIp struct {
 }
 
 func runEdge(cmd *cobra.Command, args []string) {
-	//host := initSession()
-	//ok, err := host.EdgeSetIP(&remote.EdgeNetworking{
-	//	SetDHCP:    flgEdgeIp.setDHCP,
-	//	IPAddress:  flgEdgeIp.iPAddress,
-	//	SubnetMask: flgEdgeIp.subnetMask,
-	//	Gateway:    flgEdgeIp.gateway,
-	//})
-	//fmt.Println(ok, err)
 
 }
 
