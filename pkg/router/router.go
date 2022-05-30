@@ -109,12 +109,12 @@ func Setup(db *gorm.DB) *gin.Engine {
 
 	store := admin.Group("/stores")
 	{
-		store.GET("/", api.GetAppImages)
-		store.POST("/", api.CreateAppImage)
-		store.GET("/:uuid", api.GetAppImage)
-		store.PATCH("/:uuid", api.UpdateAppImage)
-		store.DELETE("/:uuid", api.DeleteAppImage)
-		store.DELETE("/drop", api.DropAppImages)
+		store.GET("/", api.GetAppStores)
+		store.POST("/", api.CreateAppStore)
+		store.GET("/:uuid", api.GetAppStore)
+		store.PATCH("/:uuid", api.UpdateAppStore)
+		store.DELETE("/:uuid", api.DeleteAppStore)
+		store.DELETE("/drop", api.DropAppStores)
 	}
 
 	app := admin.Group("/apps")
@@ -125,6 +125,8 @@ func Setup(db *gorm.DB) *gin.Engine {
 		app.PATCH("/:uuid", api.UpdateApp)
 		app.DELETE("/", api.UnInstallApp)
 		app.DELETE("/drop", api.DropApps)
+		// stats
+		app.POST("/stats", api.AppStats)
 	}
 	appControl := admin.Group("/apps/control")
 	{

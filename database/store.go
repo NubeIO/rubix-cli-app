@@ -10,7 +10,7 @@ import (
 	"gthub.com/NubeIO/rubix-cli-app/service/product"
 )
 
-func (db *DB) GetAppImages() ([]*apps.Store, error) {
+func (db *DB) GetAppStores() ([]*apps.Store, error) {
 	var m []*apps.Store
 	if err := db.DB.Find(&m).Error; err != nil {
 		return nil, err
@@ -19,7 +19,7 @@ func (db *DB) GetAppImages() ([]*apps.Store, error) {
 	}
 }
 
-func (db *DB) GetAppImage(uuid string) (*apps.Store, error) {
+func (db *DB) GetAppStore(uuid string) (*apps.Store, error) {
 	var m *apps.Store
 	if err := db.DB.Where("uuid = ? ", uuid).First(&m).Error; err != nil {
 		logger.Errorf("GetApp error: %v", err)
@@ -28,7 +28,7 @@ func (db *DB) GetAppImage(uuid string) (*apps.Store, error) {
 	return m, nil
 }
 
-func (db *DB) GetAppImageByName(name string) (*apps.Store, error) {
+func (db *DB) GetAppStoreByName(name string) (*apps.Store, error) {
 	var m *apps.Store
 	if err := db.DB.Where("name = ? ", name).First(&m).Error; err != nil {
 		logger.Errorf("GetApp error: %v", err)
@@ -72,7 +72,7 @@ func validateAllowableProducts(store *apps.Store) ([]byte, []string, error) {
 	return valid, data, nil
 }
 
-func (db *DB) CreateAppImage(body *apps.Store) (*apps.Store, error) {
+func (db *DB) CreateAppStore(body *apps.Store) (*apps.Store, error) {
 	body.UUID = fmt.Sprintf("app_%s", uuid.SmallUUID())
 	pro, err := product.Get()
 	appType, appTypeName, err := apps.CheckType(body.AppTypeName)
@@ -127,7 +127,7 @@ func (db *DB) CreateAppImage(body *apps.Store) (*apps.Store, error) {
 	}
 }
 
-func (db *DB) UpdateAppImage(uuid string, app *apps.Store) (*apps.Store, error) {
+func (db *DB) UpdateAppStore(uuid string, app *apps.Store) (*apps.Store, error) {
 	var m *apps.Store
 	query := db.DB.Where("uuid = ?", uuid).Find(&m).Updates(app)
 	if query.Error != nil {
@@ -137,7 +137,7 @@ func (db *DB) UpdateAppImage(uuid string, app *apps.Store) (*apps.Store, error) 
 	}
 }
 
-func (db *DB) DeleteAppImage(uuid string) (*DeleteMessage, error) {
+func (db *DB) DeleteAppStore(uuid string) (*DeleteMessage, error) {
 	var m *apps.Store
 	query := db.DB.Where("uuid = ? ", uuid).Delete(&m)
 	return deleteResponse(query)
@@ -147,7 +147,7 @@ type DeleteMessage struct {
 	Message string `json:"message"`
 }
 
-func (db *DB) DropAppImages() (*DeleteMessage, error) {
+func (db *DB) DropAppStores() (*DeleteMessage, error) {
 	var m *apps.Store
 	query := db.DB.Where("1 = 1")
 	query.Delete(&m)

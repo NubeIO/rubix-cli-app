@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/olahol/melody.v1"
 	dbase "gthub.com/NubeIO/rubix-cli-app/database"
@@ -67,14 +68,15 @@ type Response struct {
 
 func reposeHandler(body interface{}, err error, ctx *gin.Context) {
 	if err != nil {
-		if err == nil {
-			ctx.JSON(404, Message{Message: "unknown error"})
-		} else {
-			if body != nil {
-				ctx.JSON(404, body)
-			} else {
+		if body != nil {
+			j, _ := json.Marshal(body)
+			if string(j) == "null" {
 				ctx.JSON(404, Message{Message: err.Error()})
+				return
 			}
+			ctx.JSON(404, body)
+		} else {
+			ctx.JSON(404, Message{Message: err.Error()})
 		}
 	} else {
 		ctx.JSON(200, body)

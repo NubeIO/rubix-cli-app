@@ -3,6 +3,7 @@ package dbase
 import (
 	"errors"
 	"fmt"
+	"github.com/NubeIO/lib-systemctl-go/systemctl"
 	"gthub.com/NubeIO/rubix-cli-app/pkg/helpers/uuid"
 	"gthub.com/NubeIO/rubix-cli-app/pkg/logger"
 	"gthub.com/NubeIO/rubix-cli-app/service/apps"
@@ -17,6 +18,30 @@ func (db *DB) GetApps() ([]*apps.App, error) {
 	}
 }
 
+type AppStats struct {
+	App   *apps.App             `json:"app"`
+	Stats systemctl.SystemState `json:"stats"`
+}
+
+func (db *DB) AppStats(body *apps.App) (*AppStats, error) {
+	var stats *AppStats
+	appStore, getApp, err := db.GetAppAndStore(body)
+	if err != nil {
+		return nil, err
+	}
+	service, err := initAppService(appStore.ServiceName)
+	if err != nil {
+		return nil, err
+	}
+	status, err := service.ServiceStats(apps.DefaultTimeout)
+	if err != nil {
+		return nil, err
+	}
+	stats.App = getApp
+	stats.Stats = status
+	return stats, nil
+}
+
 func (db *DB) GetApp(uuid string) (*apps.App, error) {
 	var m *apps.App
 	if err := db.DB.Where("uuid = ? ", uuid).First(&m).Error; err != nil {
@@ -24,6 +49,29 @@ func (db *DB) GetApp(uuid string) (*apps.App, error) {
 		return nil, err
 	}
 	return m, nil
+}
+
+func (db *DB) GetAppAndStore(body *apps.App) (*apps.Store, *apps.App, error) {
+	var app *apps.App
+	if body.UUID == "" {
+		appByName, err := db.GetAppByName(body.AppStoreName)
+		if err != nil {
+			return nil, nil, errors.New("app not found by name")
+		}
+		app = appByName
+	} else {
+		appById, err := db.GetApp(body.UUID)
+		if err != nil {
+			return nil, nil, errors.New("app not found by id")
+		}
+		app = appById
+	}
+	appStore, err := db.GetAppStore(app.AppStoreUUID)
+	if err != nil {
+		return nil, nil, errors.New("app store not found")
+	}
+
+	return appStore, app, nil
 }
 
 func (db *DB) GetAppByName(name string) (*apps.App, error) {
@@ -36,7 +84,7 @@ func (db *DB) GetAppByName(name string) (*apps.App, error) {
 }
 
 func (db *DB) AddApp(body *apps.App) (resp *apps.App, existingInstall bool, err error) {
-	store, err := db.GetAppImageByName(body.AppStoreName)
+	store, err := db.GetAppStoreByName(body.AppStoreName)
 	if err != nil {
 		return nil, false, errors.New("no app store is installed for this app")
 	}

@@ -13,9 +13,14 @@ type App struct {
 }
 
 type InstallResponse struct {
-	ErrorMessage    string `json:"error_message"`
+	Message    string     `json:"message"`
+	Error      string     `json:"error"`
+	InstallLog InstallLog `json:"log"`
+}
+
+type InstallLog struct {
 	GetAppFromStore string `json:"get_app_from_store"`
-	AppInstall      string `json:"app"`
+	AppInstall      string `json:"-"`
 	MakeDownload    string `json:"make_download"`
 	GitDownload     string `json:"git_download"`
 	MakeInstallDir  string `json:"make_install_dir"`
@@ -54,26 +59,27 @@ const (
 )
 
 func (db *DB) InstallApp(body *App) (*InstallResponse, error) {
+	resp := &InstallResponse{}
 	app, err := db.installApp(body)
 	if err != nil {
-		app.ErrorMessage = err.Error()
+		resp.Error = err.Error()
 		return app, err
 	}
-	return app, err
+	resp.InstallLog = app.InstallLog
+	resp.Error = "no errors"
+	resp.Message = fmt.Sprintf("install ok! %s", app.InstallLog.AppInstall)
+	return resp, err
 }
 
 func (db *DB) installApp(body *App) (*InstallResponse, error) {
+	resp := &InstallResponse{}
 
-	resp := &InstallResponse{
-		ErrorMessage: "no error",
-	}
-
-	appStore, err := db.GetAppImageByName(body.AppName)
+	appStore, err := db.GetAppStoreByName(body.AppName)
 	if err != nil {
-		resp.GetAppFromStore = selectAppStoreErr
+		resp.InstallLog.GetAppFromStore = selectAppStoreErr
 		return resp, err
 	}
-	resp.GetAppFromStore = selectAppStore
+	resp.InstallLog.GetAppFromStore = selectAppStore
 	installedApp := &apps.App{
 		AppStoreName:     appStore.Name,
 		AppStoreUUID:     appStore.UUID,
@@ -82,7 +88,7 @@ func (db *DB) installApp(body *App) (*InstallResponse, error) {
 
 	var inst = &apps.Apps{
 		Token:   body.Token,
-		Perm:    0700,
+		Perm:    apps.Permission,
 		Version: body.Version,
 		App:     appStore,
 	}
@@ -93,62 +99,62 @@ func (db *DB) installApp(body *App) (*InstallResponse, error) {
 	}
 
 	if err = inst.MakeDownloadDir(); err != nil {
-		resp.MakeDownload = makeDownloadErr
+		resp.InstallLog.MakeDownload = makeDownloadErr
 		return resp, err
 	}
-	resp.MakeDownload = makeDownload
+	resp.InstallLog.MakeDownload = makeDownload
 	download, err := newApp.GitDownload(inst.App.DownloadPath)
 	if err != nil {
 		log.Errorf("git: download error %s \n", err.Error())
-		resp.GitDownload = gitDownloadErr
+		resp.InstallLog.GitDownload = gitDownloadErr
 		return resp, err
 	}
 	assetTag := download.RepositoryRelease.GetTagName()
-	resp.GitDownload = fmt.Sprintf("installed version: %s", assetTag)
+	resp.InstallLog.GitDownload = fmt.Sprintf("installed version: %s", assetTag)
 	if err = inst.MakeInstallDir(); err != nil {
-		resp.MakeInstallDir = makeInstallDirErr
+		resp.InstallLog.MakeInstallDir = makeInstallDirErr
 		return resp, err
 	}
-	resp.MakeInstallDir = makeInstallDir
+	resp.InstallLog.MakeInstallDir = makeInstallDir
 	if err = inst.UnpackBuild(); err != nil {
-		resp.UnpackBuild = unpackBuildErr
+		resp.InstallLog.UnpackBuild = unpackBuildErr
 		return resp, err
 	}
-	resp.UnpackBuild = unpackBuild
+	resp.InstallLog.UnpackBuild = unpackBuild
 	tmpFileDir := newApp.App.DownloadPath
 	if _, err = newApp.GenerateServiceFile(newApp, tmpFileDir); err != nil {
 		log.Errorf("make service file build: failed error:%s \n", err.Error())
-		resp.GenerateService = generateServiceErr
+		resp.InstallLog.GenerateService = generateServiceErr
 		return resp, err
 	}
-	resp.GenerateService = generateService
+	resp.InstallLog.GenerateService = generateService
 	tmpServiceFile := fmt.Sprintf("%s/%s.service", tmpFileDir, newApp.App.ServiceName)
 	if _, err = newApp.InstallService(newApp.App.ServiceName, tmpServiceFile); err != nil {
-		resp.InstallService = installServiceErr
+		resp.InstallLog.InstallService = installServiceErr
 		return resp, err
 	}
-	resp.InstallService = installService
+	resp.InstallLog.InstallService = installService
 	if err = inst.CleanUp(); err != nil {
-		resp.CleanUp = cleanUpErr
+		resp.InstallLog.CleanUp = cleanUpErr
 		return resp, err
 	}
-	resp.CleanUp = cleanUp
+	resp.InstallLog.CleanUp = cleanUp
 	installedApp.InstalledVersion = assetTag
 	app, existingApp, err := db.AddApp(installedApp)
 	if err != nil {
-		resp.AppInstall = makeNewAppErr
+		resp.InstallLog.AppInstall = makeNewAppErr
 		return resp, err
 	}
 	if existingApp { // if it was existing app update the version
 		app.InstalledVersion = assetTag
 		_, err := db.UpdateApp(app.UUID, app)
 		if err != nil {
-			resp.AppInstall = fmt.Sprintf("an existing app was installed error:%s", err.Error())
+			resp.InstallLog.AppInstall = fmt.Sprintf("an existing app was installed error:%s", err.Error())
 			return resp, err
 		}
-		resp.AppInstall = fmt.Sprintf("an existing app was installed upgraded from: %s to: %s", app.InstalledVersion, assetTag)
+		resp.InstallLog.AppInstall = fmt.Sprintf("an existing app was installed upgraded from: %s to: %s", app.InstalledVersion, assetTag)
 	} else {
-		resp.AppInstall = makeNewApp
+		resp.InstallLog.AppInstall = makeNewApp
 	}
 
 	log.Infof(fmt.Sprintf("an existing app was installed upgraded from:%s to:%s", app.InstalledVersion, assetTag))

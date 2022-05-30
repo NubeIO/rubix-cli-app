@@ -23,12 +23,14 @@ const (
 
 var gitClient *git.Client
 
+const Permission = 0700
+
 func New(inst *Apps) (*Apps, error) {
 	if inst == nil {
 		return nil, errors.New("type apps must not be nil")
 	}
 	if inst.Perm == 0 {
-		inst.Perm = 0700
+		inst.Perm = Permission
 	}
 	return inst, err
 }

@@ -5,13 +5,13 @@ import (
 	"gthub.com/NubeIO/rubix-cli-app/service/apps"
 )
 
-func getAppImageBody(ctx *gin.Context) (dto *apps.Store, err error) {
+func getAppStoreBody(ctx *gin.Context) (dto *apps.Store, err error) {
 	err = ctx.ShouldBindJSON(&dto)
 	return dto, err
 }
 
-func (inst *Controller) GetAppImages(c *gin.Context) {
-	data, err := inst.DB.GetAppImages()
+func (inst *Controller) GetAppStores(c *gin.Context) {
+	data, err := inst.DB.GetAppStores()
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
@@ -19,8 +19,8 @@ func (inst *Controller) GetAppImages(c *gin.Context) {
 	reposeHandler(data, err, c)
 }
 
-func (inst *Controller) GetAppImage(c *gin.Context) {
-	data, err := inst.DB.GetAppImage(c.Params.ByName("uuid"))
+func (inst *Controller) GetAppStore(c *gin.Context) {
+	data, err := inst.DB.GetAppStore(c.Params.ByName("uuid"))
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
@@ -28,10 +28,10 @@ func (inst *Controller) GetAppImage(c *gin.Context) {
 	reposeHandler(data, err, c)
 }
 
-func (inst *Controller) CreateAppImage(c *gin.Context) {
+func (inst *Controller) CreateAppStore(c *gin.Context) {
 	var m *apps.Store
 	err = c.ShouldBindJSON(&m)
-	data, err := inst.DB.CreateAppImage(m)
+	data, err := inst.DB.CreateAppStore(m)
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
@@ -39,9 +39,9 @@ func (inst *Controller) CreateAppImage(c *gin.Context) {
 	reposeHandler(data, err, c)
 }
 
-func (inst *Controller) UpdateAppImage(c *gin.Context) {
-	body, _ := getAppImageBody(c)
-	data, err := inst.DB.UpdateAppImage(c.Params.ByName("uuid"), body)
+func (inst *Controller) UpdateAppStore(c *gin.Context) {
+	body, _ := getAppStoreBody(c)
+	data, err := inst.DB.UpdateAppStore(c.Params.ByName("uuid"), body)
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
@@ -49,8 +49,8 @@ func (inst *Controller) UpdateAppImage(c *gin.Context) {
 	reposeHandler(data, err, c)
 }
 
-func (inst *Controller) DeleteAppImage(c *gin.Context) {
-	q, err := inst.DB.DeleteAppImage(c.Params.ByName("uuid"))
+func (inst *Controller) DeleteAppStore(c *gin.Context) {
+	q, err := inst.DB.DeleteAppStore(c.Params.ByName("uuid"))
 	if err != nil {
 		reposeHandler(nil, err, c)
 	} else {
@@ -58,8 +58,8 @@ func (inst *Controller) DeleteAppImage(c *gin.Context) {
 	}
 }
 
-func (inst *Controller) DropAppImages(c *gin.Context) {
-	data, err := inst.DB.DropAppImages()
+func (inst *Controller) DropAppStores(c *gin.Context) {
+	data, err := inst.DB.DropAppStores()
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return

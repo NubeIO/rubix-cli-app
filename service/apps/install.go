@@ -47,7 +47,7 @@ func (inst *Apps) MakeDownloadDir() error {
 }
 
 func (inst *Apps) MakeInstallDir() error {
-	action, err := inst.Stop(defaultTimeout)
+	action, err := inst.Stop(DefaultTimeout)
 	if err != nil {
 		log.Errorf("stop app:%s failed err:%s \n", inst.App.Name, err.Error())
 	}
@@ -156,7 +156,7 @@ func (inst *Apps) InstallService(service, tmpServiceFile string) (*ctl.InstallRe
 	resp := &ctl.InstallResp{}
 
 	//path := "/tmp/nubeio-rubix-bios.service"
-	timeOut := 30
+	timeOut := DefaultTimeout
 	ser := ctl.New(service, tmpServiceFile)
 	ser.InstallOpts = ctl.InstallOpts{
 		Options: systemctl.Options{Timeout: timeOut},

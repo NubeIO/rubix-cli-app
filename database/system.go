@@ -10,7 +10,7 @@ type SystemCtl struct {
 }
 
 func (db *DB) SystemCtlAction(body *SystemCtl) (*apps.SystemResponseChecks, error) {
-	appStore, err := db.GetAppImageByName(body.App.AppStoreName)
+	appStore, _, err := db.GetAppAndStore(body.App)
 	if err != nil {
 		return nil, err
 	}
@@ -20,7 +20,7 @@ func (db *DB) SystemCtlAction(body *SystemCtl) (*apps.SystemResponseChecks, erro
 		},
 	}
 	app, err := apps.New(inst)
-	status, err := app.SystemCtlStatus("isRunning", 10)
+	status, err := app.SystemCtlStatus("isRunning", apps.DefaultTimeout)
 	if err != nil {
 		return nil, err
 	}

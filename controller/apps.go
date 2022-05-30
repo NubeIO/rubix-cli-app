@@ -19,6 +19,16 @@ func (inst *Controller) GetApps(c *gin.Context) {
 	reposeHandler(data, err, c)
 }
 
+func (inst *Controller) AppStats(c *gin.Context) {
+	body, err := getAppsBody(c)
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	data, err := inst.DB.AppStats(body)
+	reposeHandler(data, err, c)
+}
+
 func (inst *Controller) GetApp(c *gin.Context) {
 	data, err := inst.DB.GetApp(c.Params.ByName("uuid"))
 	if err != nil {

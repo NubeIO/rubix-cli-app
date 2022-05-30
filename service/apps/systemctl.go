@@ -9,11 +9,11 @@ type SystemResponse struct {
 	Message string `json:"message"`
 }
 
-var defaultTimeout = 30
+var DefaultTimeout = 30
 
 var systemOpts = systemctl.Options{
 	UserMode: false,
-	Timeout:  defaultTimeout,
+	Timeout:  DefaultTimeout,
 }
 
 func (inst *Apps) Start(timeout int) (resp *SystemResponse, err error) {
@@ -143,7 +143,7 @@ func (inst *Apps) Status(timeout int) (message string, err error) {
 	return systemctl.Status(inst.App.ServiceName, systemOpts)
 }
 
-func (inst *Apps) ServiceNameStats(timeout int) (resp systemctl.SystemState, err error) {
+func (inst *Apps) ServiceStats(timeout int) (resp systemctl.SystemState, err error) {
 	systemOpts.Timeout = timeout
 	resp, err = systemctl.State(inst.App.ServiceName, systemOpts)
 	if err != nil {
