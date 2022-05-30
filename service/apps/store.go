@@ -4,6 +4,13 @@ import (
 	"gorm.io/datatypes"
 )
 
+type InstalledApp struct {
+	UUID string `json:"uuid" gorm:"primaryKey"`
+	//Name         string `json:"name"  gorm:"type:varchar(255);unique;not null"`
+	AppStoreName string `json:"app_store_name"`
+	AppStoreUUID string `json:"app_store_uuid"`
+}
+
 type Store struct {
 	UUID                    string         `json:"uuid" gorm:"primaryKey"`
 	Name                    string         `json:"name"  gorm:"type:varchar(255);unique;not null"`
@@ -26,7 +33,6 @@ type Store struct {
 	ProductType             string         `json:"product_type"`                                           // RubixCompute (auto added)
 	Arch                    string         `json:"arch"`                                                   // amd64 (auto added)
 
-	// git details
 }
 
 type InstallOptions struct {

@@ -5,7 +5,7 @@ import (
 	"gthub.com/NubeIO/rubix-cli-app/service/apps"
 )
 
-func getAppsBody(ctx *gin.Context) (dto *apps.Store, err error) {
+func getAppsBody(ctx *gin.Context) (dto *apps.InstalledApp, err error) {
 	err = ctx.ShouldBindJSON(&dto)
 	return dto, err
 }
@@ -28,10 +28,10 @@ func (inst *Controller) GetApp(c *gin.Context) {
 	reposeHandler(data, err, c)
 }
 
-func (inst *Controller) CreateApp(c *gin.Context) {
-	var m *apps.Store
+func (inst *Controller) AddApp(c *gin.Context) {
+	var m *apps.InstalledApp
 	err = c.ShouldBindJSON(&m)
-	data, err := inst.DB.CreateApp(m)
+	data, err := inst.DB.AddApp(m)
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return

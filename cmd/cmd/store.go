@@ -24,7 +24,7 @@ func runApps(cmd *cobra.Command, args []string) {
 	db := initDB()
 	if flgApp.addStore {
 		products, _ := json.Marshal([]string{"RubixCompute", "AllLinux"}) // product.ProductType
-		db.DropApps()
+		db.DropAppImages()
 		store := &apps.Store{
 			Name:                    "flow-framework",
 			AppTypeName:             "Go",
@@ -42,7 +42,7 @@ func runApps(cmd *cobra.Command, args []string) {
 			ServiceExecStart:        "/data/rubix-apps/installed/flow-framework/app-amd64 -p 1660 -g /data/flow-framework -d data -prod",
 		}
 
-		app, err := db.CreateApp(store)
+		app, err := db.CreateAppImage(store)
 		if err != nil {
 			log.Errorln(err)
 			return
@@ -51,7 +51,7 @@ func runApps(cmd *cobra.Command, args []string) {
 	}
 
 	if flgApp.installApp {
-		appStore, err := db.GetAppByName("flow-framework")
+		appStore, err := db.GetAppImageByName("flow-framework")
 		if err != nil {
 			return
 		}
