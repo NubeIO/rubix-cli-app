@@ -8,7 +8,7 @@ import (
 	"github.com/NubeIO/lib-systemctl-go/ctl"
 	"github.com/NubeIO/lib-systemctl-go/systemctl"
 	log "github.com/sirupsen/logrus"
-	"gthub.com/NubeIO/rubix-cli-app/service/apps/app"
+	"os"
 	"time"
 )
 
@@ -25,35 +25,41 @@ import (
 var dirs = fileutils.New()
 
 func (inst *Apps) MakeDownloadDir() error {
-	if !dirs.DirExists(inst.DownloadPath) {
-		log.Errorf("no dir exists %s \n", inst.DownloadPath)
-		err := dirs.MkdirAll(inst.DownloadPath, inst.Perm)
+
+	if inst.App.DownloadPath == "/tmp" {
+		log.Infof("make download dir: was tmp dir so skip \n")
+		return nil
+	}
+
+	if !dirs.DirExists(inst.App.DownloadPath) {
+		log.Errorf("no dir exists %s \n", inst.App.DownloadPath)
+		err := dirs.MkdirAll(inst.App.DownloadPath, os.FileMode(inst.Perm))
 		if err != nil {
-			log.Errorf("unzip build: failed to make new dir %s \n", inst.DownloadPath)
+			log.Errorf("make download dir:  failed to make new dir %s \n", inst.App.DownloadPath)
 			return err
 		}
-		log.Infof("unzip build: made new dir:%s \n", inst.DownloadPath)
+		log.Infof("make download dir:  made new dir:%s \n", inst.App.DownloadPath)
 	}
-	log.Infof("unzip build: existing dir to download zip:%s \n", inst.DownloadPath)
+	log.Infof("make download dir:  existing dir to download zip:%s \n", inst.App.DownloadPath)
 	return nil
 }
 
 func (inst *Apps) MakeInstallDir() error {
 	action, err := inst.Stop(defaultTimeout)
 	if err != nil {
-		log.Errorf("stop app:%s failed err:%s \n", inst.AppName, err.Error())
+		log.Errorf("stop app:%s failed err:%s \n", inst.App.Name, err.Error())
 		return err
 	}
 	if action.Ok {
-		log.Infof("stop app:%s  it was running \n", inst.AppName)
+		log.Infof("stop app:%s  it was running \n", inst.App.Name)
 	} else {
-		log.Infof("stop app:%s  failed or was not running msg:%s \n", inst.AppName, action.Message)
+		log.Infof("stop app:%s  failed or was not running msg:%s \n", inst.App.Name, action.Message)
 	}
 
-	installPath := fmt.Sprintf(inst.GeneratedApp.AppsPath) // /data/rubix-apps/installed/flow-framework
+	installPath := fmt.Sprintf(inst.App.AppsPath) // /data/rubix-apps/installed/flow-framework
 	if !dirs.DirExists(installPath) {
 		log.Errorf("no dir exists %s \n", installPath)
-		err := dirs.MkdirAll(installPath, inst.Perm)
+		err := dirs.MkdirAll(installPath, os.FileMode(inst.Perm))
 		if err != nil {
 			log.Errorf("install dir: failed to make new dir %s \n", installPath)
 			return err
@@ -64,11 +70,11 @@ func (inst *Apps) MakeInstallDir() error {
 }
 
 func (inst *Apps) UnpackBuild() error {
-	installPath := inst.GeneratedApp.AppsPath
-	zipFileAndPath := fmt.Sprintf("%s/%s", inst.DownloadPath, inst.AssetZipName)
-	_, err = dirs.UnZip(zipFileAndPath, installPath, inst.Perm)
+	installPath := inst.App.AppsPath
+	zipFileAndPath := fmt.Sprintf("%s/%s", inst.App.DownloadPath, inst.App.AssetZipName)
+	_, err = dirs.UnZip(zipFileAndPath, installPath, os.FileMode(inst.Perm))
 	if err != nil {
-		log.Errorf("unzip build: failed to unzip source:%s  dest:%s  error:%s\n", inst.DownloadPath, installPath, err.Error())
+		log.Errorf("unzip build: failed to unzip source:%s  dest:%s  error:%s\n", inst.App.DownloadPath, installPath, err.Error())
 		return err
 	} else {
 		log.Infof("unzip build: existing install dir existed:%s \n", installPath)
@@ -77,13 +83,13 @@ func (inst *Apps) UnpackBuild() error {
 }
 
 func (inst *Apps) CleanUp() error {
-	zipFileAndPath := fmt.Sprintf("%s/%s", inst.DownloadPath, inst.AssetZipName)
+	zipFileAndPath := fmt.Sprintf("%s/%s", inst.App.DownloadPath, inst.App.AssetZipName)
 	err = dirs.Rm(zipFileAndPath)
 	if err != nil {
-		log.Errorf("delete zip: failed to unzip source:%s  error:%s\n", inst.DownloadPath, err.Error())
+		log.Errorf("delete zip: failed to unzip source:%s  error:%s\n", inst.App.DownloadPath, err.Error())
 		return err
 	} else {
-		log.Infof("delete zip: ok:%s \n", inst.DownloadPath)
+		log.Infof("delete zip: ok:%s \n", inst.App.DownloadPath)
 	}
 	return nil
 }
@@ -93,21 +99,24 @@ type RespBuilder struct {
 }
 
 func (inst *Apps) GitDownload(destination string) (*git.DownloadResponse, error) {
-	download, err := inst.gitClient.Download(destination)
-	inst.AssetZipName = download.AssetName
+	download, err := gitClient.Download(destination)
+	if err != nil {
+		return nil, err
+	}
+	inst.App.AssetZipName = download.AssetName
 	return download, err
 }
 
-func (inst *Apps) GenerateServiceFile(app *app.Service, tmpFilePath string) (*RespBuilder, error) {
+func (inst *Apps) GenerateServiceFile(app *Apps, tmpFilePath string) (*RespBuilder, error) {
 	ret := &RespBuilder{}
-	newService := app.ServiceName
-	description := app.ServiceDescription
-	user := app.RunAsUser
-	directory := app.ServiceWorkingDirectory
-	execCmd := app.ServiceExecStart
+	newService := app.App.ServiceName
+	description := app.App.ServiceDescription
+	user := app.App.RunAsUser
+	directory := app.App.ServiceWorkingDirectory
+	execCmd := app.App.ServiceExecStart
 
 	bld := &builder.SystemDBuilder{
-		ServiceName:      app.AppName,
+		ServiceName:      app.App.ServiceName,
 		Description:      description,
 		User:             user,
 		WorkingDirectory: directory,
@@ -120,7 +129,7 @@ func (inst *Apps) GenerateServiceFile(app *app.Service, tmpFilePath string) (*Re
 		},
 	}
 
-	err = bld.Build(inst.Perm)
+	err = bld.Build(os.FileMode(inst.Perm))
 	if err != nil {
 		ret.BuilderErr = err.Error()
 		return ret, err

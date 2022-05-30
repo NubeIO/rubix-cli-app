@@ -10,5 +10,6 @@ const (
 	Edge28
 	Nuc
 	AllLinux
+	Mac
 	None
 )

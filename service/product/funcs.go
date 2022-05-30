@@ -14,6 +14,7 @@ type Product struct {
 	Type     string `json:"type"`
 	Version  string `json:"version"`
 	Hardware string `json:"hardware"`
+	Arch     string `json:"arch"` //amd64
 }
 
 func Get() (*Product, error) {
@@ -30,11 +31,20 @@ func read() (*Product, error) {
 	}
 	_, _, model := cmd.DetectNubeProduct()
 	if model == "" {
-		if cmd.ArchIsLinux() {
-			model = "linux"
+		archType := cmd.ArchCheck()
+		if archType.Linux {
+			model = "Linux"
+		}
+		if archType.Darwin {
+			model = "Darwin"
 		}
 	}
+	resp, err := cmd.DetectArch()
+	if err != nil {
+		return nil, err
+	}
 	p.Hardware = model
+	p.Arch = resp.ArchModel
 	return p, err
 }
 
@@ -44,7 +54,18 @@ func CheckProduct(s string) (ProductType, error) {
 		return RubixCompute, nil
 	case RubixComputeIO.String():
 		return RubixComputeIO, nil
+	case Edge28.String():
+		return Edge28, nil
+	case AllLinux.String():
+		return AllLinux, nil
+	case RubixCompute5.String():
+		return RubixCompute5, nil
+	case Nuc.String():
+		return Nuc, nil
+	case Mac.String():
+		return Mac, nil
 	}
+
 	return None, errors.New("invalid product type, try RubixCompute")
 
 }

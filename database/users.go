@@ -7,36 +7,36 @@ import (
 	"gthub.com/NubeIO/rubix-cli-app/pkg/model"
 )
 
-func (d *DB) GetUser(uuid string) (*model.User, error) {
+func (db *DB) GetUser(uuid string) (*model.User, error) {
 	m := new(model.User)
-	if err := d.DB.Where("uuid = ? ", uuid).First(&m).Error; err != nil {
+	if err := db.DB.Where("uuid = ? ", uuid).First(&m).Error; err != nil {
 		logger.Errorf("GetHost error: %v", err)
 		return nil, err
 	}
 	return m, nil
 }
 
-func (d *DB) GetUsers() ([]*model.User, error) {
+func (db *DB) GetUsers() ([]*model.User, error) {
 	var m []*model.User
-	if err := d.DB.Find(&m).Error; err != nil {
+	if err := db.DB.Find(&m).Error; err != nil {
 		return nil, err
 	} else {
 		return m, nil
 	}
 }
 
-func (d *DB) CreateUser(user *model.User) (*model.User, error) {
+func (db *DB) CreateUser(user *model.User) (*model.User, error) {
 	user.UUID = fmt.Sprintf("usr_%s", uuid.SmallUUID())
-	if err := d.DB.Create(&user).Error; err != nil {
+	if err := db.DB.Create(&user).Error; err != nil {
 		return nil, err
 	} else {
 		return user, nil
 	}
 }
 
-func (d *DB) UpdateUser(uuid string, User *model.User) (*model.User, error) {
+func (db *DB) UpdateUser(uuid string, User *model.User) (*model.User, error) {
 	m := new(model.User)
-	query := d.DB.Where("uuid = ?", uuid).Find(&m).Updates(User)
+	query := db.DB.Where("uuid = ?", uuid).Find(&m).Updates(User)
 	if query.Error != nil {
 		return nil, query.Error
 	} else {
@@ -44,9 +44,9 @@ func (d *DB) UpdateUser(uuid string, User *model.User) (*model.User, error) {
 	}
 }
 
-func (d *DB) DeleteUser(uuid string) (ok bool, err error) {
+func (db *DB) DeleteUser(uuid string) (ok bool, err error) {
 	m := new(model.User)
-	query := d.DB.Where("uuid = ? ", uuid).Delete(&m)
+	query := db.DB.Where("uuid = ? ", uuid).Delete(&m)
 	if query.Error != nil {
 		return false, query.Error
 	}
@@ -58,9 +58,9 @@ func (d *DB) DeleteUser(uuid string) (ok bool, err error) {
 }
 
 // DropUsers delete all.
-func (d *DB) DropUsers() (bool, error) {
+func (db *DB) DropUsers() (bool, error) {
 	var m *model.User
-	query := d.DB.Where("1 = 1")
+	query := db.DB.Where("1 = 1")
 	query.Delete(&m)
 	if query.Error != nil {
 		return false, query.Error
