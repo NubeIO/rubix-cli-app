@@ -58,6 +58,20 @@ const (
 	updateExistingAppErr = ""
 )
 
+func (db *DB) GetInstallProgress(key string) (*InstallResponse, error) {
+	key = fmt.Sprintf("install-%s", key)
+	data, ok := progress.Get(key)
+	if ok {
+		parse := data.(*InstallResponse)
+		return parse, nil
+	}
+	resp := &InstallResponse{
+		Message: "not found able to find the app",
+	}
+	return resp, nil
+
+}
+
 func (db *DB) InstallApp(body *App) (*InstallResponse, error) {
 	resp := &InstallResponse{}
 	app, err := db.installApp(body)
@@ -73,7 +87,8 @@ func (db *DB) InstallApp(body *App) (*InstallResponse, error) {
 
 func (db *DB) installApp(body *App) (*InstallResponse, error) {
 	resp := &InstallResponse{}
-
+	progressKey := fmt.Sprintf("install-%s", body.AppName)
+	SetProgress(progressKey, resp)
 	appStore, err := db.GetAppStoreByName(body.AppName)
 	if err != nil {
 		resp.InstallLog.GetAppFromStore = selectAppStoreErr
@@ -93,63 +108,80 @@ func (db *DB) installApp(body *App) (*InstallResponse, error) {
 		App:     appStore,
 	}
 	newApp, err := apps.New(inst)
+	SetProgress(progressKey, resp)
 	if err != nil {
 		log.Errorln("new app: failed to init a new app", err)
 		return resp, err
 	}
-
 	if err = inst.MakeDownloadDir(); err != nil {
 		resp.InstallLog.MakeDownload = makeDownloadErr
+		SetProgress(progressKey, resp)
 		return resp, err
 	}
 	resp.InstallLog.MakeDownload = makeDownload
 	download, err := newApp.GitDownload(inst.App.DownloadPath)
+	SetProgress(progressKey, resp)
 	if err != nil {
 		log.Errorf("git: download error %s \n", err.Error())
 		resp.InstallLog.GitDownload = gitDownloadErr
+		SetProgress(progressKey, resp)
 		return resp, err
 	}
 	assetTag := download.RepositoryRelease.GetTagName()
 	resp.InstallLog.GitDownload = fmt.Sprintf("installed version: %s", assetTag)
+	SetProgress(progressKey, resp)
 	if err = inst.MakeInstallDir(); err != nil {
 		resp.InstallLog.MakeInstallDir = makeInstallDirErr
+		SetProgress(progressKey, resp)
 		return resp, err
 	}
 	resp.InstallLog.MakeInstallDir = makeInstallDir
+	SetProgress(progressKey, resp)
 	if err = inst.UnpackBuild(); err != nil {
 		resp.InstallLog.UnpackBuild = unpackBuildErr
+		SetProgress(progressKey, resp)
 		return resp, err
 	}
 	resp.InstallLog.UnpackBuild = unpackBuild
 	tmpFileDir := newApp.App.DownloadPath
+	SetProgress(progressKey, resp)
 	if _, err = newApp.GenerateServiceFile(newApp, tmpFileDir); err != nil {
 		log.Errorf("make service file build: failed error:%s \n", err.Error())
 		resp.InstallLog.GenerateService = generateServiceErr
+		SetProgress(progressKey, resp)
 		return resp, err
 	}
 	resp.InstallLog.GenerateService = generateService
 	tmpServiceFile := fmt.Sprintf("%s/%s.service", tmpFileDir, newApp.App.ServiceName)
+	SetProgress(progressKey, resp)
 	if _, err = newApp.InstallService(newApp.App.ServiceName, tmpServiceFile); err != nil {
 		resp.InstallLog.InstallService = installServiceErr
+		SetProgress(progressKey, resp)
 		return resp, err
 	}
 	resp.InstallLog.InstallService = installService
+	SetProgress(progressKey, resp)
 	if err = inst.CleanUp(); err != nil {
 		resp.InstallLog.CleanUp = cleanUpErr
+		SetProgress(progressKey, resp)
 		return resp, err
 	}
 	resp.InstallLog.CleanUp = cleanUp
 	installedApp.InstalledVersion = assetTag
+	SetProgress(progressKey, resp)
 	app, existingApp, err := db.AddApp(installedApp)
 	if err != nil {
 		resp.InstallLog.AppInstall = makeNewAppErr
+		SetProgress(progressKey, resp)
 		return resp, err
 	}
 	if existingApp { // if it was existing app update the version
 		app.InstalledVersion = assetTag
 		_, err := db.UpdateApp(app.UUID, app)
+		SetProgress(progressKey, resp)
 		if err != nil {
 			resp.InstallLog.AppInstall = fmt.Sprintf("an existing app was installed error:%s", err.Error())
+			SetProgress(progressKey, resp)
 			return resp, err
 		}
 		resp.InstallLog.AppInstall = fmt.Sprintf("an existing app was installed upgraded from: %s to: %s", app.InstalledVersion, assetTag)
@@ -158,7 +190,7 @@ func (db *DB) installApp(body *App) (*InstallResponse, error) {
 	}
 
 	log.Infof(fmt.Sprintf("an existing app was installed upgraded from:%s to:%s", app.InstalledVersion, assetTag))
-
+	SetProgress(progressKey, resp)
 	return resp, err
 
 }

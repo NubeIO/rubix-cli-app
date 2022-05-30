@@ -4,6 +4,7 @@ import (
 	"errors"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
+	"gthub.com/NubeIO/rubix-cli-app/pkg/helpers/store"
 	"gthub.com/NubeIO/rubix-cli-app/service/apps"
 )
 
@@ -34,6 +35,16 @@ func initAppService(serviceName string) (*apps.Apps, error) {
 	}
 	app, err := apps.New(inst)
 	return app, err
+}
+
+var progress = initStore()
+
+func initStore() *store.Handler {
+	return store.Init()
+}
+
+func SetProgress(key string, data interface{}) {
+	progress.SetNoExpire(key, data)
 }
 
 func initApp(initApp *apps.Apps, appStore *apps.Store) (*apps.Apps, error) {

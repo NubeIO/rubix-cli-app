@@ -18,5 +18,5 @@ https://github.com/NubeIO/rubix-cli-app/blob/master/service/product/funcs.go#L28
 ```
 
 ## command docs
-
+[CLI](docs/api.md)
 [CLI](docs/cli.md)

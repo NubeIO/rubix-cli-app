@@ -15,3 +15,14 @@ func (inst *Controller) UnInstallApp(c *gin.Context) {
 	}
 	reposeHandler(data, err, c)
 }
+
+func (inst *Controller) GetUnInstallProgress(c *gin.Context) {
+	var m *dbase.App
+	err = c.ShouldBindJSON(&m)
+	data, err := inst.DB.GetUnInstallProgress(m.AppName)
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	reposeHandler(data, err, c)
+}

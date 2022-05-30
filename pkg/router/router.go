@@ -126,6 +126,8 @@ func Setup(db *gorm.DB) *gin.Engine {
 		app.DELETE("/", api.UnInstallApp)
 		app.DELETE("/drop", api.DropApps)
 		// stats
+		app.POST("/progress/install", api.GetInstallProgress)
+		app.POST("/progress/uninstall", api.GetUnInstallProgress)
 		app.POST("/stats", api.AppStats)
 	}
 	appControl := admin.Group("/apps/control")

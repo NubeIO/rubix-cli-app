@@ -23,6 +23,19 @@ type UnInstallResponse struct {
 	UnInstallLog unInstallLog `json:"log"`
 }
 
+func (db *DB) GetUnInstallProgress(key string) (*UnInstallResponse, error) {
+	key = fmt.Sprintf("uninstall-%s", key)
+	data, ok := progress.Get(key)
+	if ok {
+		parse := data.(*UnInstallResponse)
+		return parse, nil
+	}
+	resp := &UnInstallResponse{
+		Message: "not found able to find the app",
+	}
+	return resp, nil
+}
+
 func (db *DB) UnInstallApp(body *App) (*UnInstallResponse, error) {
 	resp := &UnInstallResponse{}
 	remove, err := db.unInstallApp(body)
@@ -40,22 +53,26 @@ func (db *DB) UnInstallApp(body *App) (*UnInstallResponse, error) {
 }
 
 func (db *DB) unInstallApp(body *App) (*UnInstallResponse, error) {
-	resp := &UnInstallResponse{}
-
+	resp := &UnInstallResponse{
+		Message: "uninstall process has started",
+	}
+	progressKey := fmt.Sprintf("uninstall-%s", body.AppName)
+	SetProgress(progressKey, resp)
 	getApp, err := db.GetAppByName(body.AppName)
 	if err != nil {
 		resp.UnInstallLog.GetApp = "failed to get app, but will still try to uninstall"
 	} else {
 		resp.UnInstallLog.GetApp = "ok"
 	}
-
 	appStoreName := body.AppName
 	if getApp != nil {
 		appStoreName = getApp.AppStoreName
 	}
 	appStore, err := db.GetAppStoreByName(appStoreName)
+	SetProgress(progressKey, resp)
 	if err != nil {
 		resp.UnInstallLog.GetAppFromStore = "failed to get service name from app store so exit"
+		SetProgress(progressKey, resp)
 		return resp, err
 	}
 	resp.UnInstallLog.GetAppFromStore = selectAppStore
@@ -70,12 +87,15 @@ func (db *DB) unInstallApp(body *App) (*UnInstallResponse, error) {
 	if err != nil {
 		log.Errorln("new app: failed to init a new app", err)
 		resp.UnInstallLog.InitApp = "new app: failed to init a new app"
+		SetProgress(progressKey, resp)
 		return resp, err
 	}
 	resp.UnInstallLog.InitApp = "ok"
 	service, err := app.UninstallService(appStore.ServiceName)
+	SetProgress(progressKey, resp)
 	if err != nil {
 		resp.UnInstallLog.RemoveService = fmt.Sprintf("failed to remove service: %s", appStore.ServiceName)
+		SetProgress(progressKey, resp)
 		return nil, err
 	}
 	if service.Stop {
@@ -86,15 +106,18 @@ func (db *DB) unInstallApp(body *App) (*UnInstallResponse, error) {
 	resp.UnInstallLog.Service = service
 	if getApp != nil {
 		resp.UnInstallLog.VersionRemoved = getApp.InstalledVersion
+		SetProgress(progressKey, resp)
 		_, err = db.DeleteApp(getApp.UUID)
 		if err != nil {
 			resp.UnInstallLog.DeleteFromDB = "failed to delete the app from the db"
+			SetProgress(progressKey, resp)
 			return nil, err
 		}
 		resp.UnInstallLog.DeleteFromDB = "delete ok from the db"
 	} else {
 		resp.UnInstallLog.DeleteFromDB = "app was not found so it could not be deleted"
 	}
+	SetProgress(progressKey, resp)
 	return resp, err
 
 }
