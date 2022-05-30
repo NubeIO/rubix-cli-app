@@ -31,8 +31,12 @@ func read() (*Product, error) {
 	}
 	_, _, model := cmd.DetectNubeProduct()
 	if model == "" {
-		if cmd.ArchIsLinux() {
-			model = "linux"
+		archType := cmd.ArchCheck()
+		if archType.Linux {
+			model = "Linux"
+		}
+		if archType.Darwin {
+			model = "Darwin"
 		}
 	}
 	resp, err := cmd.DetectArch()
@@ -58,6 +62,8 @@ func CheckProduct(s string) (ProductType, error) {
 		return RubixCompute5, nil
 	case Nuc.String():
 		return Nuc, nil
+	case Mac.String():
+		return Mac, nil
 	}
 
 	return None, errors.New("invalid product type, try RubixCompute")

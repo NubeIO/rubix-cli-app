@@ -62,7 +62,9 @@ func (db *DB) InstallApp(body *InstallApp) (*InstallResponse, error) {
 
 func (db *DB) installApp(body *InstallApp) (*InstallResponse, error) {
 
-	resp := &InstallResponse{}
+	resp := &InstallResponse{
+		ErrorMessage: "no error",
+	}
 
 	appStore, err := db.GetAppImageByName(body.AppName)
 	if err != nil {

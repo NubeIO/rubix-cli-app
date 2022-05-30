@@ -21,6 +21,28 @@ type Arch struct {
 	Err          error
 }
 
+type ArchCheck struct {
+	Windows bool
+	Linux   bool
+	Darwin  bool
+}
+
+func (inst *Admin) ArchCheck() (arch ArchCheck) {
+	s := runtime.GOOS
+	switch s {
+	case "linux":
+		arch.Linux = true
+		return arch
+	case "windows":
+		arch.Windows = true
+		return arch
+	case "darwin":
+		arch.Darwin = true
+		return arch
+	}
+	return arch
+}
+
 func (inst *Admin) ArchIsLinux() bool {
 	s := runtime.GOOS
 	switch s {

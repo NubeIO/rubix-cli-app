@@ -125,7 +125,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 	app := admin.Group("/apps")
 	{
 		app.GET("/", api.GetApps)
-		app.POST("/", api.AddApp)
+		app.POST("/", api.InstallApp)
 		app.GET("/:uuid", api.GetApp)
 		app.PATCH("/:uuid", api.UpdateApp)
 		app.DELETE("/:uuid", api.DeleteApp)

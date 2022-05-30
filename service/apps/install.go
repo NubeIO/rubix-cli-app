@@ -100,6 +100,9 @@ type RespBuilder struct {
 
 func (inst *Apps) GitDownload(destination string) (*git.DownloadResponse, error) {
 	download, err := gitClient.Download(destination)
+	if err != nil {
+		return nil, err
+	}
 	inst.App.AssetZipName = download.AssetName
 	return download, err
 }
