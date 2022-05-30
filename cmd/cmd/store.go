@@ -85,7 +85,7 @@ func init() {
 	flagSet.StringVar(&flgApp.token, "token", "", "github oauth2 token value (optional)")
 	flagSet.StringVarP(&flgApp.appName, "app", "", "", "rubix-wires, wires or RubixWires")
 	flagSet.StringVar(&flgApp.version, "version", "latest", "version of build")
-	flagSet.StringVar(&flgApp.downloadPath, "download", "", "download path")
+	flagSet.StringVar(&flgApp.downloadPath, "download-path", "", "download path")
 	flagSet.StringVar(&flgApp.rubixRootPath, "rubix-path", "", "rubix main path")
 	flagSet.BoolVarP(&flgApp.addStore, "store-add", "", false, "add a new app to the store")
 	flagSet.BoolVarP(&flgApp.installApp, "install", "", false, "install an app")
