@@ -14,7 +14,7 @@ func TestInstall(t *testing.T) {
 		},
 	}
 
-	apps, err := New(inst, "ff")
+	apps, err := New(inst)
 
 	fmt.Println(apps, err)
 

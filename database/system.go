@@ -5,8 +5,8 @@ import (
 )
 
 type SystemCtl struct {
-	Action string             `json:" action"` // start. stop
-	App    *apps.InstalledApp `json:"app"`
+	Action string    `json:" action"` // start. stop
+	App    *apps.App `json:"app"`
 }
 
 func (db *DB) SystemCtlAction(body *SystemCtl) (*apps.SystemResponseChecks, error) {

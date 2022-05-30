@@ -2,11 +2,10 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	dbase "gthub.com/NubeIO/rubix-cli-app/database"
 	"gthub.com/NubeIO/rubix-cli-app/service/apps"
 )
 
-func getAppsBody(ctx *gin.Context) (dto *apps.InstalledApp, err error) {
+func getAppsBody(ctx *gin.Context) (dto *apps.App, err error) {
 	err = ctx.ShouldBindJSON(&dto)
 	return dto, err
 }
@@ -22,17 +21,6 @@ func (inst *Controller) GetApps(c *gin.Context) {
 
 func (inst *Controller) GetApp(c *gin.Context) {
 	data, err := inst.DB.GetApp(c.Params.ByName("uuid"))
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
-	reposeHandler(data, err, c)
-}
-
-func (inst *Controller) InstallApp(c *gin.Context) {
-	var m *dbase.InstallApp
-	err = c.ShouldBindJSON(&m)
-	data, err := inst.DB.InstallApp(m)
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return

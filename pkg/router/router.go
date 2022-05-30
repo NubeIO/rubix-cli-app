@@ -123,7 +123,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 		app.POST("/", api.InstallApp)
 		app.GET("/:uuid", api.GetApp)
 		app.PATCH("/:uuid", api.UpdateApp)
-		app.DELETE("/:uuid", api.DeleteApp)
+		app.DELETE("/", api.UnInstallApp)
 		app.DELETE("/drop", api.DropApps)
 	}
 	appControl := admin.Group("/apps/control")

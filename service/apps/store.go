@@ -4,7 +4,7 @@ import (
 	"gorm.io/datatypes"
 )
 
-type InstalledApp struct {
+type App struct {
 	UUID string `json:"uuid" gorm:"primaryKey"`
 	//Name         string `json:"name"  gorm:"type:varchar(255);unique;not null"`
 	AppStoreName     string `json:"app_name"`

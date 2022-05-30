@@ -6,7 +6,7 @@ import (
 	"gthub.com/NubeIO/rubix-cli-app/service/apps"
 )
 
-type InstallApp struct {
+type App struct {
 	AppName string `json:"app_name"`
 	Version string `json:"version"`
 	Token   string `json:"token"`
@@ -53,7 +53,7 @@ const (
 	updateExistingAppErr = ""
 )
 
-func (db *DB) InstallApp(body *InstallApp) (*InstallResponse, error) {
+func (db *DB) InstallApp(body *App) (*InstallResponse, error) {
 	app, err := db.installApp(body)
 	if err != nil {
 		app.ErrorMessage = err.Error()
@@ -62,7 +62,7 @@ func (db *DB) InstallApp(body *InstallApp) (*InstallResponse, error) {
 	return app, err
 }
 
-func (db *DB) installApp(body *InstallApp) (*InstallResponse, error) {
+func (db *DB) installApp(body *App) (*InstallResponse, error) {
 
 	resp := &InstallResponse{
 		ErrorMessage: "no error",
@@ -74,7 +74,7 @@ func (db *DB) installApp(body *InstallApp) (*InstallResponse, error) {
 		return resp, err
 	}
 	resp.GetAppFromStore = selectAppStore
-	installedApp := &apps.InstalledApp{
+	installedApp := &apps.App{
 		AppStoreName:     appStore.Name,
 		AppStoreUUID:     appStore.UUID,
 		InstalledVersion: body.Version,
@@ -139,7 +139,7 @@ func (db *DB) installApp(body *InstallApp) (*InstallResponse, error) {
 		resp.AppInstall = makeNewAppErr
 		return resp, err
 	}
-	if existingApp {
+	if existingApp { // if it was existing app update the version
 		app.InstalledVersion = assetTag
 		_, err := db.UpdateApp(app.UUID, app)
 		if err != nil {

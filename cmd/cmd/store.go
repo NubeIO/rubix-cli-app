@@ -52,7 +52,7 @@ func runApps(cmd *cobra.Command, args []string) {
 
 	if flgApp.installApp {
 
-		app, err := db.InstallApp(&dbase.InstallApp{
+		app, err := db.InstallApp(&dbase.App{
 			AppName: flgApp.appName,
 			Version: flgApp.version,
 			Token:   flgApp.token,

@@ -61,7 +61,7 @@ func Setup() error {
 	err = db.AutoMigrate(
 		&model.User{},
 		&apps.Store{},
-		&apps.InstalledApp{},
+		&apps.App{},
 	)
 
 	if err != nil {

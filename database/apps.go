@@ -8,8 +8,8 @@ import (
 	"gthub.com/NubeIO/rubix-cli-app/service/apps"
 )
 
-func (db *DB) GetApps() ([]*apps.InstalledApp, error) {
-	var m []*apps.InstalledApp
+func (db *DB) GetApps() ([]*apps.App, error) {
+	var m []*apps.App
 	if err := db.DB.Find(&m).Error; err != nil {
 		return nil, err
 	} else {
@@ -17,8 +17,8 @@ func (db *DB) GetApps() ([]*apps.InstalledApp, error) {
 	}
 }
 
-func (db *DB) GetApp(uuid string) (*apps.InstalledApp, error) {
-	var m *apps.InstalledApp
+func (db *DB) GetApp(uuid string) (*apps.App, error) {
+	var m *apps.App
 	if err := db.DB.Where("uuid = ? ", uuid).First(&m).Error; err != nil {
 		logger.Errorf("GetApp error: %v", err)
 		return nil, err
@@ -26,8 +26,8 @@ func (db *DB) GetApp(uuid string) (*apps.InstalledApp, error) {
 	return m, nil
 }
 
-func (db *DB) GetAppByName(name string) (*apps.InstalledApp, error) {
-	var m *apps.InstalledApp
+func (db *DB) GetAppByName(name string) (*apps.App, error) {
+	var m *apps.App
 	if err := db.DB.Where("app_store_name = ? ", name).First(&m).Error; err != nil {
 		logger.Errorf("GetApp error: %v", err)
 		return nil, err
@@ -35,7 +35,7 @@ func (db *DB) GetAppByName(name string) (*apps.InstalledApp, error) {
 	return m, nil
 }
 
-func (db *DB) AddApp(body *apps.InstalledApp) (resp *apps.InstalledApp, existingInstall bool, err error) {
+func (db *DB) AddApp(body *apps.App) (resp *apps.App, existingInstall bool, err error) {
 	store, err := db.GetAppImageByName(body.AppStoreName)
 	if err != nil {
 		return nil, false, errors.New("no app store is installed for this app")
@@ -57,8 +57,8 @@ func (db *DB) AddApp(body *apps.InstalledApp) (resp *apps.InstalledApp, existing
 	}
 }
 
-func (db *DB) UpdateApp(uuid string, app *apps.InstalledApp) (*apps.InstalledApp, error) {
-	var m *apps.InstalledApp
+func (db *DB) UpdateApp(uuid string, app *apps.App) (*apps.App, error) {
+	var m *apps.App
 	query := db.DB.Where("uuid = ?", uuid).Find(&m).Updates(app)
 	if query.Error != nil {
 		return nil, query.Error
@@ -68,13 +68,13 @@ func (db *DB) UpdateApp(uuid string, app *apps.InstalledApp) (*apps.InstalledApp
 }
 
 func (db *DB) DeleteApp(uuid string) (*DeleteMessage, error) {
-	var m *apps.InstalledApp
+	var m *apps.App
 	query := db.DB.Where("uuid = ? ", uuid).Delete(&m)
 	return deleteResponse(query)
 }
 
 func (db *DB) DropApps() (*DeleteMessage, error) {
-	var m *apps.InstalledApp
+	var m *apps.App
 	query := db.DB.Where("1 = 1")
 	query.Delete(&m)
 	return deleteResponse(query)
