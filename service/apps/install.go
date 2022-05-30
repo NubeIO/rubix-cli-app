@@ -50,7 +50,6 @@ func (inst *Apps) MakeInstallDir() error {
 	action, err := inst.Stop(defaultTimeout)
 	if err != nil {
 		log.Errorf("stop app:%s failed err:%s \n", inst.App.Name, err.Error())
-		return err
 	}
 	if action.Ok {
 		log.Infof("stop app:%s  it was running \n", inst.App.Name)
