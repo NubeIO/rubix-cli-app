@@ -1,7 +1,6 @@
 package apps
 
 import (
-	"context"
 	"errors"
 	"github.com/NubeIO/git/pkg/git"
 )
@@ -24,27 +23,12 @@ const (
 
 var gitClient *git.Client
 
-func New(inst *Apps, rubixApp string) (*Apps, error) {
+func New(inst *Apps) (*Apps, error) {
 	if inst == nil {
 		return nil, errors.New("type apps must not be nil")
-	}
-	if rubixApp == "" {
-		return nil, errors.New("no app was passed in, try ff, flow or flow-framework")
 	}
 	if inst.Perm == 0 {
 		inst.Perm = 0700
 	}
-	if inst.Token == "" {
-		return nil, errors.New("git token can not be empty")
-	}
-
-	opts := &git.AssetOptions{
-		Owner: inst.App.Owner,
-		Repo:  inst.App.Repo,
-		Tag:   inst.Version,
-		Arch:  inst.App.Arch,
-	}
-	ctx := context.Background()
-	gitClient = git.NewClient(inst.Token, opts, ctx)
 	return inst, err
 }

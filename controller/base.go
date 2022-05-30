@@ -4,13 +4,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"gopkg.in/olahol/melody.v1"
 	dbase "gthub.com/NubeIO/rubix-cli-app/database"
-	"gthub.com/NubeIO/rubix-cli-app/service/apps"
 )
 
 type Controller struct {
-	DB   *dbase.DB
-	WS   *melody.Melody //web socket
-	Apps *apps.Apps
+	DB *dbase.DB
+	WS *melody.Melody //web socket
+
 }
 
 type WsMsg struct {

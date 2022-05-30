@@ -11,16 +11,11 @@ import (
 	dbase "gthub.com/NubeIO/rubix-cli-app/database"
 	dbhandler "gthub.com/NubeIO/rubix-cli-app/pkg/handler"
 	"gthub.com/NubeIO/rubix-cli-app/pkg/logger"
-	"gthub.com/NubeIO/rubix-cli-app/service/apps"
 	"gthub.com/NubeIO/rubix-cli-app/service/auth"
 	"io"
 	"os"
 	"time"
 )
-
-func initApps() (*apps.Apps, error) {
-	return apps.New(&apps.Apps{}, "")
-}
 
 func initWs() *melody.Melody {
 	return melody.New()
@@ -52,6 +47,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 		AllowBrowserExtensions: true,
 		MaxAge:                 12 * time.Hour,
 	}))
+
 	appDB := &dbase.DB{
 		DB: db,
 	}
@@ -59,9 +55,8 @@ func Setup(db *gorm.DB) *gin.Engine {
 		DB: appDB,
 	}
 	dbhandler.Init(dbHandler)
-	initApp, err := initApps()
 
-	api := controller.Controller{DB: appDB, WS: ws, Apps: initApp}
+	api := controller.Controller{DB: appDB, WS: ws}
 	identityKey := "uuid"
 
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{

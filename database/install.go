@@ -15,7 +15,7 @@ type InstallApp struct {
 type InstallResponse struct {
 	ErrorMessage    string `json:"error_message"`
 	GetAppFromStore string `json:"get_app_from_store"`
-	MakeApp         string `json:"make_app"`
+	AppInstall      string `json:"app"`
 	MakeDownload    string `json:"make_download"`
 	GitDownload     string `json:"git_download"`
 	MakeInstallDir  string `json:"make_install_dir"`
@@ -27,28 +27,30 @@ type InstallResponse struct {
 
 // ok messages
 const (
-	selectAppStore  = "ok"
-	makeDownload    = "ok"
-	gitDownload     = "ok"
-	makeNewApp      = "ok"
-	makeInstallDir  = "ok"
-	unpackBuild     = "ok"
-	generateService = "ok"
-	installService  = "ok"
-	cleanUp         = "ok"
+	selectAppStore    = "ok"
+	makeDownload      = "ok"
+	gitDownload       = "ok"
+	makeNewApp        = "installed a new app"
+	makeInstallDir    = "ok"
+	unpackBuild       = "ok"
+	generateService   = "ok"
+	installService    = "ok"
+	cleanUp           = "ok"
+	updateExistingApp = ""
 )
 
 // not ok messages
 const (
-	selectAppStoreErr  = "this app is was not found in the app store, try flow-framework, rubix-wires"
-	makeDownloadErr    = "issue on trying to make the path to download the zip folder"
-	gitDownloadErr     = "error on git download"
-	makeNewAppErr      = "failed to make a new app"
-	makeInstallDirErr  = "unable to make the install dir for the app"
-	unpackBuildErr     = "unable to unzip the build"
-	generateServiceErr = "unable to make the app service file"
-	installServiceErr  = "unable to install the app"
-	cleanUpErr         = "unable to clean up the install"
+	selectAppStoreErr    = "this app is was not found in the app store, try flow-framework, rubix-wires"
+	makeDownloadErr      = "issue on trying to make the path to download the zip folder"
+	gitDownloadErr       = "error on git download"
+	makeNewAppErr        = "failed to make a new app"
+	makeInstallDirErr    = "unable to make the install dir for the app"
+	unpackBuildErr       = "unable to unzip the build"
+	generateServiceErr   = "unable to make the app service file"
+	installServiceErr    = "unable to install the app"
+	cleanUpErr           = "unable to clean up the install"
+	updateExistingAppErr = ""
 )
 
 func (db *DB) InstallApp(body *InstallApp) (*InstallResponse, error) {
@@ -78,21 +80,13 @@ func (db *DB) installApp(body *InstallApp) (*InstallResponse, error) {
 		InstalledVersion: body.Version,
 	}
 
-	app, err := db.AddApp(installedApp)
-	if err != nil {
-		resp.MakeApp = makeNewAppErr
-		return resp, err
-	}
-	resp.MakeApp = makeNewApp
-	log.Infof("add new app name:%s", app.AppStoreName)
-
 	var inst = &apps.Apps{
 		Token:   body.Token,
 		Perm:    0700,
 		Version: body.Version,
 		App:     appStore,
 	}
-	newApp, err := apps.New(inst, appStore.Name)
+	newApp, err := apps.New(inst)
 	if err != nil {
 		log.Errorln("new app: failed to init a new app", err)
 		return resp, err
@@ -103,12 +97,14 @@ func (db *DB) installApp(body *InstallApp) (*InstallResponse, error) {
 		return resp, err
 	}
 	resp.MakeDownload = makeDownload
-	if _, err = newApp.GitDownload(inst.App.DownloadPath); err != nil {
+	download, err := newApp.GitDownload(inst.App.DownloadPath)
+	if err != nil {
 		log.Errorf("git: download error %s \n", err.Error())
 		resp.GitDownload = gitDownloadErr
 		return resp, err
 	}
-	resp.GitDownload = gitDownload
+	assetTag := download.RepositoryRelease.GetTagName()
+	resp.GitDownload = fmt.Sprintf("installed version: %s", assetTag)
 	if err = inst.MakeInstallDir(); err != nil {
 		resp.MakeInstallDir = makeInstallDirErr
 		return resp, err
@@ -137,6 +133,26 @@ func (db *DB) installApp(body *InstallApp) (*InstallResponse, error) {
 		return resp, err
 	}
 	resp.CleanUp = cleanUp
+	installedApp.InstalledVersion = assetTag
+	app, existingApp, err := db.AddApp(installedApp)
+	if err != nil {
+		resp.AppInstall = makeNewAppErr
+		return resp, err
+	}
+	if existingApp {
+		app.InstalledVersion = assetTag
+		_, err := db.UpdateApp(app.UUID, app)
+		if err != nil {
+			resp.AppInstall = fmt.Sprintf("an existing app was installed error:%s", err.Error())
+			return resp, err
+		}
+		resp.AppInstall = fmt.Sprintf("an existing app was installed upgraded from: %s to: %s", app.InstalledVersion, assetTag)
+	} else {
+		resp.AppInstall = makeNewApp
+	}
+
+	log.Infof(fmt.Sprintf("an existing app was installed upgraded from:%s to:%s", app.InstalledVersion, assetTag))
+
 	return resp, err
 
 }

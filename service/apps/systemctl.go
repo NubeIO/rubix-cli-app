@@ -4,7 +4,7 @@ import (
 	"github.com/NubeIO/lib-systemctl-go/systemctl"
 )
 
-type Response struct {
+type SystemResponse struct {
 	Ok      bool   `json:"ok"`
 	Message string `json:"message"`
 }
@@ -16,8 +16,8 @@ var systemOpts = systemctl.Options{
 	Timeout:  defaultTimeout,
 }
 
-func (inst *Apps) Start(timeout int) (resp *Response, err error) {
-	resp = &Response{}
+func (inst *Apps) Start(timeout int) (resp *SystemResponse, err error) {
+	resp = &SystemResponse{}
 	systemOpts.Timeout = timeout
 	err = systemctl.Start(inst.App.ServiceName, systemOpts)
 	if err != nil {
@@ -29,8 +29,8 @@ func (inst *Apps) Start(timeout int) (resp *Response, err error) {
 	return resp, nil
 }
 
-func (inst *Apps) Stop(timeout int) (resp *Response, err error) {
-	resp = &Response{}
+func (inst *Apps) Stop(timeout int) (resp *SystemResponse, err error) {
+	resp = &SystemResponse{}
 	systemOpts.Timeout = timeout
 	err = systemctl.Stop(inst.App.ServiceName, systemOpts)
 	if err != nil {
@@ -42,8 +42,8 @@ func (inst *Apps) Stop(timeout int) (resp *Response, err error) {
 	return resp, nil
 }
 
-func (inst *Apps) Enable(timeout int) (resp *Response, err error) {
-	resp = &Response{}
+func (inst *Apps) Enable(timeout int) (resp *SystemResponse, err error) {
+	resp = &SystemResponse{}
 	systemOpts.Timeout = timeout
 	err = systemctl.Enable(inst.App.ServiceName, systemOpts)
 	if err != nil {
@@ -55,8 +55,8 @@ func (inst *Apps) Enable(timeout int) (resp *Response, err error) {
 	return resp, nil
 }
 
-func (inst *Apps) Disable(timeout int) (resp *Response, err error) {
-	resp = &Response{}
+func (inst *Apps) Disable(timeout int) (resp *SystemResponse, err error) {
+	resp = &SystemResponse{}
 	systemOpts.Timeout = timeout
 	err = systemctl.Disable(inst.App.ServiceName, systemOpts)
 	if err != nil {
@@ -68,29 +68,74 @@ func (inst *Apps) Disable(timeout int) (resp *Response, err error) {
 	return resp, nil
 }
 
-func (inst *Apps) IsEnabled(timeout int) (out bool, err error) {
-	systemOpts.Timeout = timeout
-	return systemctl.IsEnabled(inst.App.ServiceName, systemOpts)
+type SystemResponseChecks struct {
+	Is      bool   `json:"is"`
+	Message string `json:"message"`
 }
 
-func (inst *Apps) IsFailed(timeout int) (out bool, err error) {
+func (inst *Apps) IsEnabled(timeout int) (resp *SystemResponseChecks, err error) {
+	resp = &SystemResponseChecks{}
 	systemOpts.Timeout = timeout
-	return systemctl.IsFailed(inst.App.ServiceName, systemOpts)
+	out, err := systemctl.IsEnabled(inst.App.ServiceName, systemOpts)
+	if err != nil || out == false {
+		resp.Message = "is not enabled"
+		return resp, err
+	}
+	resp.Is = out
+	resp.Message = "is enabled"
+	return
 }
 
-func (inst *Apps) IsInstalled(timeout int) (out bool, err error) {
+func (inst *Apps) IsFailed(timeout int) (resp *SystemResponseChecks, err error) {
+	resp = &SystemResponseChecks{}
 	systemOpts.Timeout = timeout
-	return systemctl.IsInstalled(inst.App.ServiceName, systemOpts)
+	out, err := systemctl.IsFailed(inst.App.ServiceName, systemOpts)
+	if err != nil || out == true {
+		resp.Message = "is failed"
+		return resp, err
+	}
+	resp.Is = out
+	resp.Message = "is not failed"
+	return
 }
 
-func (inst *Apps) IsActive(timeout int) (active bool, status string, err error) {
+func (inst *Apps) IsInstalled(timeout int) (resp *SystemResponseChecks, err error) {
+	resp = &SystemResponseChecks{}
 	systemOpts.Timeout = timeout
-	return systemctl.IsActive(inst.App.ServiceName, systemOpts)
+	out, err := systemctl.IsInstalled(inst.App.ServiceName, systemOpts)
+	if err != nil || out == false {
+		resp.Message = "is not installed"
+		return resp, err
+	}
+	resp.Is = out
+	resp.Message = "is installed"
+	return
 }
 
-func (inst *Apps) IsRunning(timeout int) (active bool, status string, err error) {
+func (inst *Apps) IsActive(timeout int) (resp *SystemResponseChecks, err error) {
+	resp = &SystemResponseChecks{}
 	systemOpts.Timeout = timeout
-	return systemctl.IsRunning(inst.App.ServiceName, systemOpts)
+	out, msg, err := systemctl.IsActive(inst.App.ServiceName, systemOpts)
+	if err != nil || out == false {
+		resp.Message = msg
+		return resp, err
+	}
+	resp.Is = out
+	resp.Message = msg
+	return
+}
+
+func (inst *Apps) IsRunning(timeout int) (resp *SystemResponseChecks, err error) {
+	resp = &SystemResponseChecks{}
+	systemOpts.Timeout = timeout
+	out, msg, err := systemctl.IsRunning(inst.App.ServiceName, systemOpts)
+	if err != nil || out == false {
+		resp.Message = msg
+		return resp, err
+	}
+	resp.Is = out
+	resp.Message = msg
+	return
 }
 
 func (inst *Apps) Status(timeout int) (message string, err error) {

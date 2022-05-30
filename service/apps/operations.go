@@ -1,8 +1,37 @@
 package apps
 
-func (inst *Apps) SystemCtlAction(action string, timeout int) (interface{}, error) {
+import "errors"
 
-	return nil, nil
+func (inst *Apps) SystemCtlAction(action string, timeout int) (*SystemResponse, error) {
+	actionResp := &SystemResponse{}
+	switch action {
+	case start.String():
+		return inst.Start(timeout)
+	case stop.String():
+		return inst.Stop(timeout)
+	case enable.String():
+		return inst.Enable(timeout)
+	case disable.String():
+		return inst.Disable(timeout)
+	}
+	return actionResp, errors.New("no valid action found try, start, stop, enable or disable")
+}
+
+func (inst *Apps) SystemCtlStatus(action string, timeout int) (*SystemResponseChecks, error) {
+	actionResp := &SystemResponseChecks{}
+	switch action {
+	case isRunning.String():
+		return inst.IsRunning(timeout)
+	case isInstalled.String():
+		return inst.IsInstalled(timeout)
+	case isEnabled.String():
+		return inst.IsEnabled(timeout)
+	case isActive.String():
+		return inst.IsActive(timeout)
+	case isFailed.String():
+		return inst.IsFailed(timeout)
+	}
+	return actionResp, errors.New("no valid action found try, isRunning, isInstalled, isEnabled, isActive or isFailed")
 }
 
 type Mass struct {

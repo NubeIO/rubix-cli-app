@@ -28,28 +28,32 @@ func (db *DB) GetApp(uuid string) (*apps.InstalledApp, error) {
 
 func (db *DB) GetAppByName(name string) (*apps.InstalledApp, error) {
 	var m *apps.InstalledApp
-	if err := db.DB.Where("name = ? ", name).First(&m).Error; err != nil {
+	if err := db.DB.Where("app_store_name = ? ", name).First(&m).Error; err != nil {
 		logger.Errorf("GetApp error: %v", err)
 		return nil, err
 	}
 	return m, nil
 }
 
-func (db *DB) AddApp(body *apps.InstalledApp) (*apps.InstalledApp, error) {
+func (db *DB) AddApp(body *apps.InstalledApp) (resp *apps.InstalledApp, existingInstall bool, err error) {
 	store, err := db.GetAppImageByName(body.AppStoreName)
 	if err != nil {
-		return nil, errors.New("no app store is installed for this app")
+		return nil, false, errors.New("no app store is installed for this app")
+	}
+	name, _ := db.GetAppByName(store.Name)
+	if name != nil {
+		return name, true, nil
 	}
 	if body.InstalledVersion == "" {
-		return nil, errors.New("installed version can not be null")
+		return nil, false, errors.New("installed version can not be null")
 	}
 	body.UUID = fmt.Sprintf("app_%s", uuid.SmallUUID())
 	body.AppStoreUUID = store.UUID
 	body.AppStoreName = store.Name
 	if err := db.DB.Create(&body).Error; err != nil {
-		return nil, err
+		return nil, false, err
 	} else {
-		return body, nil
+		return body, false, nil
 	}
 }
 

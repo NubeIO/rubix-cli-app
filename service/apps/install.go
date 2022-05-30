@@ -1,6 +1,8 @@
 package apps
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"github.com/NubeIO/git/pkg/git"
 	fileutils "github.com/NubeIO/lib-dirs/dirs"
@@ -99,6 +101,17 @@ type RespBuilder struct {
 }
 
 func (inst *Apps) GitDownload(destination string) (*git.DownloadResponse, error) {
+	if inst.Token == "" {
+		return nil, errors.New("git token can not be empty")
+	}
+	opts := &git.AssetOptions{
+		Owner: inst.App.Owner,
+		Repo:  inst.App.Repo,
+		Tag:   inst.Version,
+		Arch:  inst.App.Arch,
+	}
+	ctx := context.Background()
+	gitClient = git.NewClient(inst.Token, opts, ctx)
 	download, err := gitClient.Download(destination)
 	if err != nil {
 		return nil, err
