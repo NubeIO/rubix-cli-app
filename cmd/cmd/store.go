@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"encoding/json"
-	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	dbase "gthub.com/NubeIO/rubix-cli-app/database"
 	pprint "gthub.com/NubeIO/rubix-cli-app/pkg/helpers/print"
 	"gthub.com/NubeIO/rubix-cli-app/service/apps"
 )
@@ -26,7 +26,7 @@ func runApps(cmd *cobra.Command, args []string) {
 		products, _ := json.Marshal([]string{"RubixCompute", "AllLinux"}) // product.ProductType
 		db.DropAppImages()
 		store := &apps.Store{
-			Name:                    "flow-framework",
+			Name:                    flgApp.appName,
 			AppTypeName:             "Go",
 			AllowableProducts:       products,
 			DownloadPath:            flgApp.downloadPath,
@@ -51,47 +51,15 @@ func runApps(cmd *cobra.Command, args []string) {
 	}
 
 	if flgApp.installApp {
-		appStore, err := db.GetAppImageByName("flow-framework")
-		if err != nil {
-			return
-		}
 
-		var inst = &apps.Apps{
-			Token:   flgApp.token,
-			Perm:    0700,
+		app, err := db.InstallApp(&dbase.InstallApp{
+			AppName: flgApp.appName,
 			Version: flgApp.version,
-			App:     appStore,
-		}
-		newApp, err := apps.New(inst, "flow-framework")
+			Token:   flgApp.token,
+		})
+		pprint.PrintJOSN(app)
 		if err != nil {
-			log.Errorln("new app: failed to init a new app", err)
-			return
-		}
-
-		if err = inst.MakeDownloadDir(); err != nil {
-			return
-		}
-		//
-		if _, err = newApp.GitDownload(inst.App.DownloadPath); err != nil {
-			log.Errorf("git: download error %s \n", err.Error())
-			return
-		}
-		if err = inst.MakeInstallDir(); err != nil {
-			return
-		}
-		if err = inst.UnpackBuild(); err != nil {
-			return
-		}
-		tmpFileDir := newApp.App.DownloadPath
-		if _, err = newApp.GenerateServiceFile(newApp, tmpFileDir); err != nil {
-			log.Errorf("make service file build: failed error:%s \n", err.Error())
-			return
-		}
-		tmpServiceFile := fmt.Sprintf("%s/%s.service", tmpFileDir, newApp.App.ServiceName)
-		if _, err = newApp.InstallService(newApp.App.ServiceName, tmpServiceFile); err != nil {
-			return
-		}
-		if err = inst.CleanUp(); err != nil {
+			log.Println("install app err", err)
 			return
 		}
 

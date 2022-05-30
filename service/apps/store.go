@@ -7,8 +7,9 @@ import (
 type InstalledApp struct {
 	UUID string `json:"uuid" gorm:"primaryKey"`
 	//Name         string `json:"name"  gorm:"type:varchar(255);unique;not null"`
-	AppStoreName string `json:"app_store_name"`
-	AppStoreUUID string `json:"app_store_uuid"`
+	AppStoreName     string `json:"app_store_name"`
+	AppStoreUUID     string `json:"app_store_uuid"`
+	InstalledVersion string `json:"version"`
 }
 
 type Store struct {
