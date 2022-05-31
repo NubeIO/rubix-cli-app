@@ -1,9 +1,9 @@
 package controller
 
 import (
+	"github.com/NubeIO/lib-date/datelib"
 	"github.com/NubeIO/lib-networking/networking"
 	"github.com/gin-gonic/gin"
-	"gthub.com/NubeIO/rubix-cli-app/service/remote"
 )
 
 func (inst *Controller) Networking(c *gin.Context) {
@@ -27,9 +27,8 @@ func (inst *Controller) GetInterfacesNames(c *gin.Context) {
 }
 
 func (inst *Controller) HostTime(c *gin.Context) {
-	host := &remote.Admin{}
-	run := remote.New(host)
-	data, err := run.SystemTime()
+
+	data, err := datelib.New(&datelib.Date{}).SystemTime()
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
