@@ -14,9 +14,10 @@ type Command struct {
 }
 
 type Response struct {
-	Ok  bool
-	Out string
-	Err error
+	Ok      bool
+	Out     string
+	OutByte []byte
+	Err     error
 }
 
 func Builder(args ...string) []string {
@@ -48,5 +49,6 @@ func (inst *Command) RunCommand() (res *Response) {
 	}
 	res.Out = outAsString
 	res.Ok = true
+	res.OutByte = output
 	return res
 }

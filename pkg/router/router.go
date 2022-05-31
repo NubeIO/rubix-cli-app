@@ -138,6 +138,10 @@ func Setup(db *gorm.DB) *gin.Engine {
 
 	system := admin.Group("/system")
 	{
+		system.GET("/networking", api.Networking)
+		system.GET("/interfaces", api.GetInterfacesNames)
+		system.GET("/internet", api.InternetIP)
+		system.GET("/time", api.HostTime)
 		system.GET("/product", api.GetProduct)
 	}
 	return r

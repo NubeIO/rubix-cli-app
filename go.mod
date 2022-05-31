@@ -9,6 +9,7 @@ go 1.18
 require (
 	github.com/NubeIO/git v0.0.3
 	github.com/NubeIO/lib-dirs v0.0.1
+	github.com/NubeIO/lib-networking v0.0.1
 	github.com/NubeIO/lib-systemctl-go v0.0.4
 	github.com/NubeIO/nubeio-rubix-lib-helpers-go v0.2.7
 	github.com/NubeIO/rubix-assist-model v0.0.1

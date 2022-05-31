@@ -6,7 +6,7 @@
 - `POST`
 
 #### allowable_products
-if an app is added to the store and allowable_products is meant to be used so the user can instal an app on the incorrect target device
+if an app is added to the store and allowable_products is meant to be used so the user can install an app on the incorrect target device
 
 
 ```
