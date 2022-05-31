@@ -2,9 +2,9 @@ package dbase
 
 import (
 	"errors"
+	"github.com/NubeIO/lib-store/store"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
-	"gthub.com/NubeIO/rubix-cli-app/pkg/helpers/store"
 	"gthub.com/NubeIO/rubix-cli-app/service/apps"
 )
 

@@ -3,11 +3,10 @@ package dbase
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
-	"gthub.com/NubeIO/rubix-cli-app/pkg/helpers/uuid"
+	"github.com/NubeIO/lib-command/product"
+	"github.com/NubeIO/lib-uuid/uuid"
 	"gthub.com/NubeIO/rubix-cli-app/pkg/logger"
 	"gthub.com/NubeIO/rubix-cli-app/service/apps"
-	"gthub.com/NubeIO/rubix-cli-app/service/product"
 )
 
 func (db *DB) GetAppStores() ([]*apps.Store, error) {
@@ -73,7 +72,7 @@ func validateAllowableProducts(store *apps.Store) ([]byte, []string, error) {
 }
 
 func (db *DB) CreateAppStore(body *apps.Store) (*apps.Store, error) {
-	body.UUID = fmt.Sprintf("app_%s", uuid.SmallUUID())
+	body.UUID = uuid.ShortUUID("sto")
 	pro, err := product.Get()
 	appType, appTypeName, err := apps.CheckType(body.AppTypeName)
 	if err != nil {
@@ -119,7 +118,6 @@ func (db *DB) CreateAppStore(body *apps.Store) (*apps.Store, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(body)
 	if err := db.DB.Create(&body).Error; err != nil {
 		return nil, err
 	} else {

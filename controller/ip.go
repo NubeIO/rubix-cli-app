@@ -1,13 +1,14 @@
 package controller
 
 import (
-	"github.com/NubeIO/lib-date/datelib"
 	"github.com/NubeIO/lib-networking/networking"
 	"github.com/gin-gonic/gin"
+	"gthub.com/NubeIO/rubix-cli-app/service/system"
 )
 
+var nets = networking.New()
+
 func (inst *Controller) Networking(c *gin.Context) {
-	nets := networking.NewNets()
 	data, err := nets.GetNetworks()
 	if err != nil {
 		reposeHandler(nil, err, c)
@@ -17,7 +18,6 @@ func (inst *Controller) Networking(c *gin.Context) {
 }
 
 func (inst *Controller) GetInterfacesNames(c *gin.Context) {
-	nets := networking.NewNets()
 	data, err := nets.GetInterfacesNames()
 	if err != nil {
 		reposeHandler(nil, err, c)
@@ -26,9 +26,8 @@ func (inst *Controller) GetInterfacesNames(c *gin.Context) {
 	reposeHandler(data, err, c)
 }
 
-func (inst *Controller) HostTime(c *gin.Context) {
-
-	data, err := datelib.New(&datelib.Date{}).SystemTime()
+func (inst *Controller) InternetIP(c *gin.Context) {
+	data, err := nets.GetInternetIP()
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
@@ -36,9 +35,24 @@ func (inst *Controller) HostTime(c *gin.Context) {
 	reposeHandler(data, err, c)
 }
 
-func (inst *Controller) InternetIP(c *gin.Context) {
-	nets := networking.NewNets()
-	data, err := nets.GetInternetIP()
+func (inst *Controller) SetDHCP(c *gin.Context) {
+	var m *system.IP
+	err = c.ShouldBindJSON(&m)
+	m.DHCP = true
+	ip := system.NewIP(m)
+	data, err := ip.SetDHCP()
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	reposeHandler(data, err, c)
+}
+
+func (inst *Controller) SetStaticIP(c *gin.Context) {
+	var m *system.IP
+	err = c.ShouldBindJSON(&m)
+	ip := system.NewIP(m)
+	data, err := ip.SetStaticIP()
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return

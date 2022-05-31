@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/NubeIO/nubeio-rubix-lib-helpers-go/pkg/uuid"
+	"github.com/NubeIO/lib-uuid/uuid"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -32,7 +32,6 @@ func (inst *Controller) GetUsers(c *gin.Context) {
 		reposeHandler(nil, err, c)
 		return
 	}
-	//inst.publishMSG(&WsMsg{Topic: "hey", Message: hosts})
 	if err != nil {
 		return
 	}
@@ -113,7 +112,7 @@ func (inst *Controller) AddUser(c *gin.Context) {
 			panic(err)
 		}
 		user = model.User{Username: newUser.Username, Email: newUser.Email, Hash: string(hash), UID: GenerateUID()}
-		user.UUID, _ = uuid.MakeUUID()
+		user.UUID = uuid.ShortUUID("usr")
 		if err := inst.DB.DB.Create(&user).Error; err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return

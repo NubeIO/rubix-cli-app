@@ -2,9 +2,8 @@ package dbase
 
 import (
 	"errors"
-	"fmt"
 	"github.com/NubeIO/lib-systemctl-go/systemctl"
-	"gthub.com/NubeIO/rubix-cli-app/pkg/helpers/uuid"
+	"github.com/NubeIO/lib-uuid/uuid"
 	"gthub.com/NubeIO/rubix-cli-app/pkg/logger"
 	"gthub.com/NubeIO/rubix-cli-app/service/apps"
 )
@@ -95,7 +94,7 @@ func (db *DB) AddApp(body *apps.App) (resp *apps.App, existingInstall bool, err 
 	if body.InstalledVersion == "" {
 		return nil, false, errors.New("installed version can not be null")
 	}
-	body.UUID = fmt.Sprintf("app_%s", uuid.SmallUUID())
+	body.UUID = uuid.ShortUUID("app")
 	body.AppStoreUUID = store.UUID
 	body.AppStoreName = store.Name
 	if err := db.DB.Create(&body).Error; err != nil {

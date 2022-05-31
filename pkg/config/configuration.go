@@ -2,8 +2,9 @@ package config
 
 import (
 	"fmt"
+	fileutils "github.com/NubeIO/lib-dirs/dirs"
 	"github.com/spf13/viper"
-	"gthub.com/NubeIO/rubix-cli-app/pkg/helpers/homedir"
+
 	"gthub.com/NubeIO/rubix-cli-app/pkg/logger"
 )
 
@@ -23,7 +24,7 @@ func Setup() error {
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
 
-	home, err := homedir.Dir()
+	home, err := fileutils.Dir()
 	if err != nil {
 		fmt.Println(err)
 	}

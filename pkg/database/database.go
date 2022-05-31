@@ -3,10 +3,11 @@ package database
 import (
 	"errors"
 	"fmt"
+	fileutils "github.com/NubeIO/lib-dirs/dirs"
 	"github.com/spf13/viper"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"gthub.com/NubeIO/rubix-cli-app/pkg/helpers/homedir"
+
 	"gthub.com/NubeIO/rubix-cli-app/pkg/model"
 	"gthub.com/NubeIO/rubix-cli-app/service/apps"
 	"io"
@@ -32,7 +33,7 @@ func Setup() error {
 
 	currentUser, err := user.Current()
 	if currentUser.Username != "root" {
-		home, err := homedir.Dir()
+		home, err := fileutils.Dir()
 		if err != nil {
 			fmt.Println(err)
 		}

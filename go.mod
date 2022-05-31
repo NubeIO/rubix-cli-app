@@ -3,22 +3,26 @@ module gthub.com/NubeIO/rubix-cli-app
 //replace github.com/NubeIO/lib-systemctl-go => /home/aidan/code/go/nube/lib/lib-systemctl-go
 //replace github.com/NubeIO/lib-dirs => /home/aidan/code/go/nube/lib/lib-dirs
 //replace github.com/NubeIO/git => /home/aidan/code/go/nube/lib/git
+replace github.com/NubeIO/lib-command => /home/aidan/code/go/nube/lib/lib-command
+replace github.com/NubeIO/lib-dhcpd => /home/aidan/code/go/nube/lib/lib-dhcpd
+replace github.com/NubeIO/lib-networking => /home/aidan/code/go/nube/lib/lib-networking
 
 go 1.18
 
 require (
 	github.com/NubeIO/git v0.0.3
+	github.com/NubeIO/lib-command v0.0.1
 	github.com/NubeIO/lib-date v0.0.1
 	github.com/NubeIO/lib-dirs v0.0.1
 	github.com/NubeIO/lib-networking v0.0.1
+	github.com/NubeIO/lib-store v0.0.1
 	github.com/NubeIO/lib-systemctl-go v0.0.4
-	github.com/NubeIO/nubeio-rubix-lib-helpers-go v0.2.7
+	github.com/NubeIO/lib-uuid v0.0.1
 	github.com/NubeIO/rubix-assist-model v0.0.1
 	github.com/appleboy/gin-jwt/v2 v2.8.0
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.7.7
 	github.com/google/uuid v1.1.2
-	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/viper v1.11.0
@@ -30,9 +34,8 @@ require (
 )
 
 require (
-	github.com/PuerkitoBio/purell v1.1.1 // indirect
-	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
-	github.com/THREATINT/go-net v1.2.10 // indirect
+	github.com/NubeIO/lib-dhcpd v0.0.0-20220531034335-d2880dc5c136 // indirect
+	github.com/NubeIO/nubeio-rubix-lib-helpers-go v0.2.7 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.13.0 // indirect
@@ -53,10 +56,10 @@ require (
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mattn/go-sqlite3 v1.14.12 // indirect
-	github.com/mcnijman/go-emailaddress v1.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
+	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/pelletier/go-toml v1.9.4 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.0-beta.8 // indirect
 	github.com/spf13/afero v1.8.2 // indirect
