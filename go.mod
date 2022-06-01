@@ -3,18 +3,20 @@ module gthub.com/NubeIO/rubix-cli-app
 //replace github.com/NubeIO/lib-systemctl-go => /home/aidan/code/go/nube/lib/lib-systemctl-go
 //replace github.com/NubeIO/lib-dirs => /home/aidan/code/go/nube/lib/lib-dirs
 //replace github.com/NubeIO/git => /home/aidan/code/go/nube/lib/git
-replace github.com/NubeIO/lib-command => /home/aidan/code/go/nube/lib/lib-command
-replace github.com/NubeIO/lib-dhcpd => /home/aidan/code/go/nube/lib/lib-dhcpd
-replace github.com/NubeIO/lib-networking => /home/aidan/code/go/nube/lib/lib-networking
+//replace github.com/NubeIO/lib-command => /home/aidan/code/go/nube/lib/lib-command
+
+//replace github.com/NubeIO/lib-dhcpd => /home/aidan/code/go/nube/lib/lib-dhcpd
+//replace github.com/NubeIO/lib-networking => /home/aidan/code/go/nube/lib/lib-networking
 
 go 1.18
 
 require (
 	github.com/NubeIO/git v0.0.3
-	github.com/NubeIO/lib-command v0.0.1
+	github.com/NubeIO/lib-command v0.0.2
 	github.com/NubeIO/lib-date v0.0.1
+	github.com/NubeIO/lib-dhcpd v0.0.1
 	github.com/NubeIO/lib-dirs v0.0.1
-	github.com/NubeIO/lib-networking v0.0.1
+	github.com/NubeIO/lib-networking v0.0.3
 	github.com/NubeIO/lib-store v0.0.1
 	github.com/NubeIO/lib-systemctl-go v0.0.4
 	github.com/NubeIO/lib-uuid v0.0.1
@@ -34,7 +36,6 @@ require (
 )
 
 require (
-	github.com/NubeIO/lib-dhcpd v0.0.0-20220531034335-d2880dc5c136 // indirect
 	github.com/NubeIO/nubeio-rubix-lib-helpers-go v0.2.7 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
