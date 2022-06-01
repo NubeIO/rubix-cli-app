@@ -45,10 +45,10 @@ func Setup() error {
 	if driver == "" {
 		driver = "sqlite"
 	}
-
+	connection := fmt.Sprintf("%s?_foreign_keys=on", dbName)
 	switch driver {
 	case "sqlite":
-		db, err = gorm.Open(sqlite.Open(dbName), &gorm.Config{})
+		db, err = gorm.Open(sqlite.Open(connection), &gorm.Config{})
 	default:
 		return errors.New("unsupported database driver")
 	}
