@@ -5,6 +5,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	dbase "gthub.com/NubeIO/rubix-cli-app/database"
+	"gthub.com/NubeIO/rubix-cli-app/pkg/config"
+	"gthub.com/NubeIO/rubix-cli-app/pkg/database"
 	pprint "gthub.com/NubeIO/rubix-cli-app/pkg/helpers/print"
 	"gthub.com/NubeIO/rubix-cli-app/service/apps"
 )
@@ -18,6 +20,20 @@ var appsCmd = &cobra.Command{
 
 type InstallResp struct {
 	RespBuilder *apps.RespBuilder `json:"response_builder"`
+}
+
+func initDB() *dbase.DB {
+	if err := config.Setup(); err != nil {
+		log.Errorln("config.Setup() error: %s", err)
+	}
+	if err := database.Setup(); err != nil {
+		log.Errorln("database.Setup() error: %s", err)
+	}
+	db := database.GetDB()
+	appDB := &dbase.DB{
+		DB: db,
+	}
+	return appDB
 }
 
 func runApps(cmd *cobra.Command, args []string) {

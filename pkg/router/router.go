@@ -161,9 +161,9 @@ func Setup(db *gorm.DB) *gin.Engine {
 
 	dirs := admin.Group("/dirs")
 	{
-		dirs.GET("/dirs/*filePath", api.ReadDirs)
+		dirs.GET("/*filePath", api.ReadDirs)
 		dirs.DELETE("/delete/*filePath", api.DeleteDir)
-		dirs.DELETE("/delete/all/*filePath", api.DeleteDirForce)
+		dirs.DELETE("/force/*filePath", api.DeleteDirForce)
 	}
 	return r
 }
