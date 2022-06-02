@@ -3,10 +3,16 @@ package controller
 import (
 	"github.com/NubeIO/lib-networking/networking"
 	"github.com/gin-gonic/gin"
+	"gthub.com/NubeIO/rubix-cli-app/pkg/model"
 	"gthub.com/NubeIO/rubix-cli-app/service/system"
 )
 
 var nets = networking.New()
+
+func (inst *Controller) GetIpSchema(ctx *gin.Context) {
+	mod := model.GetIpSchema()
+	reposeHandler(mod, nil, ctx)
+}
 
 func (inst *Controller) Networking(c *gin.Context) {
 	data, err := nets.GetNetworks()

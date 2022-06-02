@@ -147,9 +147,16 @@ func Setup(db *gorm.DB) *gin.Engine {
 		networking.GET("/networks", api.Networking)
 		networking.GET("/interfaces", api.GetInterfacesNames)
 		networking.GET("/internet", api.InternetIP)
-		networking.POST("/dhcp", api.SetDHCP)
-		networking.POST("/static", api.SetStaticIP)
+		networking.GET("/update/schema", api.GetIpSchema)
+		networking.POST("/update/dhcp", api.SetDHCP)
+		networking.POST("/update/static", api.SetStaticIP)
+	}
 
+	files := admin.Group("/files")
+	{
+		files.POST("/upload/*filePath", api.UploadFile)
+		files.POST("/download/*filePath", api.DownloadFile)
+		files.GET("/dirs/*filePath", api.ReadDirs)
 	}
 	return r
 }

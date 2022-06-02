@@ -7,6 +7,7 @@ module gthub.com/NubeIO/rubix-cli-app
 
 //replace github.com/NubeIO/lib-dhcpd => /home/aidan/code/go/nube/lib/lib-dhcpd
 //replace github.com/NubeIO/lib-networking => /home/aidan/code/go/nube/lib/lib-networking
+replace github.com/NubeIO/lib-schema => /home/aidan/code/go/nube/lib/lib-schema
 
 go 1.18
 
@@ -17,6 +18,7 @@ require (
 	github.com/NubeIO/lib-dhcpd v0.0.1
 	github.com/NubeIO/lib-dirs v0.0.1
 	github.com/NubeIO/lib-networking v0.0.3
+	github.com/NubeIO/lib-schema v0.0.0-20220601090346-5a5aef246267
 	github.com/NubeIO/lib-store v0.0.1
 	github.com/NubeIO/lib-systemctl-go v0.0.4
 	github.com/NubeIO/lib-uuid v0.0.1
@@ -24,6 +26,7 @@ require (
 	github.com/appleboy/gin-jwt/v2 v2.8.0
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.7.7
+	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.1.2
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.4.0
