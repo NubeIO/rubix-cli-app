@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	fileutils "github.com/NubeIO/lib-dirs/dirs"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/olahol/melody.v1"
 	dbase "gthub.com/NubeIO/rubix-cli-app/database"
@@ -12,6 +13,8 @@ type Controller struct {
 	WS *melody.Melody //web socket
 
 }
+
+var fileUtils = fileutils.New()
 
 type WsMsg struct {
 	Topic   string      `json:"topic"`

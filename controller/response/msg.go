@@ -4,7 +4,7 @@ var MsgFlags = map[int]string{
 	Success:        "Ok",
 	InvalidParams:  "Invalid params error",
 	Error:          "Fail",
-	StatusNotFound: "File doesn't exist",
+	StatusNotFound: "not found",
 }
 
 func GetMsg(code int) string {

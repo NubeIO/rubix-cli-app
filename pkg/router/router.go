@@ -155,8 +155,15 @@ func Setup(db *gorm.DB) *gin.Engine {
 	files := admin.Group("/files")
 	{
 		files.POST("/upload/*filePath", api.UploadFile)
+		files.DELETE("/delete/*filePath", api.DeleteFile)
 		files.POST("/download/*filePath", api.DownloadFile)
-		files.GET("/dirs/*filePath", api.ReadDirs)
+	}
+
+	dirs := admin.Group("/dirs")
+	{
+		dirs.GET("/dirs/*filePath", api.ReadDirs)
+		dirs.DELETE("/delete/*filePath", api.DeleteDir)
+		dirs.DELETE("/delete/all/*filePath", api.DeleteDirForce)
 	}
 	return r
 }
