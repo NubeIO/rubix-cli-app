@@ -2,20 +2,22 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"gthub.com/NubeIO/rubix-cli-app/controller/response"
 	dbase "gthub.com/NubeIO/rubix-cli-app/database"
+	"net/http"
 )
 
-func getAppServiceBody(ctx *gin.Context) (dto *dbase.SystemCtl) {
-	err = ctx.ShouldBindJSON(&dto)
+func getAppServiceBody(c *gin.Context) (dto *dbase.SystemCtl) {
+	err = c.ShouldBindJSON(&dto)
 	return dto
 }
 
-func (inst *Controller) AppService(ctx *gin.Context) {
-	body := getAppServiceBody(ctx)
-	action, err := inst.DB.SystemCtlAction(body)
+func (inst *Controller) AppService(c *gin.Context) {
+	body := getAppServiceBody(c)
+	data, err := inst.DB.SystemCtlAction(body)
 	if err != nil {
-		reposeHandler(nil, err, ctx)
+		response.ReposeHandler(c, http.StatusBadRequest, response.Error, err)
 		return
 	}
-	reposeHandler(action, err, ctx)
+	response.ReposeHandler(c, http.StatusOK, response.Success, data)
 }

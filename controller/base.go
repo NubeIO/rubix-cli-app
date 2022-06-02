@@ -21,41 +21,41 @@ type WsMsg struct {
 
 var err error
 
-func bodyAsJSON(ctx *gin.Context) (interface{}, error) {
+func bodyAsJSON(c *gin.Context) (interface{}, error) {
 	var body interface{} //get the body and put it into an interface
-	err = ctx.ShouldBindJSON(&body)
+	err = c.ShouldBindJSON(&body)
 	if err != nil {
 		return nil, err
 	}
 	return body, err
 }
 
-func resolveHeaderHostID(ctx *gin.Context) string {
-	return ctx.GetHeader("host_uuid")
+func resolveHeaderHostID(c *gin.Context) string {
+	return c.GetHeader("host_uuid")
 }
 
-func resolveHeaderHostName(ctx *gin.Context) string {
-	return ctx.GetHeader("host_name")
+func resolveHeaderHostName(c *gin.Context) string {
+	return c.GetHeader("host_name")
 }
 
-func resolveHeaderGitToken(ctx *gin.Context) string {
-	return ctx.GetHeader("git_token")
+func resolveHeaderGitToken(c *gin.Context) string {
+	return c.GetHeader("git_token")
 }
 
-func reposeWithCode(code int, body interface{}, err error, ctx *gin.Context) {
+func reposeWithCode(code int, body interface{}, err error, c *gin.Context) {
 	if err != nil {
 		if err == nil {
-			ctx.JSON(code, Message{Message: "unknown error"})
+			c.JSON(code, Message{Message: "unknown error"})
 		} else {
 			if body != nil {
-				ctx.JSON(code, body)
+				c.JSON(code, body)
 			} else {
-				ctx.JSON(code, Message{Message: err.Error()})
+				c.JSON(code, Message{Message: err.Error()})
 			}
 
 		}
 	} else {
-		ctx.JSON(code, body)
+		c.JSON(code, body)
 	}
 }
 
@@ -66,20 +66,20 @@ type Response struct {
 	Data         interface{} `json:"data"`
 }
 
-func reposeHandler(body interface{}, err error, ctx *gin.Context) {
+func reposeHandler(body interface{}, err error, c *gin.Context) {
 	if err != nil {
 		if body != nil {
 			j, _ := json.Marshal(body)
 			if string(j) == "null" {
-				ctx.JSON(404, Message{Message: err.Error()})
+				c.JSON(404, Message{Message: err.Error()})
 				return
 			}
-			ctx.JSON(404, body)
+			c.JSON(404, body)
 		} else {
-			ctx.JSON(404, Message{Message: err.Error()})
+			c.JSON(404, Message{Message: err.Error()})
 		}
 	} else {
-		ctx.JSON(200, body)
+		c.JSON(200, body)
 	}
 }
 

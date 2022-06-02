@@ -15,13 +15,13 @@ type Response struct {
 }
 
 // ReposeHandler response request
-func ReposeHandler(ctx *gin.Context, httpCode, responseCode int, data interface{}) {
+func ReposeHandler(c *gin.Context, httpCode, responseCode int, data interface{}) {
 	response := Response{
 		Code:    responseCode,
 		Message: GetMsg(responseCode),
 		Data:    data,
 	}
-	ctx.JSON(httpCode, response)
+	c.JSON(httpCode, response)
 	if mode := gin.Mode(); mode == gin.DebugMode {
 		switch data.(type) {
 		case error:
@@ -30,20 +30,20 @@ func ReposeHandler(ctx *gin.Context, httpCode, responseCode int, data interface{
 	}
 }
 
-func reposeHandler(body interface{}, err error, ctx *gin.Context) {
+func reposeHandler(body interface{}, err error, c *gin.Context) {
 	if err != nil {
 		if body != nil {
 			j, _ := json.Marshal(body)
 			if string(j) == "null" {
-				ctx.JSON(404, Message{Message: err.Error()})
+				c.JSON(404, Message{Message: err.Error()})
 				return
 			}
-			ctx.JSON(404, body)
+			c.JSON(404, body)
 		} else {
-			ctx.JSON(404, Message{Message: err.Error()})
+			c.JSON(404, Message{Message: err.Error()})
 		}
 	} else {
-		ctx.JSON(200, body)
+		c.JSON(200, body)
 	}
 }
 

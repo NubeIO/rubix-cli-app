@@ -23,19 +23,19 @@ func ConcatPath(localSystemFilePath string) string {
 UploadFile
 //curl -X POST http://localhost:8090/api/files/upload/code/go   -F "file=@/home/user/Downloads/bios-master.zip"   -H "Content-Type: multipart/form-data"
 */
-func (inst *Controller) UploadFile(ctx *gin.Context) {
-	localSystemFilePath := ConcatPath(ctx.Param("filePath"))
-	file, err := ctx.FormFile("file")
+func (inst *Controller) UploadFile(c *gin.Context) {
+	localSystemFilePath := ConcatPath(c.Param("filePath"))
+	file, err := c.FormFile("file")
 	if err != nil || file == nil {
-		response.ReposeHandler(ctx, http.StatusOK, response.Error, err)
+		response.ReposeHandler(c, http.StatusOK, response.Error, err)
 		return
 	}
 	fileFull := fmt.Sprintf("%s/%s", localSystemFilePath, filepath.Base(file.Filename))
-	if err := ctx.SaveUploadedFile(file, fileFull); err != nil {
-		response.ReposeHandler(ctx, http.StatusOK, response.Error, err)
+	if err := c.SaveUploadedFile(file, fileFull); err != nil {
+		response.ReposeHandler(c, http.StatusOK, response.Error, err)
 		return
 	}
-	response.ReposeHandler(ctx, http.StatusOK, response.Success, gin.H{"uploaded": fileFull})
+	response.ReposeHandler(c, http.StatusOK, response.Success, gin.H{"uploaded": fileFull})
 }
 
 /*
@@ -43,8 +43,8 @@ DownloadFile
 curl -X POST http://localhost:8080/api/files/download/<pathAndFile>
 eg curl -X POST http://localhost:8090/api/files/download/code/go/nube/rubix-cli-app/docs/api.md
 */
-func (inst *Controller) DownloadFile(ctx *gin.Context) {
-	inst.readFiles(ctx, true)
+func (inst *Controller) DownloadFile(c *gin.Context) {
+	inst.readFiles(c, true)
 }
 
 /*
@@ -52,37 +52,37 @@ ReadDirs
 curl -X GET http://localhost:8080/api/files/dirs/<path>
 
 */
-func (inst *Controller) ReadDirs(ctx *gin.Context) {
-	inst.readFiles(ctx, false)
+func (inst *Controller) ReadDirs(c *gin.Context) {
+	inst.readFiles(c, false)
 }
 
 /*
 DeleteFile
 curl -X DELETE http://localhost:8080/api/files/delete/<pathAndFile>
 */
-func (inst *Controller) DeleteFile(ctx *gin.Context) {
-	localSystemFilePath := ConcatPath(ctx.Param("filePath"))
+func (inst *Controller) DeleteFile(c *gin.Context) {
+	localSystemFilePath := ConcatPath(c.Param("filePath"))
 	if _, err := os.Stat(localSystemFilePath); !errors.Is(err, os.ErrNotExist) {
-		response.ReposeHandler(ctx, http.StatusOK, response.Error, err)
+		response.ReposeHandler(c, http.StatusOK, response.Error, err)
 		return
 	}
 	if err := os.Remove(localSystemFilePath); err != nil {
-		response.ReposeHandler(ctx, http.StatusOK, response.Error, err)
+		response.ReposeHandler(c, http.StatusOK, response.Error, err)
 		return
 	}
-	response.ReposeHandler(ctx, http.StatusOK, response.Success, gin.H{"path": localSystemFilePath})
+	response.ReposeHandler(c, http.StatusOK, response.Success, gin.H{"path": localSystemFilePath})
 }
 
-func (inst *Controller) readFiles(ctx *gin.Context, downloadFile bool) {
-	localSystemFilePath := ConcatPath(ctx.Param("filePath")) // /api/files/*filePath
+func (inst *Controller) readFiles(c *gin.Context, downloadFile bool) {
+	localSystemFilePath := ConcatPath(c.Param("filePath")) // /api/files/*filePath
 	fileInfo, err := os.Stat(localSystemFilePath)
 	fileName, _ := filepath.Abs(localSystemFilePath)
 	outFileName := fmt.Sprintf("attachment; %s", filepath.Base(fileName))
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			response.ReposeHandler(ctx, http.StatusOK, response.StatusNotFound, err)
+			response.ReposeHandler(c, http.StatusOK, response.StatusNotFound, err)
 		} else {
-			response.ReposeHandler(ctx, http.StatusOK, response.Error, err)
+			response.ReposeHandler(c, http.StatusOK, response.Error, err)
 		}
 		return
 	}
@@ -90,7 +90,7 @@ func (inst *Controller) readFiles(ctx *gin.Context, downloadFile bool) {
 	if fileInfo.IsDir() {
 		files, err := ioutil.ReadDir(localSystemFilePath)
 		if err != nil {
-			response.ReposeHandler(ctx, http.StatusOK, response.Error, err)
+			response.ReposeHandler(c, http.StatusOK, response.Error, err)
 			return
 		}
 		for _, file := range files {
@@ -100,12 +100,12 @@ func (inst *Controller) readFiles(ctx *gin.Context, downloadFile bool) {
 		if downloadFile {
 			byteFile, err := ioutil.ReadFile(localSystemFilePath)
 			if err != nil {
-				response.ReposeHandler(ctx, http.StatusOK, response.Error, err)
+				response.ReposeHandler(c, http.StatusOK, response.Error, err)
 				return
 			}
-			ctx.Header("Content-Disposition", outFileName)
-			ctx.Data(http.StatusOK, "application/octet-stream", byteFile)
+			c.Header("Content-Disposition", outFileName)
+			c.Data(http.StatusOK, "application/octet-stream", byteFile)
 		}
 	}
-	response.ReposeHandler(ctx, http.StatusOK, response.Success, gin.H{"path": dirContent})
+	response.ReposeHandler(c, http.StatusOK, response.Success, gin.H{"path": dirContent})
 }

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"gthub.com/NubeIO/rubix-cli-app/controller/response"
 	"gthub.com/NubeIO/rubix-cli-app/pkg/model"
 	"math/rand"
 	"net/http"
@@ -12,59 +13,55 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func getUserBody(ctx *gin.Context) (dto *model.User, err error) {
-	err = ctx.ShouldBindJSON(&dto)
+func getUserBody(c *gin.Context) (dto *model.User, err error) {
+	err = c.ShouldBindJSON(&dto)
 	return dto, err
 }
 
 func (inst *Controller) GetUser(c *gin.Context) {
-	host, err := inst.DB.GetUser(c.Params.ByName("uuid"))
+	data, err := inst.DB.GetUser(c.Params.ByName("uuid"))
 	if err != nil {
-		reposeHandler(nil, err, c)
+		response.ReposeHandler(c, http.StatusBadRequest, response.Error, err)
 		return
 	}
-	reposeHandler(host, err, c)
+	response.ReposeHandler(c, http.StatusOK, response.Success, data)
 }
 
 func (inst *Controller) GetUsers(c *gin.Context) {
-	hosts, err := inst.DB.GetUsers()
+	data, err := inst.DB.GetUsers()
 	if err != nil {
-		reposeHandler(nil, err, c)
+		response.ReposeHandler(c, http.StatusBadRequest, response.Error, err)
 		return
 	}
-	if err != nil {
-		return
-	}
-
-	reposeHandler(hosts, err, c)
+	response.ReposeHandler(c, http.StatusOK, response.Success, data)
 }
 
 func (inst *Controller) UpdateUser(c *gin.Context) {
 	body, _ := getUserBody(c)
-	host, err := inst.DB.UpdateUser(c.Params.ByName("uuid"), body)
+	data, err := inst.DB.UpdateUser(c.Params.ByName("uuid"), body)
 	if err != nil {
-		reposeHandler(nil, err, c)
+		response.ReposeHandler(c, http.StatusBadRequest, response.Error, err)
 		return
 	}
-	reposeHandler(host, err, c)
+	response.ReposeHandler(c, http.StatusOK, response.Success, data)
 }
 
 func (inst *Controller) DeleteUser(c *gin.Context) {
-	q, err := inst.DB.DeleteUser(c.Params.ByName("uuid"))
+	data, err := inst.DB.DeleteUser(c.Params.ByName("uuid"))
 	if err != nil {
-		reposeHandler(nil, err, c)
-	} else {
-		reposeHandler(q, err, c)
+		response.ReposeHandler(c, http.StatusBadRequest, response.Error, err)
+		return
 	}
+	response.ReposeHandler(c, http.StatusOK, response.Success, data)
 }
 
 func (inst *Controller) DropUsers(c *gin.Context) {
-	host, err := inst.DB.DropUsers()
+	data, err := inst.DB.DropUsers()
 	if err != nil {
-		reposeHandler(nil, err, c)
+		response.ReposeHandler(c, http.StatusBadRequest, response.Error, err)
 		return
 	}
-	reposeHandler(host, err, c)
+	response.ReposeHandler(c, http.StatusOK, response.Success, data)
 }
 
 func (inst *Controller) Login(c *gin.Context) (interface{}, error) {

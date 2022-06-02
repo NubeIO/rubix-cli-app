@@ -7,17 +7,10 @@ import (
 
 func TestHost(*testing.T) {
 
-	client := New("0.0.0.0", 8080)
+	client := New("0.0.0.0", 8090)
 
-	apps, _ := client.GetApps()
-	fmt.Println(222, apps)
-	uuid := ""
-	fmt.Println(apps)
-	for _, app := range apps {
-		uuid = app.UUID
-	}
-	if uuid == "" {
-		return
-	}
+	data, res := client.GetTime()
+
+	fmt.Println(data.Data.DateFormatLocal, res.GetStatus())
 
 }

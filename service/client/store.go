@@ -12,13 +12,13 @@ type Path struct {
 }
 
 var Paths = struct {
-	Apps        Path
-	Store       Path
-	HostNetwork Path
+	Apps   Path
+	Store  Path
+	System Path
 }{
-	Apps:        Path{Path: "/api/apps"},
-	Store:       Path{Path: "/api/store"},
-	HostNetwork: Path{Path: "/api/networks"},
+	Apps:   Path{Path: "/api/apps"},
+	Store:  Path{Path: "/api/store"},
+	System: Path{Path: "/api/system"},
 }
 
 type Response struct {
