@@ -2,8 +2,6 @@ package response
 
 import (
 	"encoding/json"
-	"log"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -25,7 +23,12 @@ func ReposeHandler(c *gin.Context, httpCode, responseCode int, data interface{})
 	if mode := gin.Mode(); mode == gin.DebugMode {
 		switch data.(type) {
 		case error:
-			log.Panicf("[error] %+v", data)
+			//if data != nil {
+			//	log.Panicf("[error] %+v", data)
+			//} else {
+			//	log.Print("[error]", data)
+			//}
+
 		}
 	}
 }

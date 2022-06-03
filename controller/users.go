@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"gthub.com/NubeIO/rubix-cli-app/controller/response"
 	"gthub.com/NubeIO/rubix-cli-app/pkg/model"
 	"math/rand"
 	"net/http"
@@ -21,47 +20,47 @@ func getUserBody(c *gin.Context) (dto *model.User, err error) {
 func (inst *Controller) GetUser(c *gin.Context) {
 	data, err := inst.DB.GetUser(c.Params.ByName("uuid"))
 	if err != nil {
-		response.ReposeHandler(c, http.StatusBadRequest, response.Error, err)
+		reposeHandler(data, err, c)
 		return
 	}
-	response.ReposeHandler(c, http.StatusOK, response.Success, data)
+	reposeHandler(data, err, c)
 }
 
 func (inst *Controller) GetUsers(c *gin.Context) {
 	data, err := inst.DB.GetUsers()
 	if err != nil {
-		response.ReposeHandler(c, http.StatusBadRequest, response.Error, err)
+		reposeHandler(data, err, c)
 		return
 	}
-	response.ReposeHandler(c, http.StatusOK, response.Success, data)
+	reposeHandler(data, err, c)
 }
 
 func (inst *Controller) UpdateUser(c *gin.Context) {
 	body, _ := getUserBody(c)
 	data, err := inst.DB.UpdateUser(c.Params.ByName("uuid"), body)
 	if err != nil {
-		response.ReposeHandler(c, http.StatusBadRequest, response.Error, err)
+		reposeHandler(data, err, c)
 		return
 	}
-	response.ReposeHandler(c, http.StatusOK, response.Success, data)
+	reposeHandler(data, err, c)
 }
 
 func (inst *Controller) DeleteUser(c *gin.Context) {
 	data, err := inst.DB.DeleteUser(c.Params.ByName("uuid"))
 	if err != nil {
-		response.ReposeHandler(c, http.StatusBadRequest, response.Error, err)
+		reposeHandler(data, err, c)
 		return
 	}
-	response.ReposeHandler(c, http.StatusOK, response.Success, data)
+	reposeHandler(data, err, c)
 }
 
 func (inst *Controller) DropUsers(c *gin.Context) {
 	data, err := inst.DB.DropUsers()
 	if err != nil {
-		response.ReposeHandler(c, http.StatusBadRequest, response.Error, err)
+		reposeHandler(data, err, c)
 		return
 	}
-	response.ReposeHandler(c, http.StatusOK, response.Success, data)
+	reposeHandler(data, err, c)
 }
 
 func (inst *Controller) Login(c *gin.Context) (interface{}, error) {

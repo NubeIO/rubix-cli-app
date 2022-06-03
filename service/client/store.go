@@ -2,9 +2,7 @@ package client
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/go-resty/resty/v2"
-	"gthub.com/NubeIO/rubix-cli-app/service/apps"
 )
 
 type Path struct {
@@ -54,7 +52,7 @@ func (response *Response) GetError() interface{} {
 }
 
 func (response *Response) GetStatus() int {
-	return response.resty.StatusCode()
+	return response.StatusCode
 }
 
 // AsJson return as body as blank interface
@@ -65,13 +63,4 @@ func (response *Response) AsJson() (interface{}, error) {
 		return nil, err
 	}
 	return out, nil
-}
-
-func (inst *Client) GetApps() (data []apps.App, response *Response) {
-	path := fmt.Sprintf(Paths.Apps.Path)
-	response = &Response{}
-	resp, err := inst.Rest.R().
-		SetResult(&[]apps.App{}).
-		Get(path)
-	return *resp.Result().(*[]apps.App), response.buildResponse(resp, err)
 }

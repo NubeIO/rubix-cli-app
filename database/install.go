@@ -91,7 +91,7 @@ func (db *DB) installApp(body *App) (*InstallResponse, error) {
 	SetProgress(progressKey, resp)
 	appStore, err := db.GetAppStoreByName(body.AppName)
 	if err != nil {
-		resp.InstallLog.GetAppFromStore = selectAppStoreErr
+		resp.InstallLog.GetAppFromStore = err.Error()
 		return resp, err
 	}
 	resp.InstallLog.GetAppFromStore = selectAppStore
@@ -123,7 +123,7 @@ func (db *DB) installApp(body *App) (*InstallResponse, error) {
 	SetProgress(progressKey, resp)
 	if err != nil {
 		log.Errorf("git: download error %s \n", err.Error())
-		resp.InstallLog.GitDownload = gitDownloadErr
+		resp.InstallLog.GitDownload = err.Error()
 		SetProgress(progressKey, resp)
 		return resp, err
 	}
@@ -131,14 +131,14 @@ func (db *DB) installApp(body *App) (*InstallResponse, error) {
 	resp.InstallLog.GitDownload = fmt.Sprintf("installed version: %s", assetTag)
 	SetProgress(progressKey, resp)
 	if err = inst.MakeInstallDir(); err != nil {
-		resp.InstallLog.MakeInstallDir = makeInstallDirErr
+		resp.InstallLog.MakeInstallDir = err.Error()
 		SetProgress(progressKey, resp)
 		return resp, err
 	}
 	resp.InstallLog.MakeInstallDir = makeInstallDir
 	SetProgress(progressKey, resp)
 	if err = inst.UnpackBuild(); err != nil {
-		resp.InstallLog.UnpackBuild = unpackBuildErr
+		resp.InstallLog.UnpackBuild = err.Error()
 		SetProgress(progressKey, resp)
 		return resp, err
 	}
@@ -147,7 +147,7 @@ func (db *DB) installApp(body *App) (*InstallResponse, error) {
 	SetProgress(progressKey, resp)
 	if _, err = newApp.GenerateServiceFile(newApp, tmpFileDir); err != nil {
 		log.Errorf("make service file build: failed error:%s \n", err.Error())
-		resp.InstallLog.GenerateService = generateServiceErr
+		resp.InstallLog.GenerateService = err.Error()
 		SetProgress(progressKey, resp)
 		return resp, err
 	}
@@ -155,14 +155,14 @@ func (db *DB) installApp(body *App) (*InstallResponse, error) {
 	tmpServiceFile := fmt.Sprintf("%s/%s.service", tmpFileDir, newApp.App.ServiceName)
 	SetProgress(progressKey, resp)
 	if _, err = newApp.InstallService(newApp.App.ServiceName, tmpServiceFile); err != nil {
-		resp.InstallLog.InstallService = installServiceErr
+		resp.InstallLog.InstallService = err.Error()
 		SetProgress(progressKey, resp)
 		return resp, err
 	}
 	resp.InstallLog.InstallService = installService
 	SetProgress(progressKey, resp)
 	if err = inst.CleanUp(); err != nil {
-		resp.InstallLog.CleanUp = cleanUpErr
+		resp.InstallLog.CleanUp = err.Error()
 		SetProgress(progressKey, resp)
 		return resp, err
 	}
@@ -171,7 +171,7 @@ func (db *DB) installApp(body *App) (*InstallResponse, error) {
 	SetProgress(progressKey, resp)
 	app, existingApp, err := db.AddApp(installedApp)
 	if err != nil {
-		resp.InstallLog.AppInstall = makeNewAppErr
+		resp.InstallLog.AppInstall = err.Error()
 		SetProgress(progressKey, resp)
 		return resp, err
 	}

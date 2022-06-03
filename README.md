@@ -4,6 +4,7 @@
 
 ```
 go mod tidy
+go run ./cmd/main.go server
 ```
 
 ## product file (this is for hardware identification)

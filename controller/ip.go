@@ -19,28 +19,28 @@ func (inst *Controller) GetIpSchema(c *gin.Context) {
 func (inst *Controller) Networking(c *gin.Context) {
 	data, err := nets.GetNetworks()
 	if err != nil {
-		response.ReposeHandler(c, http.StatusBadRequest, response.Error, err)
+		reposeHandler(data, err, c)
 		return
 	}
-	response.ReposeHandler(c, http.StatusOK, response.Success, data)
+	reposeHandler(data, err, c)
 }
 
 func (inst *Controller) GetInterfacesNames(c *gin.Context) {
 	data, err := nets.GetInterfacesNames()
 	if err != nil {
-		response.ReposeHandler(c, http.StatusBadRequest, response.Error, err)
+		reposeHandler(data, err, c)
 		return
 	}
-	response.ReposeHandler(c, http.StatusOK, response.Success, data)
+	reposeHandler(data, err, c)
 }
 
 func (inst *Controller) InternetIP(c *gin.Context) {
 	data, err := nets.GetInternetIP()
 	if err != nil {
-		response.ReposeHandler(c, http.StatusBadRequest, response.Error, err)
+		reposeHandler(data, err, c)
 		return
 	}
-	response.ReposeHandler(c, http.StatusOK, response.Success, data)
+	reposeHandler(data, err, c)
 }
 
 func (inst *Controller) SetDHCP(c *gin.Context) {
@@ -50,10 +50,10 @@ func (inst *Controller) SetDHCP(c *gin.Context) {
 	ip := system.NewIP(m)
 	data, err := ip.SetDHCP()
 	if err != nil {
-		response.ReposeHandler(c, http.StatusBadRequest, response.Error, err)
+		reposeHandler(data, err, c)
 		return
 	}
-	response.ReposeHandler(c, http.StatusOK, response.Success, data)
+	reposeHandler(data, err, c)
 }
 
 func (inst *Controller) SetStaticIP(c *gin.Context) {
@@ -62,8 +62,8 @@ func (inst *Controller) SetStaticIP(c *gin.Context) {
 	ip := system.NewIP(m)
 	data, err := ip.SetStaticIP()
 	if err != nil {
-		response.ReposeHandler(c, http.StatusBadRequest, response.Error, err)
+		reposeHandler(data, err, c)
 		return
 	}
-	response.ReposeHandler(c, http.StatusOK, response.Success, data)
+	reposeHandler(data, err, c)
 }

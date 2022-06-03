@@ -2,9 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"gthub.com/NubeIO/rubix-cli-app/controller/response"
 	dbase "gthub.com/NubeIO/rubix-cli-app/database"
-	"net/http"
 )
 
 func (inst *Controller) UnInstallApp(c *gin.Context) {
@@ -12,10 +10,10 @@ func (inst *Controller) UnInstallApp(c *gin.Context) {
 	err = c.ShouldBindJSON(&m)
 	data, err := inst.DB.UnInstallApp(m)
 	if err != nil {
-		response.ReposeHandler(c, http.StatusBadRequest, response.Error, err)
+		reposeHandler(data, err, c)
 		return
 	}
-	response.ReposeHandler(c, http.StatusOK, response.Success, data)
+	reposeHandler(data, err, c)
 }
 
 func (inst *Controller) GetUnInstallProgress(c *gin.Context) {
@@ -23,8 +21,8 @@ func (inst *Controller) GetUnInstallProgress(c *gin.Context) {
 	err = c.ShouldBindJSON(&m)
 	data, err := inst.DB.GetUnInstallProgress(m.AppName)
 	if err != nil {
-		response.ReposeHandler(c, http.StatusBadRequest, response.Error, err)
+		reposeHandler(data, err, c)
 		return
 	}
-	response.ReposeHandler(c, http.StatusOK, response.Success, data)
+	reposeHandler(data, err, c)
 }

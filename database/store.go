@@ -28,6 +28,14 @@ func (db *DB) GetAppStore(uuid string) (*apps.Store, error) {
 }
 
 func (db *DB) GetAppStoreByName(name string) (*apps.Store, error) {
+
+	stores, err := db.GetAppStores()
+	if err != nil {
+		return nil, err
+	}
+	if len(stores) == 0 {
+		return nil, errors.New("there is no apps added to the store please add one")
+	}
 	var m *apps.Store
 	if err := db.DB.Where("name = ? ", name).First(&m).Error; err != nil {
 		logger.Errorf("GetApp error: %v", err)
