@@ -3,8 +3,8 @@ package controller
 import (
 	"errors"
 	"fmt"
+	"github.com/NubeIO/rubix-cli-app/controller/response"
 	"github.com/gin-gonic/gin"
-	"gthub.com/NubeIO/rubix-cli-app/controller/response"
 	"io/ioutil"
 	"net/http"
 	"os"

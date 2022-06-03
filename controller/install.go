@@ -1,8 +1,8 @@
 package controller
 
 import (
+	dbase "github.com/NubeIO/rubix-cli-app/database"
 	"github.com/gin-gonic/gin"
-	dbase "gthub.com/NubeIO/rubix-cli-app/database"
 )
 
 func (inst *Controller) InstallApp(c *gin.Context) {

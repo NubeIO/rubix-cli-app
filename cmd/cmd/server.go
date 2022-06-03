@@ -2,13 +2,13 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/NubeIO/rubix-cli-app/pkg/config"
+	"github.com/NubeIO/rubix-cli-app/pkg/database"
+	"github.com/NubeIO/rubix-cli-app/pkg/logger"
+	"github.com/NubeIO/rubix-cli-app/pkg/router"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"gthub.com/NubeIO/rubix-cli-app/pkg/config"
-	"gthub.com/NubeIO/rubix-cli-app/pkg/database"
-	"gthub.com/NubeIO/rubix-cli-app/pkg/logger"
-	"gthub.com/NubeIO/rubix-cli-app/pkg/router"
 	"log"
 )
 

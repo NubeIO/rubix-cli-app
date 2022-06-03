@@ -4,8 +4,8 @@ import (
 	"errors"
 	"github.com/NubeIO/lib-systemctl-go/systemctl"
 	"github.com/NubeIO/lib-uuid/uuid"
-	"gthub.com/NubeIO/rubix-cli-app/pkg/logger"
-	"gthub.com/NubeIO/rubix-cli-app/service/apps"
+	"github.com/NubeIO/rubix-cli-app/pkg/logger"
+	"github.com/NubeIO/rubix-cli-app/service/apps"
 )
 
 func (db *DB) GetApps() ([]*apps.App, error) {

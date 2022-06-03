@@ -2,8 +2,8 @@ package client
 
 import (
 	"fmt"
-	dbase "gthub.com/NubeIO/rubix-cli-app/database"
-	pprint "gthub.com/NubeIO/rubix-cli-app/pkg/helpers/print"
+	dbase "github.com/NubeIO/rubix-cli-app/database"
+	pprint "github.com/NubeIO/rubix-cli-app/pkg/helpers/print"
 	"testing"
 )
 

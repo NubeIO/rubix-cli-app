@@ -2,13 +2,13 @@ package cmd
 
 import (
 	"encoding/json"
+	dbase "github.com/NubeIO/rubix-cli-app/database"
+	"github.com/NubeIO/rubix-cli-app/pkg/config"
+	"github.com/NubeIO/rubix-cli-app/pkg/database"
+	pprint "github.com/NubeIO/rubix-cli-app/pkg/helpers/print"
+	"github.com/NubeIO/rubix-cli-app/service/apps"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
-	dbase "gthub.com/NubeIO/rubix-cli-app/database"
-	"gthub.com/NubeIO/rubix-cli-app/pkg/config"
-	"gthub.com/NubeIO/rubix-cli-app/pkg/database"
-	pprint "gthub.com/NubeIO/rubix-cli-app/pkg/helpers/print"
-	"gthub.com/NubeIO/rubix-cli-app/service/apps"
 )
 
 var appsCmd = &cobra.Command{

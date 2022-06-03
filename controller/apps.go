@@ -1,8 +1,8 @@
 package controller
 
 import (
+	"github.com/NubeIO/rubix-cli-app/service/apps"
 	"github.com/gin-gonic/gin"
-	"gthub.com/NubeIO/rubix-cli-app/service/apps"
 )
 
 func getAppsBody(c *gin.Context) (dto *apps.App, err error) {

@@ -1,7 +1,7 @@
 package dbase
 
 import (
-	"gthub.com/NubeIO/rubix-cli-app/service/apps"
+	"github.com/NubeIO/rubix-cli-app/service/apps"
 )
 
 type SystemCtl struct {

@@ -2,10 +2,10 @@ package controller
 
 import (
 	"github.com/NubeIO/lib-networking/networking"
+	"github.com/NubeIO/rubix-cli-app/controller/response"
+	"github.com/NubeIO/rubix-cli-app/pkg/model"
+	"github.com/NubeIO/rubix-cli-app/service/system"
 	"github.com/gin-gonic/gin"
-	"gthub.com/NubeIO/rubix-cli-app/controller/response"
-	"gthub.com/NubeIO/rubix-cli-app/pkg/model"
-	"gthub.com/NubeIO/rubix-cli-app/service/system"
 	"net/http"
 )
 

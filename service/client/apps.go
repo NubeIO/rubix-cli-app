@@ -2,8 +2,8 @@ package client
 
 import (
 	"fmt"
-	dbase "gthub.com/NubeIO/rubix-cli-app/database"
-	"gthub.com/NubeIO/rubix-cli-app/service/apps"
+	dbase "github.com/NubeIO/rubix-cli-app/database"
+	"github.com/NubeIO/rubix-cli-app/service/apps"
 )
 
 type AppsResp struct {

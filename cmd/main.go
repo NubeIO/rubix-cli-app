@@ -1,7 +1,7 @@
 package main
 
 import (
-	"gthub.com/NubeIO/rubix-cli-app/cmd/cmd"
+	"github.com/NubeIO/rubix-cli-app/cmd/cmd"
 )
 
 func main() {

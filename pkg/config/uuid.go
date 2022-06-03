@@ -4,8 +4,8 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
+	"github.com/NubeIO/rubix-cli-app/pkg/model"
 	"github.com/google/uuid"
-	"gthub.com/NubeIO/rubix-cli-app/pkg/model"
 )
 
 func GenerateToken(length int) string {

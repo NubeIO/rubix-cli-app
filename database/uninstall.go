@@ -3,8 +3,8 @@ package dbase
 import (
 	"fmt"
 	"github.com/NubeIO/lib-systemctl-go/ctl"
+	"github.com/NubeIO/rubix-cli-app/service/apps"
 	log "github.com/sirupsen/logrus"
-	"gthub.com/NubeIO/rubix-cli-app/service/apps"
 )
 
 type unInstallLog struct {

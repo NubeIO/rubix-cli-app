@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"gthub.com/NubeIO/rubix-cli-app/pkg/model"
+	"github.com/NubeIO/rubix-cli-app/pkg/model"
 	"math/rand"
 	"net/http"
 	"time"
