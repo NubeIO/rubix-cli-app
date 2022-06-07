@@ -23,7 +23,9 @@ type AppStats struct {
 }
 
 func (db *DB) AppStats(body *apps.App) (*AppStats, error) {
-	var stats *AppStats
+	appStats := &AppStats{
+		Stats: systemctl.SystemState{},
+	}
 	appStore, getApp, err := db.GetAppAndStore(body)
 	if err != nil {
 		return nil, err
@@ -36,9 +38,9 @@ func (db *DB) AppStats(body *apps.App) (*AppStats, error) {
 	if err != nil {
 		return nil, err
 	}
-	stats.App = getApp
-	stats.Stats = status
-	return stats, nil
+	appStats.App = getApp
+	appStats.Stats = status
+	return appStats, nil
 }
 
 func (db *DB) GetApp(uuid string) (*apps.App, error) {
