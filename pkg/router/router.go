@@ -6,6 +6,7 @@ import (
 	dbase "github.com/NubeIO/rubix-cli-app/database"
 	dbhandler "github.com/NubeIO/rubix-cli-app/pkg/handler"
 	"github.com/NubeIO/rubix-cli-app/pkg/logger"
+	"github.com/NubeIO/rubix-cli-app/service/apps/installer"
 	"github.com/NubeIO/rubix-cli-app/service/auth"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-contrib/cors"
@@ -56,7 +57,11 @@ func Setup(db *gorm.DB) *gin.Engine {
 	}
 	dbhandler.Init(dbHandler)
 
-	api := controller.Controller{DB: appDB, WS: ws}
+	install := installer.New(&installer.Installer{
+		DB: appDB,
+	})
+
+	api := controller.Controller{DB: appDB, WS: ws, Installer: install}
 	identityKey := "uuid"
 
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{

@@ -14,6 +14,12 @@ func New(url string, port int) *Client {
 	rest := &Client{
 		Rest: resty.New(),
 	}
+	if url == "" {
+		url = "0.0.0.0"
+	}
+	if port == 0 {
+		port = 1661
+	}
 	rest.Rest.SetBaseURL(fmt.Sprintf("http://%s:%d", url, port))
 	return rest
 }

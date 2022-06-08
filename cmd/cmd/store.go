@@ -68,16 +68,16 @@ func runApps(cmd *cobra.Command, args []string) {
 
 	if flgApp.installApp {
 
-		app, err := db.InstallApp(&dbase.App{
-			AppName: flgApp.appName,
-			Version: flgApp.version,
-			Token:   flgApp.token,
-		})
-		pprint.PrintJOSN(app)
-		if err != nil {
-			log.Println("install app err", err)
-			return
-		}
+		//app, err := db.InstallApp(&dbase.App{
+		//	AppName: flgApp.appName,
+		//	Version: flgApp.version,
+		//	Token:   flgApp.token,
+		//})
+		//pprint.PrintJOSN(app)
+		//if err != nil {
+		//	log.Println("install app err", err)
+		//	return
+		//}
 
 	}
 

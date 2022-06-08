@@ -1,7 +1,9 @@
-package dbase
+package installer
 
 import (
+	"errors"
 	"fmt"
+	dbase "github.com/NubeIO/rubix-cli-app/database"
 	"github.com/NubeIO/rubix-cli-app/service/apps"
 	log "github.com/sirupsen/logrus"
 )
@@ -28,6 +30,14 @@ type InstallLog struct {
 	GenerateService string `json:"generate_service"`
 	InstallService  string `json:"install_service"`
 	CleanUp         string `json:"clean_up"`
+}
+
+type Installer struct {
+	DB *dbase.DB
+}
+
+func New(install *Installer) *Installer {
+	return install
 }
 
 // ok messages
@@ -58,7 +68,7 @@ const (
 	updateExistingAppErr = ""
 )
 
-func (db *DB) GetInstallProgress(key string) (*InstallResponse, error) {
+func (inst *Installer) GetInstallProgress(key string) (*InstallResponse, error) {
 	key = fmt.Sprintf("install-%s", key)
 	data, ok := progress.Get(key)
 	if ok {
@@ -72,12 +82,14 @@ func (db *DB) GetInstallProgress(key string) (*InstallResponse, error) {
 
 }
 
-func (db *DB) InstallApp(body *App) (*InstallResponse, error) {
+func (inst *Installer) InstallApp(body *App) (*InstallResponse, error) {
 	resp := &InstallResponse{}
-	app, err := db.installApp(body)
+	app, err := inst.installApp(body)
 	if err != nil {
+		resp.InstallLog = app.InstallLog
+		resp.Message = fmt.Sprintf("install fail! %s", body.AppName)
 		resp.Error = err.Error()
-		return app, err
+		return resp, err
 	}
 	resp.InstallLog = app.InstallLog
 	resp.Error = "no errors"
@@ -85,15 +97,22 @@ func (db *DB) InstallApp(body *App) (*InstallResponse, error) {
 	return resp, err
 }
 
-func (db *DB) installApp(body *App) (*InstallResponse, error) {
+func (inst *Installer) installApp(body *App) (*InstallResponse, error) {
 	resp := &InstallResponse{}
 	progressKey := fmt.Sprintf("install-%s", body.AppName)
 	SetProgress(progressKey, resp)
-	appStore, err := db.GetAppStoreByName(body.AppName)
+	appStore, err := inst.DB.GetAppStoreByName(body.AppName)
 	if err != nil {
 		resp.InstallLog.GetAppFromStore = err.Error()
 		return resp, err
 	}
+
+	if body.Version == "" {
+		resp.InstallLog.MakeDownload = "app version can not be empty"
+		SetProgress(progressKey, resp)
+		return resp, errors.New("app version can not be empty")
+	}
+
 	resp.InstallLog.GetAppFromStore = selectAppStore
 	installedApp := &apps.App{
 		AppStoreName:     appStore.Name,
@@ -101,25 +120,25 @@ func (db *DB) installApp(body *App) (*InstallResponse, error) {
 		InstalledVersion: body.Version,
 	}
 
-	var inst = &apps.Apps{
+	var newApps = &apps.Apps{
 		Token:   body.Token,
 		Perm:    apps.Permission,
 		Version: body.Version,
 		App:     appStore,
 	}
-	newApp, err := apps.New(inst)
+	newApp, err := apps.New(newApps)
 	SetProgress(progressKey, resp)
 	if err != nil {
 		log.Errorln("new app: failed to init a new app", err)
 		return resp, err
 	}
-	if err = inst.MakeDownloadDir(); err != nil {
+	if err = newApps.MakeDownloadDir(); err != nil {
 		resp.InstallLog.MakeDownload = makeDownloadErr
 		SetProgress(progressKey, resp)
 		return resp, err
 	}
 	resp.InstallLog.MakeDownload = makeDownload
-	download, err := newApp.GitDownload(inst.App.DownloadPath)
+	download, err := newApp.GitDownload(newApps.App.DownloadPath)
 	SetProgress(progressKey, resp)
 	if err != nil {
 		log.Errorf("git: download error %s \n", err.Error())
@@ -130,14 +149,14 @@ func (db *DB) installApp(body *App) (*InstallResponse, error) {
 	assetTag := download.RepositoryRelease.GetTagName()
 	resp.InstallLog.GitDownload = fmt.Sprintf("installed version: %s", assetTag)
 	SetProgress(progressKey, resp)
-	if err = inst.MakeInstallDir(); err != nil {
+	if err = newApps.MakeInstallDir(); err != nil {
 		resp.InstallLog.MakeInstallDir = err.Error()
 		SetProgress(progressKey, resp)
 		return resp, err
 	}
 	resp.InstallLog.MakeInstallDir = makeInstallDir
 	SetProgress(progressKey, resp)
-	if err = inst.UnpackBuild(); err != nil {
+	if err = newApps.UnpackBuild(); err != nil {
 		resp.InstallLog.UnpackBuild = err.Error()
 		SetProgress(progressKey, resp)
 		return resp, err
@@ -161,7 +180,7 @@ func (db *DB) installApp(body *App) (*InstallResponse, error) {
 	}
 	resp.InstallLog.InstallService = installService
 	SetProgress(progressKey, resp)
-	if err = inst.CleanUp(); err != nil {
+	if err = newApps.CleanUp(); err != nil {
 		resp.InstallLog.CleanUp = err.Error()
 		SetProgress(progressKey, resp)
 		return resp, err
@@ -169,7 +188,7 @@ func (db *DB) installApp(body *App) (*InstallResponse, error) {
 	resp.InstallLog.CleanUp = cleanUp
 	installedApp.InstalledVersion = assetTag
 	SetProgress(progressKey, resp)
-	app, existingApp, err := db.AddApp(installedApp)
+	app, existingApp, err := inst.DB.AddApp(installedApp)
 	if err != nil {
 		resp.InstallLog.AppInstall = err.Error()
 		SetProgress(progressKey, resp)
@@ -177,7 +196,7 @@ func (db *DB) installApp(body *App) (*InstallResponse, error) {
 	}
 	if existingApp { // if it was existing app update the version
 		app.InstalledVersion = assetTag
-		_, err := db.UpdateApp(app.UUID, app)
+		_, err := inst.DB.UpdateApp(app.UUID, app)
 		SetProgress(progressKey, resp)
 		if err != nil {
 			resp.InstallLog.AppInstall = fmt.Sprintf("an existing app was installed error:%s", err.Error())
@@ -194,3 +213,19 @@ func (db *DB) installApp(body *App) (*InstallResponse, error) {
 	return resp, err
 
 }
+
+//func (inst *Installer) InstallApp(body *App) (*InstallResponse, error) {
+//	resp := &InstallResponse{}
+//	//progressKey := fmt.Sprintf("install-%s", body.AppName)
+//	//SetProgress(progressKey, resp)
+//	appStore, err := inst.DB.GetAppStoreByName(body.AppName)
+//	fmt.Println(11111)
+//	if err != nil {
+//		resp.InstallLog.GetAppFromStore = err.Error()
+//		return resp, err
+//	}
+//	fmt.Println(11111)
+//	fmt.Println(appStore)
+//	return nil, err
+//
+//}

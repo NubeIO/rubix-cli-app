@@ -1,14 +1,15 @@
 package controller
 
 import (
-	dbase "github.com/NubeIO/rubix-cli-app/database"
+	"github.com/NubeIO/rubix-cli-app/service/apps/installer"
 	"github.com/gin-gonic/gin"
 )
 
 func (inst *Controller) InstallApp(c *gin.Context) {
-	var m *dbase.App
+
+	var m *installer.App
 	err = c.ShouldBindJSON(&m)
-	data, err := inst.DB.InstallApp(m)
+	data, err := inst.Installer.InstallApp(m)
 	if err != nil {
 		reposeHandler(data, err, c)
 		return
@@ -17,9 +18,9 @@ func (inst *Controller) InstallApp(c *gin.Context) {
 }
 
 func (inst *Controller) GetInstallProgress(c *gin.Context) {
-	var m *dbase.App
+	var m *installer.App
 	err = c.ShouldBindJSON(&m)
-	data, err := inst.DB.GetInstallProgress(m.AppName)
+	data, err := inst.Installer.GetInstallProgress(m.AppName)
 	if err != nil {
 		reposeHandler(data, err, c)
 		return

@@ -1,4 +1,4 @@
-package dbase
+package installer
 
 import (
 	"fmt"
@@ -23,7 +23,7 @@ type UnInstallResponse struct {
 	UnInstallLog unInstallLog `json:"log"`
 }
 
-func (db *DB) GetUnInstallProgress(key string) (*UnInstallResponse, error) {
+func (inst *Installer) GetUnInstallProgress(key string) (*UnInstallResponse, error) {
 	key = fmt.Sprintf("uninstall-%s", key)
 	data, ok := progress.Get(key)
 	if ok {
@@ -36,9 +36,9 @@ func (db *DB) GetUnInstallProgress(key string) (*UnInstallResponse, error) {
 	return resp, nil
 }
 
-func (db *DB) UnInstallApp(body *App) (*UnInstallResponse, error) {
+func (inst *Installer) UnInstallApp(body *App) (*UnInstallResponse, error) {
 	resp := &UnInstallResponse{}
-	remove, err := db.unInstallApp(body)
+	remove, err := inst.unInstallApp(body)
 	if err != nil {
 		resp.Error = err.Error()
 	}
@@ -52,13 +52,13 @@ func (db *DB) UnInstallApp(body *App) (*UnInstallResponse, error) {
 	return resp, err
 }
 
-func (db *DB) unInstallApp(body *App) (*UnInstallResponse, error) {
+func (inst *Installer) unInstallApp(body *App) (*UnInstallResponse, error) {
 	resp := &UnInstallResponse{
 		Message: "uninstall process has started",
 	}
 	progressKey := fmt.Sprintf("uninstall-%s", body.AppName)
 	SetProgress(progressKey, resp)
-	getApp, err := db.GetAppByName(body.AppName)
+	getApp, err := inst.DB.GetAppByName(body.AppName)
 	if err != nil {
 		resp.UnInstallLog.GetApp = "failed to get app, but will still try to uninstall"
 	} else {
@@ -68,7 +68,7 @@ func (db *DB) unInstallApp(body *App) (*UnInstallResponse, error) {
 	if getApp != nil {
 		appStoreName = getApp.AppStoreName
 	}
-	appStore, err := db.GetAppStoreByName(appStoreName)
+	appStore, err := inst.DB.GetAppStoreByName(appStoreName)
 	SetProgress(progressKey, resp)
 	if err != nil {
 		resp.UnInstallLog.GetAppFromStore = "failed to get service name from app store so exit"
@@ -77,13 +77,13 @@ func (db *DB) unInstallApp(body *App) (*UnInstallResponse, error) {
 	}
 	resp.UnInstallLog.GetAppFromStore = selectAppStore
 
-	var inst = &apps.Apps{
+	var newApps = &apps.Apps{
 		Token:   body.Token,
 		Perm:    apps.Permission,
 		Version: body.Version,
 		App:     appStore,
 	}
-	app, err := apps.New(inst)
+	app, err := apps.New(newApps)
 	if err != nil {
 		log.Errorln("new app: failed to init a new app", err)
 		resp.UnInstallLog.InitApp = "new app: failed to init a new app"
@@ -107,7 +107,7 @@ func (db *DB) unInstallApp(body *App) (*UnInstallResponse, error) {
 	if getApp != nil {
 		resp.UnInstallLog.VersionRemoved = getApp.InstalledVersion
 		SetProgress(progressKey, resp)
-		_, err = db.DeleteApp(getApp.UUID)
+		_, err = inst.DB.DeleteApp(getApp.UUID)
 		if err != nil {
 			resp.UnInstallLog.DeleteFromDB = "failed to delete the app from the db"
 			SetProgress(progressKey, resp)

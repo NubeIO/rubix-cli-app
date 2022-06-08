@@ -2,8 +2,8 @@ package client
 
 import (
 	"fmt"
-	dbase "github.com/NubeIO/rubix-cli-app/database"
 	"github.com/NubeIO/rubix-cli-app/service/apps"
+	"github.com/NubeIO/rubix-cli-app/service/apps/installer"
 )
 
 type AppsResp struct {
@@ -27,14 +27,14 @@ func (inst *Client) GetApps() (data []apps.App, response *Response) {
 	return *resp.Result().(*[]apps.App), response.buildResponse(resp, err)
 }
 
-func (inst *Client) InstallApp(body *dbase.App) (data *dbase.InstallResponse, response *Response) {
+func (inst *Client) InstallApp(body *installer.App) (data *installer.InstallResponse, response *Response) {
 	path := fmt.Sprintf(Paths.Apps.Path)
 	response = &Response{}
 	resp, err := inst.Rest.R().
 		SetBody(body).
-		SetResult(&dbase.InstallResponse{}).
+		SetResult(&installer.InstallResponse{}).
 		Post(path)
-	return resp.Result().(*dbase.InstallResponse), response.buildResponse(resp, err)
+	return resp.Result().(*installer.InstallResponse), response.buildResponse(resp, err)
 }
 
 func (inst *Client) GetApp(uuid string) (data *AppResp, response *Response) {

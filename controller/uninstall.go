@@ -1,14 +1,14 @@
 package controller
 
 import (
-	dbase "github.com/NubeIO/rubix-cli-app/database"
+	"github.com/NubeIO/rubix-cli-app/service/apps/installer"
 	"github.com/gin-gonic/gin"
 )
 
 func (inst *Controller) UnInstallApp(c *gin.Context) {
-	var m *dbase.App
+	var m *installer.App
 	err = c.ShouldBindJSON(&m)
-	data, err := inst.DB.UnInstallApp(m)
+	data, err := inst.Installer.UnInstallApp(m)
 	if err != nil {
 		reposeHandler(data, err, c)
 		return
@@ -17,9 +17,9 @@ func (inst *Controller) UnInstallApp(c *gin.Context) {
 }
 
 func (inst *Controller) GetUnInstallProgress(c *gin.Context) {
-	var m *dbase.App
+	var m *installer.App
 	err = c.ShouldBindJSON(&m)
-	data, err := inst.DB.GetUnInstallProgress(m.AppName)
+	data, err := inst.Installer.GetUnInstallProgress(m.AppName)
 	if err != nil {
 		reposeHandler(data, err, c)
 		return

@@ -39,7 +39,7 @@ func (db *DB) GetAppStoreByName(name string) (*apps.Store, error) {
 	var m *apps.Store
 	if err := db.DB.Where("name = ? ", name).First(&m).Error; err != nil {
 		logger.Errorf("GetApp error: %v", err)
-		return nil, err
+		return nil, errors.New("no app found in store")
 	}
 	return m, nil
 }

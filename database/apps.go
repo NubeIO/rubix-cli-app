@@ -47,7 +47,7 @@ func (db *DB) GetApp(uuid string) (*apps.App, error) {
 	var m *apps.App
 	if err := db.DB.Where("uuid = ? ", uuid).First(&m).Error; err != nil {
 		logger.Errorf("GetApp error: %v", err)
-		return nil, err
+		return nil, errors.New("no app found")
 	}
 	return m, nil
 }
