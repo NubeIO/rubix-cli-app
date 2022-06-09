@@ -2,8 +2,8 @@ package dbase
 
 import (
 	"errors"
+	"github.com/NubeIO/edge/service/apps"
 	"github.com/NubeIO/lib-store/store"
-	"github.com/NubeIO/rubix-cli-app/service/apps"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )

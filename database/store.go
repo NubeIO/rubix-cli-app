@@ -3,10 +3,10 @@ package dbase
 import (
 	"encoding/json"
 	"errors"
+	"github.com/NubeIO/edge/pkg/logger"
+	"github.com/NubeIO/edge/service/apps"
 	"github.com/NubeIO/lib-command/product"
 	"github.com/NubeIO/lib-uuid/uuid"
-	"github.com/NubeIO/rubix-cli-app/pkg/logger"
-	"github.com/NubeIO/rubix-cli-app/service/apps"
 )
 
 func (db *DB) GetAppStores() ([]*apps.Store, error) {

@@ -10,7 +10,7 @@ go build main.go && sudo ./main server
 ```
 
 ## product file (this is for hardware identification)
-https://github.com/NubeIO/rubix-cli-app/blob/master/service/product/funcs.go#L28
+https://github.com/NubeIO/edge/blob/master/service/product/funcs.go#L28
 
 `sudo nano /data/product.json`
 ```

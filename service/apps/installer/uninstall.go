@@ -2,8 +2,8 @@ package installer
 
 import (
 	"fmt"
+	"github.com/NubeIO/edge/service/apps"
 	"github.com/NubeIO/lib-systemctl-go/ctl"
-	"github.com/NubeIO/rubix-cli-app/service/apps"
 	log "github.com/sirupsen/logrus"
 )
 

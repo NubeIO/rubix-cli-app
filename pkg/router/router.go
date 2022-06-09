@@ -2,12 +2,12 @@ package router
 
 import (
 	"fmt"
-	"github.com/NubeIO/rubix-cli-app/controller"
-	dbase "github.com/NubeIO/rubix-cli-app/database"
-	dbhandler "github.com/NubeIO/rubix-cli-app/pkg/handler"
-	"github.com/NubeIO/rubix-cli-app/pkg/logger"
-	"github.com/NubeIO/rubix-cli-app/service/apps/installer"
-	"github.com/NubeIO/rubix-cli-app/service/auth"
+	"github.com/NubeIO/edge/controller"
+	dbase "github.com/NubeIO/edge/database"
+	dbhandler "github.com/NubeIO/edge/pkg/handler"
+	"github.com/NubeIO/edge/pkg/logger"
+	"github.com/NubeIO/edge/service/apps/installer"
+	"github.com/NubeIO/edge/service/auth"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"

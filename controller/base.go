@@ -2,9 +2,9 @@ package controller
 
 import (
 	"encoding/json"
+	dbase "github.com/NubeIO/edge/database"
+	"github.com/NubeIO/edge/service/apps/installer"
 	fileutils "github.com/NubeIO/lib-dirs/dirs"
-	dbase "github.com/NubeIO/rubix-cli-app/database"
-	"github.com/NubeIO/rubix-cli-app/service/apps/installer"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/olahol/melody.v1"
 )

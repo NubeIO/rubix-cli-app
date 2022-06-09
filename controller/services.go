@@ -1,7 +1,7 @@
 package controller
 
 import (
-	dbase "github.com/NubeIO/rubix-cli-app/database"
+	dbase "github.com/NubeIO/edge/database"
 	"github.com/gin-gonic/gin"
 )
 

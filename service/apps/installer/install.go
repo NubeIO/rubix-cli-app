@@ -3,8 +3,8 @@ package installer
 import (
 	"errors"
 	"fmt"
-	dbase "github.com/NubeIO/rubix-cli-app/database"
-	"github.com/NubeIO/rubix-cli-app/service/apps"
+	dbase "github.com/NubeIO/edge/database"
+	"github.com/NubeIO/edge/service/apps"
 	log "github.com/sirupsen/logrus"
 )
 

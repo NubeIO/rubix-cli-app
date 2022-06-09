@@ -2,11 +2,11 @@ package cmd
 
 import (
 	"encoding/json"
-	dbase "github.com/NubeIO/rubix-cli-app/database"
-	"github.com/NubeIO/rubix-cli-app/pkg/config"
-	"github.com/NubeIO/rubix-cli-app/pkg/database"
-	pprint "github.com/NubeIO/rubix-cli-app/pkg/helpers/print"
-	"github.com/NubeIO/rubix-cli-app/service/apps"
+	dbase "github.com/NubeIO/edge/database"
+	"github.com/NubeIO/edge/pkg/config"
+	"github.com/NubeIO/edge/pkg/database"
+	pprint "github.com/NubeIO/edge/pkg/helpers/print"
+	"github.com/NubeIO/edge/service/apps"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )

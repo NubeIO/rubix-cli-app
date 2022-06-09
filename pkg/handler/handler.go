@@ -1,7 +1,7 @@
 package dbhandler
 
 import (
-	dbase "github.com/NubeIO/rubix-cli-app/database"
+	dbase "github.com/NubeIO/edge/database"
 )
 
 var db *dbase.DB

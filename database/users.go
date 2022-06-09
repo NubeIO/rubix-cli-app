@@ -1,9 +1,9 @@
 package dbase
 
 import (
+	"github.com/NubeIO/edge/pkg/logger"
+	"github.com/NubeIO/edge/pkg/model"
 	"github.com/NubeIO/lib-uuid/uuid"
-	"github.com/NubeIO/rubix-cli-app/pkg/logger"
-	"github.com/NubeIO/rubix-cli-app/pkg/model"
 )
 
 func (db *DB) GetUser(uuid string) (*model.User, error) {

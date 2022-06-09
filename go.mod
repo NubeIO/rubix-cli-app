@@ -1,4 +1,4 @@
-module github.com/NubeIO/rubix-cli-app
+module github.com/NubeIO/edge
 
 //replace github.com/NubeIO/lib-dirs => /home/user/code/go/nube/lib/lib-dirs
 

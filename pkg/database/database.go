@@ -8,8 +8,8 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
-	"github.com/NubeIO/rubix-cli-app/pkg/model"
-	"github.com/NubeIO/rubix-cli-app/service/apps"
+	"github.com/NubeIO/edge/pkg/model"
+	"github.com/NubeIO/edge/service/apps"
 	"io"
 	"os"
 	"os/user"

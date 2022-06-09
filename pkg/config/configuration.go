@@ -5,7 +5,7 @@ import (
 	fileutils "github.com/NubeIO/lib-dirs/dirs"
 	"github.com/spf13/viper"
 
-	"github.com/NubeIO/rubix-cli-app/pkg/logger"
+	"github.com/NubeIO/edge/pkg/logger"
 )
 
 var Config *Configuration

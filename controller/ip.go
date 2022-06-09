@@ -1,10 +1,10 @@
 package controller
 
 import (
+	"github.com/NubeIO/edge/controller/response"
+	"github.com/NubeIO/edge/pkg/model"
+	"github.com/NubeIO/edge/service/system"
 	"github.com/NubeIO/lib-networking/networking"
-	"github.com/NubeIO/rubix-cli-app/controller/response"
-	"github.com/NubeIO/rubix-cli-app/pkg/model"
-	"github.com/NubeIO/rubix-cli-app/service/system"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
