@@ -1,10 +1,12 @@
-# rubix-cli-app
+# rubix-edge
 
 ## install
 
+need to run as sudo to install apps
+
 ```
 go mod tidy
-go run ./cmd/main.go server
+go build main.go && sudo ./main server
 ```
 
 ## product file (this is for hardware identification)
