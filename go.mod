@@ -1,13 +1,6 @@
 module github.com/NubeIO/rubix-cli-app
 
-//replace github.com/NubeIO/lib-systemctl-go => /home/aidan/code/go/nube/lib/lib-systemctl-go
-//replace github.com/NubeIO/lib-dirs => /home/aidan/code/go/nube/lib/lib-dirs
-//replace github.com/NubeIO/git => /home/aidan/code/go/nube/lib/git
-//replace github.com/NubeIO/lib-command => /home/aidan/code/go/nube/lib/lib-command
-
-//replace github.com/NubeIO/lib-dhcpd => /home/aidan/code/go/nube/lib/lib-dhcpd
-//replace github.com/NubeIO/lib-networking => /home/aidan/code/go/nube/lib/lib-networking
-//replace github.com/NubeIO/lib-schema => /home/aidan/code/go/nube/lib/lib-schema
+//replace github.com/NubeIO/lib-dirs => /home/user/code/go/nube/lib/lib-dirs
 
 go 1.18
 
