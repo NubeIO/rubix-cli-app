@@ -27,14 +27,20 @@ func (inst *Client) GetApps() (data []apps.App, response *Response) {
 	return *resp.Result().(*[]apps.App), response.buildResponse(resp, err)
 }
 
-func (inst *Client) InstallApp(body *installer.App) (data *installer.InstallResponse, response *Response) {
+func (inst *Client) InstallApp(body *installer.App) (*installer.InstallResponse, *Response) {
 	path := fmt.Sprintf(Paths.Apps.Path)
-	response = &Response{}
-	resp, err := inst.Rest.R().
+	response := &Response{}
+	resp, _ := inst.Rest.R().
 		SetBody(body).
 		SetResult(&installer.InstallResponse{}).
+		SetError(&installer.InstallResponse{}).
 		Post(path)
-	return resp.Result().(*installer.InstallResponse), response.buildResponse(resp, err)
+	response.StatusCode = resp.StatusCode()
+	if resp.IsSuccess() {
+		response.Message = resp.Result().(*installer.InstallResponse)
+		return resp.Result().(*installer.InstallResponse), response
+	}
+	return resp.Error().(*installer.InstallResponse), response
 }
 
 func (inst *Client) GetApp(uuid string) (data *AppResp, response *Response) {

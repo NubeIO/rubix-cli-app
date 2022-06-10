@@ -1,4 +1,4 @@
-package response
+package httpresp
 
 var MsgFlags = map[int]string{
 	Success:        "Ok",

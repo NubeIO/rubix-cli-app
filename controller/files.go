@@ -3,7 +3,8 @@ package controller
 import (
 	"errors"
 	"fmt"
-	"github.com/NubeIO/edge/controller/response"
+	"github.com/NubeIO/edge/controller/httpresp"
+
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
@@ -22,15 +23,15 @@ func (inst *Controller) UploadFile(c *gin.Context) {
 	localSystemFilePath := ConcatPath(c.Param("filePath"))
 	file, err := c.FormFile("file")
 	if err != nil || file == nil {
-		response.ReposeHandler(c, http.StatusOK, response.Error, err)
+		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, err)
 		return
 	}
 	fileFull := fmt.Sprintf("%s/%s", localSystemFilePath, filepath.Base(file.Filename))
 	if err := c.SaveUploadedFile(file, fileFull); err != nil {
-		response.ReposeHandler(c, http.StatusOK, response.Error, err)
+		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, err)
 		return
 	}
-	response.ReposeHandler(c, http.StatusOK, response.Success, gin.H{"uploaded": fileFull})
+	httpresp.ReposeHandler(c, http.StatusOK, httpresp.Success, gin.H{"uploaded": fileFull})
 }
 
 /*
@@ -80,32 +81,32 @@ func (inst *Controller) delete(c *gin.Context, deleteDir, forceWipeOnDeleteDir b
 
 	if !deleteDir { //delete  a file
 		if !fileUtils.FileExists(localSystemFilePath) {
-			response.ReposeHandler(c, http.StatusOK, response.Error, err)
+			httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, err)
 			return
 		}
-		response.ReposeHandler(c, http.StatusOK, response.Success, gin.H{"path": localSystemFilePath})
+		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Success, gin.H{"path": localSystemFilePath})
 		return
 	}
 
 	if deleteDir { //delete  a dir
 		if !fileUtils.DirExists(localSystemFilePath) {
-			response.ReposeHandler(c, http.StatusOK, response.Error, err)
+			httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, err)
 			return
 		}
 		if forceWipeOnDeleteDir {
 			err := fileUtils.RmRF(localSystemFilePath)
 			if err != nil {
-				response.ReposeHandler(c, http.StatusOK, response.Error, err)
+				httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, err)
 				return
 			}
 		} else {
 			err := fileUtils.Rm(localSystemFilePath)
 			if err != nil {
-				response.ReposeHandler(c, http.StatusOK, response.Error, err)
+				httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, err)
 				return
 			}
 		}
-		response.ReposeHandler(c, http.StatusOK, response.Success, gin.H{"path": localSystemFilePath})
+		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Success, gin.H{"path": localSystemFilePath})
 		return
 	}
 }
@@ -122,9 +123,9 @@ func (inst *Controller) readFiles(c *gin.Context, downloadFile bool) {
 	outFileName := fmt.Sprintf("attachment; %s", filepath.Base(fileName))
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			response.ReposeHandler(c, http.StatusOK, response.StatusNotFound, err)
+			httpresp.ReposeHandler(c, http.StatusOK, httpresp.StatusNotFound, err)
 		} else {
-			response.ReposeHandler(c, http.StatusOK, response.Error, err)
+			httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, err)
 		}
 		return
 	}
@@ -132,7 +133,7 @@ func (inst *Controller) readFiles(c *gin.Context, downloadFile bool) {
 	if fileInfo.IsDir() {
 		files, err := ioutil.ReadDir(localSystemFilePath)
 		if err != nil {
-			response.ReposeHandler(c, http.StatusOK, response.Error, err)
+			httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, err)
 			return
 		}
 		for _, file := range files {
@@ -142,12 +143,12 @@ func (inst *Controller) readFiles(c *gin.Context, downloadFile bool) {
 		if downloadFile {
 			byteFile, err := ioutil.ReadFile(localSystemFilePath)
 			if err != nil {
-				response.ReposeHandler(c, http.StatusOK, response.Error, err)
+				httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, err)
 				return
 			}
 			c.Header("Content-Disposition", outFileName)
 			c.Data(http.StatusOK, "application/octet-stream", byteFile)
 		}
 	}
-	response.ReposeHandler(c, http.StatusOK, response.Success, gin.H{"path": dirContent})
+	httpresp.ReposeHandler(c, http.StatusOK, httpresp.Success, gin.H{"path": dirContent})
 }

@@ -1,19 +1,16 @@
 package controller
 
 import (
-	"github.com/NubeIO/edge/controller/response"
-	"github.com/NubeIO/edge/pkg/model"
 	"github.com/NubeIO/edge/service/system"
 	"github.com/NubeIO/lib-networking/networking"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 var nets = networking.New()
 
 func (inst *Controller) GetIpSchema(c *gin.Context) {
-	data := model.GetIpSchema()
-	response.ReposeHandler(c, http.StatusOK, response.Success, data)
+	//data := model.GetIpSchema()
+	//httpresp.ReposeHandler(c, http.StatusOK, httpresp.Success, data)
 }
 
 func (inst *Controller) Networking(c *gin.Context) {

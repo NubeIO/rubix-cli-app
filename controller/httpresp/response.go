@@ -1,4 +1,4 @@
-package response
+package httpresp
 
 import (
 	"encoding/json"
@@ -12,7 +12,7 @@ type Response struct {
 	Data    interface{} `json:"data"`
 }
 
-// ReposeHandler response request
+// ReposeHandler httpresp request
 func ReposeHandler(c *gin.Context, httpCode, responseCode int, data interface{}) {
 	response := Response{
 		Code:    responseCode,

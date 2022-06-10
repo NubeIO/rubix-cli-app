@@ -64,7 +64,7 @@ func (inst *Apps) Mass(mass *Mass) ([]massResponse, error) {
 	//		Message: actionResp.Message,
 	//		Err:     actionResp.Err,
 	//	}
-	//	response = append(response, res)
+	//	httpresp = append(httpresp, res)
 	//}
 	return response, nil
 }
