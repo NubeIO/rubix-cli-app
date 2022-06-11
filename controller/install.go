@@ -11,10 +11,10 @@ func (inst *Controller) InstallApp(c *gin.Context) {
 	err = c.ShouldBindJSON(&m)
 	data, err := inst.Installer.InstallApp(m)
 	if err != nil {
-		reposeHandler(data, err, c)
+		reposeWithCode(404, data, err, c)
 		return
 	}
-	reposeHandler(data, err, c)
+	reposeWithCode(202, data, err, c)
 }
 
 func (inst *Controller) GetInstallProgress(c *gin.Context) {
@@ -22,8 +22,8 @@ func (inst *Controller) GetInstallProgress(c *gin.Context) {
 	err = c.ShouldBindJSON(&m)
 	data, err := inst.Installer.GetInstallProgress(m.AppName)
 	if err != nil {
-		reposeHandler(data, err, c)
+		reposeWithCode(404, data, err, c)
 		return
 	}
-	reposeHandler(data, err, c)
+	reposeWithCode(202, data, err, c)
 }
