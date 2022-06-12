@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/NubeIO/edge/controller/httpresp"
+	fileutils "github.com/NubeIO/lib-dirs/dirs"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
@@ -16,21 +17,28 @@ const dirPath = "/home/aidan/testing/" //TODO add in config
 
 /*
 UploadFile
-//curl -X POST http://localhost:8090/api/files/upload/code/go   -F "file=@/home/user/Downloads/bios-master.zip"   -H "Content-Type: multipart/form-data"
+// curl -X POST http://localhost:1661/api/files/upload?destination=/home/user   -F "file=@/home/user/Downloads/bios-master.zip"   -H "Content-Type: multipart/form-data"
 */
 func (inst *Controller) UploadFile(c *gin.Context) {
-	localSystemFilePath := concatPath(c.Param("filePath"))
+	destination := c.Query("destination")
 	file, err := c.FormFile("file")
 	if err != nil || file == nil {
 		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, err)
 		return
 	}
-	fileFull := fmt.Sprintf("%s/%s", localSystemFilePath, filepath.Base(file.Filename))
+	fileFull := fmt.Sprintf("%s/%s", destination, filepath.Base(file.Filename))
 	if err := c.SaveUploadedFile(file, fileFull); err != nil {
 		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, err)
 		return
 	}
-	httpresp.ReposeHandler(c, http.StatusOK, httpresp.Success, gin.H{"uploaded": fileFull})
+	size, err := fileutils.GetFileSize(fileFull)
+	if err != nil {
+		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, err)
+	}
+	httpresp.ReposeHandler(c, http.StatusOK, httpresp.Success, gin.H{
+		"file":        file.Filename,
+		"destination": destination,
+		"size":        size})
 }
 
 /*

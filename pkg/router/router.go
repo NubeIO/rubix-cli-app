@@ -159,7 +159,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 
 	files := admin.Group("/files")
 	{
-		files.POST("/upload/*filePath", api.UploadFile)
+		files.POST("/upload", api.UploadFile)
 		files.DELETE("/delete/*filePath", api.DeleteFile)
 		files.POST("/download/*filePath", api.DownloadFile)
 
