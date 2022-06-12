@@ -17,8 +17,8 @@ type Store struct {
 	Name                    string         `json:"name"  gorm:"type:varchar(255);unique;not null"`
 	AllowableProducts       datatypes.JSON `json:"allowable_products"` // All RubixCompute RubixIO
 	Port                    int            `json:"port"`
-	AppTypeName             string         `json:"app_type_name"`                                          //go, node
-	AppType                 Type           `json:"-"`                                                      //go, node
+	AppTypeName             string         `json:"app_type_name"`                                          // go, node
+	AppType                 Type           `json:"-"`                                                      // go, node
 	Repo                    string         `json:"repo"  gorm:"type:varchar(255);unique;not null"`         // wires-build
 	ServiceName             string         `json:"service_name"  gorm:"type:varchar(255);unique;not null"` // nubeio-rubix-wires
 	RubixRootPath           string         `json:"rubix_root_path"`                                        // /data

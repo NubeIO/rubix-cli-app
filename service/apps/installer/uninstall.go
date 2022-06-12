@@ -75,7 +75,7 @@ func (inst *Installer) unInstallApp(body *App) (*UnInstallResponse, error) {
 		SetProgress(progressKey, resp)
 		return resp, err
 	}
-	resp.UnInstallLog.GetAppFromStore = selectAppStore
+	resp.UnInstallLog.GetAppFromStore = ok
 
 	var newApps = &apps.Apps{
 		Token:   body.Token,

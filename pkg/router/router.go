@@ -162,6 +162,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 		files.POST("/upload/*filePath", api.UploadFile)
 		files.DELETE("/delete/*filePath", api.DeleteFile)
 		files.POST("/download/*filePath", api.DownloadFile)
+
 	}
 
 	dirs := admin.Group("/dirs")
@@ -169,6 +170,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 		dirs.GET("/*filePath", api.ReadDirs)
 		dirs.DELETE("/delete/*filePath", api.DeleteDir)
 		dirs.DELETE("/force/*filePath", api.DeleteDirForce)
+		dirs.POST("/zip/unzip", api.Unzip)
 	}
 	return r
 }

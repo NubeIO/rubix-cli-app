@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/NubeIO/edge/controller/httpresp"
-
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
@@ -20,7 +19,7 @@ UploadFile
 //curl -X POST http://localhost:8090/api/files/upload/code/go   -F "file=@/home/user/Downloads/bios-master.zip"   -H "Content-Type: multipart/form-data"
 */
 func (inst *Controller) UploadFile(c *gin.Context) {
-	localSystemFilePath := ConcatPath(c.Param("filePath"))
+	localSystemFilePath := concatPath(c.Param("filePath"))
 	file, err := c.FormFile("file")
 	if err != nil || file == nil {
 		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, err)
@@ -70,14 +69,14 @@ func (inst *Controller) DeleteDir(c *gin.Context) {
 
 /*
 DeleteDirForce
-curl -X DELETE http://localhost:8090/api/files/delete/<pathAndFile>
+curl -X DELETE http://localhost:8090/api/files/force/<pathAndFile>
 */
 func (inst *Controller) DeleteDirForce(c *gin.Context) {
 	inst.delete(c, true, true)
 }
 
 func (inst *Controller) delete(c *gin.Context, deleteDir, forceWipeOnDeleteDir bool) {
-	localSystemFilePath := ConcatPath(c.Param("filePath"))
+	localSystemFilePath := concatPath(c.Param("filePath"))
 
 	if !deleteDir { //delete  a file
 		if !fileUtils.FileExists(localSystemFilePath) {
@@ -111,13 +110,13 @@ func (inst *Controller) delete(c *gin.Context, deleteDir, forceWipeOnDeleteDir b
 	}
 }
 
-func ConcatPath(localSystemFilePath string) string {
+func concatPath(localSystemFilePath string) string {
 	localSystemFilePath = path.Join(filepath.Dir(dirPath), localSystemFilePath)
 	return localSystemFilePath
 }
 
 func (inst *Controller) readFiles(c *gin.Context, downloadFile bool) {
-	localSystemFilePath := ConcatPath(c.Param("filePath")) // /api/files/*filePath
+	localSystemFilePath := concatPath(c.Param("filePath")) // /api/files/*filePath
 	fileInfo, err := os.Stat(localSystemFilePath)
 	fileName, _ := filepath.Abs(localSystemFilePath)
 	outFileName := fmt.Sprintf("attachment; %s", filepath.Base(fileName))

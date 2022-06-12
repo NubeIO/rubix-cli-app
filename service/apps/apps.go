@@ -9,7 +9,7 @@ var err error
 
 type Apps struct {
 	Token   string `json:"token"`   // git token
-	Version string `json:"version"` //version to install
+	Version string `json:"version"` // version to install
 	Perm    int
 	App     *Store
 }

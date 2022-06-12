@@ -17,12 +17,6 @@ type Controller struct {
 
 var fileUtils = fileutils.New()
 
-type WsMsg struct {
-	Topic   string      `json:"topic"`
-	Message interface{} `json:"message"`
-	IsError bool        `json:"is_error"`
-}
-
 var err error
 
 func bodyAsJSON(c *gin.Context) (interface{}, error) {

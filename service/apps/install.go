@@ -27,12 +27,10 @@ import (
 var dirs = fileutils.New()
 
 func (inst *Apps) MakeDownloadDir() error {
-
 	if inst.App.DownloadPath == "/tmp" {
 		log.Infof("make download dir: was tmp dir so skip \n")
 		return nil
 	}
-
 	if !dirs.DirExists(inst.App.DownloadPath) {
 		log.Errorf("no dir exists %s \n", inst.App.DownloadPath)
 		err := dirs.MkdirAll(inst.App.DownloadPath, os.FileMode(inst.Perm))
@@ -66,31 +64,74 @@ func (inst *Apps) MakeInstallDir() error {
 			return err
 		}
 	}
-	log.Infof("install dir: existing install dir existed:%s \n", installPath)
+	log.Infof("make-install-dir: existing install dir existed:%s \n", installPath)
 	return nil
 }
 
-func (inst *Apps) UnpackBuild() error {
+func (inst *Apps) BuildExists(manualAssetZipName string) error {
+	assetZipName := ""
+	if manualAssetZipName != "" {
+		assetZipName = manualAssetZipName
+	} else {
+		assetZipName = inst.App.AssetZipName
+	}
+	if assetZipName == "" {
+		return errors.New("asset zip folder name can not be empty")
+	}
+
 	installPath := inst.App.AppsPath
-	zipFileAndPath := fmt.Sprintf("%s/%s", inst.App.DownloadPath, inst.App.AssetZipName)
+	zipFileAndPath := fmt.Sprintf("%s/%s", inst.App.DownloadPath, assetZipName)
+	exists := fileutils.New().FileExists(zipFileAndPath)
+	fmt.Println(111111, exists)
+	if !exists {
+		log.Errorf("unzip build: the existing downloaded build dose not exist source:%s  dest:%s\n", inst.App.DownloadPath, installPath)
+		return errors.New(fmt.Sprintf("unzip build: the existing downloaded build dose not exist source:%s  dest:%s", inst.App.DownloadPath, installPath))
+	}
+	return nil
+}
+
+func (inst *Apps) UnpackBuild(manualAssetZipName string) error {
+	assetZipName := ""
+	if manualAssetZipName != "" {
+		assetZipName = manualAssetZipName
+	} else {
+		assetZipName = inst.App.AssetZipName
+	}
+	if assetZipName == "" {
+		return errors.New("asset zip folder name can not be empty")
+	}
+
+	installPath := inst.App.AppsPath
+	zipFileAndPath := fmt.Sprintf("%s/%s", inst.App.DownloadPath, assetZipName)
+
 	_, err = dirs.UnZip(zipFileAndPath, installPath, os.FileMode(inst.Perm))
 	if err != nil {
 		log.Errorf("unzip build: failed to unzip source:%s  dest:%s  error:%s\n", inst.App.DownloadPath, installPath, err.Error())
 		return err
 	} else {
-		log.Infof("unzip build: existing install dir existed:%s \n", installPath)
+		log.Infof("unzip build: from:%s \n", zipFileAndPath)
+		log.Infof("unzip build: to:%s \n", installPath)
 	}
 	return nil
 }
 
-func (inst *Apps) CleanUp() error {
-	zipFileAndPath := fmt.Sprintf("%s/%s", inst.App.DownloadPath, inst.App.AssetZipName)
+func (inst *Apps) CleanUp(manualAssetZipName string) error {
+	assetZipName := ""
+	if manualAssetZipName != "" {
+		assetZipName = manualAssetZipName
+	} else {
+		assetZipName = inst.App.AssetZipName
+	}
+	if assetZipName == "" {
+		return errors.New("asset zip folder name can not be empty")
+	}
+	zipFileAndPath := fmt.Sprintf("%s/%s", inst.App.DownloadPath, assetZipName)
 	err = dirs.Rm(zipFileAndPath)
 	if err != nil {
 		log.Errorf("delete zip: failed to unzip source:%s  error:%s\n", inst.App.DownloadPath, err.Error())
 		return err
 	} else {
-		log.Infof("delete zip: ok:%s \n", inst.App.DownloadPath)
+		log.Infof("clean-up delete zip: ok:%s \n", inst.App.DownloadPath)
 	}
 	return nil
 }
@@ -116,6 +157,7 @@ func (inst *Apps) GitDownload(destination string) (*git.DownloadResponse, error)
 		return nil, err
 	}
 	inst.App.AssetZipName = download.AssetName
+	log.Infof("git downloaded full asset name: %s", download.AssetName)
 	return download, err
 }
 
