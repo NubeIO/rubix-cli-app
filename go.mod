@@ -1,6 +1,6 @@
 module github.com/NubeIO/edge
 
-//replace github.com/NubeIO/lib-dirs => /home/user/code/go/nube/lib/lib-dirs
+//replace github.com/NubeIO/lib-dirs => /home/aidan/code/go/nube/lib/lib-dirs
 
 go 1.18
 
@@ -9,7 +9,7 @@ require (
 	github.com/NubeIO/lib-command v0.0.2
 	github.com/NubeIO/lib-date v0.0.1
 	github.com/NubeIO/lib-dhcpd v0.0.1
-	github.com/NubeIO/lib-dirs v0.0.1
+	github.com/NubeIO/lib-dirs v0.0.2
 	github.com/NubeIO/lib-networking v0.0.3
 	github.com/NubeIO/lib-schema v0.0.2
 	github.com/NubeIO/lib-store v0.0.1
@@ -21,7 +21,6 @@ require (
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.1.2
-	github.com/otiai10/copy v1.7.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/viper v1.11.0

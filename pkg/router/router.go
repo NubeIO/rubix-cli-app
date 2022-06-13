@@ -171,12 +171,13 @@ func Setup(db *gorm.DB) *gin.Engine {
 	{
 		dirs.DELETE("/delete/*filePath", api.DeleteDir)
 		dirs.DELETE("/force/*filePath", api.DeleteDirForce)
-		dirs.POST("/move", api.MoveDir)
+		dirs.POST("/move", api.CopyDir)
 
 	}
 	zip := admin.Group("/zip")
 	{
 		zip.POST("/unzip", api.Unzip)
+		zip.POST("/zip", api.ZipDir)
 	}
 	return r
 }

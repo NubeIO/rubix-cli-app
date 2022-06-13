@@ -6,7 +6,6 @@ import (
 	"github.com/NubeIO/edge/controller/httpresp"
 	fileutils "github.com/NubeIO/lib-dirs/dirs"
 	"github.com/gin-gonic/gin"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -109,30 +108,6 @@ func (inst *Controller) RenameFile(c *gin.Context) {
 	})
 }
 
-func MoveFile(sourcePath, destPath string) error {
-	inputFile, err := os.Open(sourcePath)
-	if err != nil {
-		return fmt.Errorf("couldn't open source file: %s", err)
-	}
-	outputFile, err := os.Create(destPath)
-	if err != nil {
-		inputFile.Close()
-		return fmt.Errorf("couldn't open dest file: %s", err)
-	}
-	defer outputFile.Close()
-	_, err = io.Copy(outputFile, inputFile)
-	inputFile.Close()
-	if err != nil {
-		return fmt.Errorf("writing to output file failed: %s", err)
-	}
-	// The copy was successful, so now delete the original file
-	err = os.Remove(sourcePath)
-	if err != nil {
-		return fmt.Errorf("failed removing original file: %s", err)
-	}
-	return nil
-}
-
 func (inst *Controller) MoveFile(c *gin.Context) {
 	existing := c.Query("existing")
 	destination := c.Query("destination")
@@ -146,7 +121,7 @@ func (inst *Controller) MoveFile(c *gin.Context) {
 		return
 	}
 
-	err := MoveFile(existing, destination)
+	err := fileUtils.MoveFile(existing, destination)
 	if err != nil {
 		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, gin.H{
 			"error":       err.Error(),
@@ -162,7 +137,7 @@ func (inst *Controller) MoveFile(c *gin.Context) {
 	})
 }
 
-func (inst *Controller) MoveDir(c *gin.Context) {
+func (inst *Controller) CopyDir(c *gin.Context) {
 	existing := c.Query("existing")
 	destination := c.Query("destination")
 	exists := fileUtils.DirExists(existing)
