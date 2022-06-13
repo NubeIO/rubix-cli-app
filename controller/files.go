@@ -6,20 +6,38 @@ import (
 	"github.com/NubeIO/edge/controller/httpresp"
 	fileutils "github.com/NubeIO/lib-dirs/dirs"
 	"github.com/gin-gonic/gin"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
+	"runtime"
+	"time"
 )
 
-const dirPath = "/home/aidan/testing/" //TODO add in config
+func TimeTrack(start time.Time) (out string) {
+	elapsed := time.Since(start)
+	// Skip this function, and fetch the PC and file for its parent.
+	pc, _, _, _ := runtime.Caller(1)
+	// Retrieve a function object this functions parent.
+	funcObj := runtime.FuncForPC(pc)
+	// Regex to extract just the function name (and not the module path).
+	runtimeFunc := regexp.MustCompile(`^.*\.(.*)$`)
+	name := runtimeFunc.ReplaceAllString(funcObj.Name(), "$1")
+	out = fmt.Sprintf("%s took %s", name, elapsed)
+	return out
+}
+
+const dirPath = "/home/aidan/testing" //TODO add in config
 
 /*
 UploadFile
 // curl -X POST http://localhost:1661/api/files/upload?destination=/home/user   -F "file=@/home/user/Downloads/bios-master.zip"   -H "Content-Type: multipart/form-data"
 */
 func (inst *Controller) UploadFile(c *gin.Context) {
+	now := time.Now()
 	destination := c.Query("destination")
 	file, err := c.FormFile("file")
 	if err != nil || file == nil {
@@ -38,13 +56,15 @@ func (inst *Controller) UploadFile(c *gin.Context) {
 	httpresp.ReposeHandler(c, http.StatusOK, httpresp.Success, gin.H{
 		"file":        file.Filename,
 		"destination": destination,
-		"size":        size})
+		"upload_time": TimeTrack(now),
+		"size":        size.String(),
+	})
 }
 
 /*
 DownloadFile
-curl -X POST http://localhost:8090/api/files/download/<pathAndFile>
-eg curl -X POST http://localhost:8090/api/files/download/code/go/nube/rubix-cli-app/docs/api.md
+curl -X GET http://localhost:1661/api/files/download/<pathAndFile>
+eg curl -X GET http://localhost:1661/api/dirs/Downloads/flow-framework-0.5.4-13ac6506.amd64.zip
 */
 func (inst *Controller) DownloadFile(c *gin.Context) {
 	inst.readFiles(c, true)
@@ -52,16 +72,128 @@ func (inst *Controller) DownloadFile(c *gin.Context) {
 
 /*
 ReadDirs
-curl -X GET http://localhost:8090/api/files/dirs/<path>
+curl -X GET http://localhost:1661/api/files/dirs/<path>
 
 */
 func (inst *Controller) ReadDirs(c *gin.Context) {
 	inst.readFiles(c, false)
 }
 
+// RenameFile ...
+func (inst *Controller) RenameFile(c *gin.Context) {
+	existing := c.Query("existing")
+	newName := c.Query("new")
+	dir, _ := filepath.Split(existing)
+	fileFull := fmt.Sprintf("%s/%s", dir, newName)
+
+	if existing == "" || newName == "" {
+		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, gin.H{
+			"error": "path and file name can not be empty",
+			"path":  existing,
+			"new":   fileFull,
+		})
+		return
+	}
+	if !fileUtils.FileExists(existing) {
+		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, gin.H{
+			"error": "file not found",
+			"path":  existing,
+			"new":   fileFull,
+		})
+		return
+	}
+	err = fileUtils.Rename(existing, fileFull)
+	httpresp.ReposeHandler(c, http.StatusOK, httpresp.Success, gin.H{
+		"path": existing,
+		"new":  fileFull,
+	})
+}
+
+func MoveFile(sourcePath, destPath string) error {
+	inputFile, err := os.Open(sourcePath)
+	if err != nil {
+		return fmt.Errorf("couldn't open source file: %s", err)
+	}
+	outputFile, err := os.Create(destPath)
+	if err != nil {
+		inputFile.Close()
+		return fmt.Errorf("couldn't open dest file: %s", err)
+	}
+	defer outputFile.Close()
+	_, err = io.Copy(outputFile, inputFile)
+	inputFile.Close()
+	if err != nil {
+		return fmt.Errorf("writing to output file failed: %s", err)
+	}
+	// The copy was successful, so now delete the original file
+	err = os.Remove(sourcePath)
+	if err != nil {
+		return fmt.Errorf("failed removing original file: %s", err)
+	}
+	return nil
+}
+
+func (inst *Controller) MoveFile(c *gin.Context) {
+	existing := c.Query("existing")
+	destination := c.Query("destination")
+
+	if existing == "" || destination == "" {
+		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, gin.H{
+			"error":       "existing and existing name can not be empty",
+			"existing":    existing,
+			"destination": destination,
+		})
+		return
+	}
+
+	err := MoveFile(existing, destination)
+	if err != nil {
+		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, gin.H{
+			"error":       err.Error(),
+			"existing":    existing,
+			"destination": destination,
+		})
+		return
+	}
+	httpresp.ReposeHandler(c, http.StatusOK, httpresp.Success, gin.H{
+		"message":     "moved ok",
+		"existing":    existing,
+		"destination": destination,
+	})
+}
+
+func (inst *Controller) MoveDir(c *gin.Context) {
+	existing := c.Query("existing")
+	destination := c.Query("destination")
+	exists := fileUtils.DirExists(existing)
+	if !exists {
+		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, gin.H{
+			"error":       "existing dir not found",
+			"existing":    existing,
+			"destination": destination,
+		})
+		return
+	}
+
+	err := fileUtils.Copy(existing, destination)
+	if err != nil {
+		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, gin.H{
+			"error":       err.Error(),
+			"existing":    existing,
+			"destination": destination,
+		})
+		return
+	}
+	httpresp.ReposeHandler(c, http.StatusOK, httpresp.Success, gin.H{
+		"message":     "moved ok",
+		"existing":    existing,
+		"destination": destination,
+	})
+}
+
 /*
 DeleteFile
-curl -X DELETE http://localhost:8090/api/files/delete/<pathAndFile>
+curl -X DELETE http://localhost:1661/api/files/delete/<pathAndFile>
 */
 func (inst *Controller) DeleteFile(c *gin.Context) {
 	inst.delete(c, false, false)
@@ -69,7 +201,7 @@ func (inst *Controller) DeleteFile(c *gin.Context) {
 
 /*
 DeleteDir
-curl -X DELETE http://localhost:8090/api/files/delete/<pathAndFile>
+curl -X DELETE http://localhost:1661/api/files/delete/<pathAndFile>
 */
 func (inst *Controller) DeleteDir(c *gin.Context) {
 	inst.delete(c, true, false)
@@ -77,7 +209,7 @@ func (inst *Controller) DeleteDir(c *gin.Context) {
 
 /*
 DeleteDirForce
-curl -X DELETE http://localhost:8090/api/files/force/<pathAndFile>
+curl -X DELETE http://localhost:1661/api/files/force/<pathAndFile>
 */
 func (inst *Controller) DeleteDirForce(c *gin.Context) {
 	inst.delete(c, true, true)
@@ -144,6 +276,7 @@ func (inst *Controller) readFiles(c *gin.Context, downloadFile bool) {
 			return
 		}
 		for _, file := range files {
+			fmt.Println(file)
 			dirContent = append(dirContent, file.Name())
 		}
 	} else {
