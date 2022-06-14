@@ -58,8 +58,8 @@ github.com/NubeIO/lib-schema v0.0.2 h1:T1AbNSQpW45U6Q0jv8+ezlhhTyhLaFEo8EhdoOVRM
 github.com/NubeIO/lib-schema v0.0.2/go.mod h1:+XEsOqjtJ/NlVo13p+5nZQK4LDRKkJTB3SxPi6u8vhM=
 github.com/NubeIO/lib-store v0.0.1 h1:7VwFEf70oLnSTDIRckNA2tXELPoxfTkH1rEU5wAkNSw=
 github.com/NubeIO/lib-store v0.0.1/go.mod h1:N+uMx5s5C8clvAKOUaNNLaHmjVSxHrTvcca73d6DNAk=
-github.com/NubeIO/lib-systemctl-go v0.0.4 h1:mbzIo5biOCjD1cisp8AsiIvQClxy9sS1PTlJI7Pi+c4=
-github.com/NubeIO/lib-systemctl-go v0.0.4/go.mod h1:LEQoNVU87sqBc40Kdr2K+aUiqTUH8sVZkRZQBJBjm+w=
+github.com/NubeIO/lib-systemctl-go v0.0.5 h1:Bh0ibU56WR/Em+39J4ygQ7KQEqT2+kSkml4WcHl0hv8=
+github.com/NubeIO/lib-systemctl-go v0.0.5/go.mod h1:gpVy2jcgc8AiCBf3k+sSDwDoxYtdNzd3hEeK3ygJz+c=
 github.com/NubeIO/lib-uuid v0.0.1 h1:qIwb0mNZkrS74JeNhz/61HBvq8+PswRiw78nOj5FUIY=
 github.com/NubeIO/lib-uuid v0.0.1/go.mod h1:lLx2E+mqNntnVsgnA44rEVQXoXzKTcZDYTQdNacJLDg=
 github.com/NubeIO/nubeio-rubix-lib-helpers-go v0.2.7 h1:QKgcOjDkVujyAXWK+OysVFnQKzpZx335vGPG95UNXuI=
