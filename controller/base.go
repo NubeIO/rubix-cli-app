@@ -6,12 +6,10 @@ import (
 	"github.com/NubeIO/edge/service/apps/installer"
 	fileutils "github.com/NubeIO/lib-dirs/dirs"
 	"github.com/gin-gonic/gin"
-	"gopkg.in/olahol/melody.v1"
 )
 
 type Controller struct {
 	DB        *dbase.DB
-	WS        *melody.Melody //web socket
 	Installer *installer.Installer
 }
 

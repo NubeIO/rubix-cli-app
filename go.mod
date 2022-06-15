@@ -10,7 +10,7 @@ require (
 	github.com/NubeIO/lib-date v0.0.1
 	github.com/NubeIO/lib-dhcpd v0.0.1
 	github.com/NubeIO/lib-dirs v0.0.2
-	github.com/NubeIO/lib-networking v0.0.3
+	github.com/NubeIO/lib-networking v0.0.4
 	github.com/NubeIO/lib-schema v0.0.2
 	github.com/NubeIO/lib-store v0.0.1
 	github.com/NubeIO/lib-systemctl-go v0.0.5
@@ -25,7 +25,6 @@ require (
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/viper v1.11.0
 	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4
-	gopkg.in/olahol/melody.v1 v1.0.0-20170518105555-d52139073376
 	gorm.io/datatypes v1.0.6
 	gorm.io/driver/sqlite v1.3.2
 	gorm.io/gorm v1.23.5
@@ -43,7 +42,6 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-github/v32 v32.1.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
-	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect

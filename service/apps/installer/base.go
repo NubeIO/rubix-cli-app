@@ -2,6 +2,8 @@ package installer
 
 import (
 	"github.com/NubeIO/edge/service/apps"
+	"github.com/NubeIO/lib-command/command"
+	"github.com/NubeIO/lib-command/unixcmd"
 	"github.com/NubeIO/lib-store/store"
 	log "github.com/sirupsen/logrus"
 )
@@ -15,6 +17,8 @@ func initAppService(serviceName string) (*apps.Apps, error) {
 	app, err := apps.New(inst)
 	return app, err
 }
+
+var cmd = unixcmd.New(&command.Command{})
 
 var progress = initStore()
 

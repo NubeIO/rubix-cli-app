@@ -82,7 +82,6 @@ func (inst *Apps) BuildExists(manualAssetZipName string) error {
 	installPath := inst.App.AppsPath
 	zipFileAndPath := fmt.Sprintf("%s/%s", inst.App.DownloadPath, assetZipName)
 	exists := fileutils.New().FileExists(zipFileAndPath)
-	fmt.Println(111111, exists)
 	if !exists {
 		log.Errorf("unzip build: the existing downloaded build dose not exist source:%s  dest:%s\n", inst.App.DownloadPath, installPath)
 		return errors.New(fmt.Sprintf("unzip build: the existing downloaded build dose not exist source:%s  dest:%s", inst.App.DownloadPath, installPath))

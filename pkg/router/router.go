@@ -1,7 +1,6 @@
 package router
 
 import (
-	"fmt"
 	"github.com/NubeIO/edge/controller"
 	dbase "github.com/NubeIO/edge/database"
 	dbhandler "github.com/NubeIO/edge/pkg/handler"
@@ -11,20 +10,14 @@ import (
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"gopkg.in/olahol/melody.v1"
 	"gorm.io/gorm"
 	"io"
 	"os"
 	"time"
 )
 
-func initWs() *melody.Melody {
-	return melody.New()
-}
-
 func Setup(db *gorm.DB) *gin.Engine {
 	r := gin.New()
-	var ws = initWs()
 	// Write gin access log to file
 	f, err := os.OpenFile("rubix.access.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
@@ -61,7 +54,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 		DB: appDB,
 	})
 
-	api := controller.Controller{DB: appDB, WS: ws, Installer: install}
+	api := controller.Controller{DB: appDB, Installer: install}
 	identityKey := "uuid"
 
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
@@ -80,20 +73,6 @@ func Setup(db *gorm.DB) *gin.Engine {
 		},
 		TokenLookup: "header: Authorization",
 		TimeFunc:    time.Now,
-	})
-
-	//web socket route
-	r.GET("/ws", func(c *gin.Context) {
-		err := ws.HandleRequest(c.Writer, c.Request)
-		fmt.Println(err)
-		//if err != nil {
-		//	return
-		//}
-	})
-
-	ws.HandleMessage(func(s *melody.Session, msg []byte) {
-		fmt.Println(string(msg))
-		ws.Broadcast(msg)
 	})
 
 	admin := r.Group("/api")
@@ -145,6 +124,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 	{
 		system.GET("/time", api.HostTime)
 		system.GET("/product", api.GetProduct)
+		system.POST("/scanner", api.RunScanner)
 	}
 
 	networking := admin.Group("/networking")
@@ -179,5 +159,6 @@ func Setup(db *gorm.DB) *gin.Engine {
 		zip.POST("/unzip", api.Unzip)
 		zip.POST("/zip", api.ZipDir)
 	}
+
 	return r
 }
