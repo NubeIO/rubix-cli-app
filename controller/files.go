@@ -31,6 +31,17 @@ func TimeTrack(start time.Time) (out string) {
 
 const dirPath = "/home/aidan/testing" //TODO add in config
 
+type UploadResponse struct {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
+	Data struct {
+		Destination string `json:"destination"`
+		File        string `json:"file"`
+		Size        string `json:"size"`
+		UploadTime  string `json:"upload_time"`
+	} `json:"data"`
+}
+
 /*
 UploadFile
 // curl -X POST http://localhost:1661/api/files/upload?destination=/home/user   -F "file=@/home/user/Downloads/bios-master.zip"   -H "Content-Type: multipart/form-data"
@@ -39,25 +50,61 @@ func (inst *Controller) UploadFile(c *gin.Context) {
 	now := time.Now()
 	destination := c.Query("destination")
 	file, err := c.FormFile("file")
+	resp := &UploadResponse{
+		Code: 0,
+		Msg:  "",
+		Data: struct {
+			Destination string `json:"destination"`
+			File        string `json:"file"`
+			Size        string `json:"size"`
+			UploadTime  string `json:"upload_time"`
+		}{
+			Destination: "",
+			File:        "",
+			Size:        "",
+			UploadTime:  "",
+		},
+	}
+
 	if err != nil || file == nil {
-		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, err)
+		if err != nil {
+			resp.Msg = err.Error()
+		}
+		resp.Code = 404
+		reposeWithCode(404, resp, nil, c)
 		return
 	}
 	fileFull := fmt.Sprintf("%s/%s", destination, filepath.Base(file.Filename))
 	if err := c.SaveUploadedFile(file, fileFull); err != nil {
-		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, err)
+		resp.Msg = err.Error()
+		resp.Code = 404
+		reposeWithCode(404, resp, nil, c)
 		return
 	}
 	size, err := fileutils.GetFileSize(fileFull)
 	if err != nil {
-		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, err)
+		resp.Msg = err.Error()
+		resp.Code = 404
+		reposeWithCode(404, resp, nil, c)
 	}
-	httpresp.ReposeHandler(c, http.StatusOK, httpresp.Success, gin.H{
-		"file":        file.Filename,
-		"destination": destination,
-		"upload_time": TimeTrack(now),
-		"size":        size.String(),
-	})
+
+	resp = &UploadResponse{
+		Code: 202,
+		Msg:  "upload ok",
+		Data: struct {
+			Destination string `json:"destination"`
+			File        string `json:"file"`
+			Size        string `json:"size"`
+			UploadTime  string `json:"upload_time"`
+		}{
+			Destination: file.Filename,
+			File:        file.Filename,
+			Size:        TimeTrack(now),
+			UploadTime:  size.String(),
+		},
+	}
+	reposeWithCode(202, resp, nil, c)
+
 }
 
 /*
