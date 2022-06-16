@@ -1,7 +1,6 @@
 package dbase
 
 import (
-	"github.com/NubeIO/edge/pkg/logger"
 	"github.com/NubeIO/edge/pkg/model"
 	"github.com/NubeIO/lib-uuid/uuid"
 )
@@ -9,7 +8,6 @@ import (
 func (db *DB) GetUser(uuid string) (*model.User, error) {
 	m := new(model.User)
 	if err := db.DB.Where("uuid = ? ", uuid).First(&m).Error; err != nil {
-		logger.Errorf("GetHost error: %v", err)
 		return nil, err
 	}
 	return m, nil
