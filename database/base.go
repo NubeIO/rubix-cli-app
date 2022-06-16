@@ -3,8 +3,6 @@ package dbase
 import (
 	"fmt"
 	"github.com/NubeIO/edge/service/apps"
-	"github.com/NubeIO/lib-store/store"
-	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -41,27 +39,6 @@ func initAppService(serviceName string) (*apps.Apps, error) {
 	return app, err
 }
 
-var progress = initStore()
-
-func initStore() *store.Handler {
-	return store.Init()
-}
-
-func SetProgress(key string, data interface{}) {
-	progress.SetNoExpire(key, data)
-}
-
-func initApp(initApp *apps.Apps, appStore *apps.Store) (*apps.Apps, error) {
-	var inst = &apps.Apps{
-		Token:   initApp.Token,
-		Perm:    apps.Permission,
-		Version: initApp.Version,
-		App:     appStore,
-	}
-	app, err := apps.New(inst)
-	if err != nil {
-		log.Errorln("new app: failed to init a new app", err)
-		return app, err
-	}
-	return app, err
+func handelNotFound(name string) error {
+	return fmt.Errorf("no %s with that id was found", name)
 }

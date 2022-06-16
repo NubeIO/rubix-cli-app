@@ -9,6 +9,8 @@ import (
 	"github.com/NubeIO/lib-uuid/uuid"
 )
 
+const storeName = "store"
+
 func (db *DB) GetAppStores() ([]*apps.Store, error) {
 	var m []*apps.Store
 	if err := db.DB.Find(&m).Error; err != nil {
@@ -21,8 +23,7 @@ func (db *DB) GetAppStores() ([]*apps.Store, error) {
 func (db *DB) GetAppStore(uuid string) (*apps.Store, error) {
 	var m *apps.Store
 	if err := db.DB.Where("uuid = ? ", uuid).First(&m).Error; err != nil {
-		logger.Errorf("GetApp error: %v", err)
-		return nil, err
+		return nil, handelNotFound(storeName)
 	}
 	return m, nil
 }
@@ -139,7 +140,7 @@ func (db *DB) UpdateAppStore(uuid string, app *apps.Store) (*apps.Store, error) 
 	if query.Error != nil {
 		return nil, query.Error
 	} else {
-		return app, query.Error
+		return app, handelNotFound(storeName)
 	}
 }
 

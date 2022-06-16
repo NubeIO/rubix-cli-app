@@ -2,11 +2,12 @@ package dbase
 
 import (
 	"errors"
-	"github.com/NubeIO/edge/pkg/logger"
 	"github.com/NubeIO/edge/service/apps"
 	"github.com/NubeIO/lib-systemctl-go/systemctl"
 	"github.com/NubeIO/lib-uuid/uuid"
 )
+
+const appName = "app"
 
 func (db *DB) GetApps() ([]*apps.App, error) {
 	var m []*apps.App
@@ -46,8 +47,7 @@ func (db *DB) AppStats(body *apps.App) (*AppStats, error) {
 func (db *DB) GetApp(uuid string) (*apps.App, error) {
 	var m *apps.App
 	if err := db.DB.Where("uuid = ? ", uuid).First(&m).Error; err != nil {
-		logger.Errorf("GetApp error: %v", err)
-		return nil, errors.New("no app found")
+		return nil, handelNotFound(appName)
 	}
 	return m, nil
 }
@@ -63,7 +63,7 @@ func (db *DB) GetAppAndStore(body *apps.App) (*apps.Store, *apps.App, error) {
 	} else {
 		appById, err := db.GetApp(body.UUID)
 		if err != nil {
-			return nil, nil, errors.New("app not found by id")
+			return nil, nil, handelNotFound(appName)
 		}
 		app = appById
 	}
@@ -78,8 +78,7 @@ func (db *DB) GetAppAndStore(body *apps.App) (*apps.Store, *apps.App, error) {
 func (db *DB) GetAppByName(name string) (*apps.App, error) {
 	var m *apps.App
 	if err := db.DB.Where("app_store_name = ? ", name).First(&m).Error; err != nil {
-		logger.Errorf("GetApp error: %v", err)
-		return nil, err
+		return nil, handelNotFound(appName)
 	}
 	return m, nil
 }
@@ -110,7 +109,7 @@ func (db *DB) UpdateApp(uuid string, app *apps.App) (*apps.App, error) {
 	var m *apps.App
 	query := db.DB.Where("uuid = ?", uuid).Find(&m).Updates(app)
 	if query.Error != nil {
-		return nil, query.Error
+		return nil, handelNotFound(appName)
 	} else {
 		return app, query.Error
 	}
