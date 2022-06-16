@@ -3,7 +3,6 @@ package controller
 import (
 	"errors"
 	"fmt"
-	"github.com/NubeIO/edge/controller/httpresp"
 	fileutils "github.com/NubeIO/lib-dirs/dirs"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
@@ -32,14 +31,10 @@ func TimeTrack(start time.Time) (out string) {
 const dirPath = "/home/aidan/testing" //TODO add in config
 
 type UploadResponse struct {
-	Code int    `json:"code"`
-	Msg  string `json:"msg"`
-	Data struct {
-		Destination string `json:"destination"`
-		File        string `json:"file"`
-		Size        string `json:"size"`
-		UploadTime  string `json:"upload_time"`
-	} `json:"data"`
+	Destination string `json:"destination"`
+	File        string `json:"file"`
+	Size        string `json:"size"`
+	UploadTime  string `json:"upload_time"`
 }
 
 /*
@@ -50,60 +45,27 @@ func (inst *Controller) UploadFile(c *gin.Context) {
 	now := time.Now()
 	destination := c.Query("destination")
 	file, err := c.FormFile("file")
-	resp := &UploadResponse{
-		Code: 0,
-		Msg:  "",
-		Data: struct {
-			Destination string `json:"destination"`
-			File        string `json:"file"`
-			Size        string `json:"size"`
-			UploadTime  string `json:"upload_time"`
-		}{
-			Destination: "",
-			File:        "",
-			Size:        "",
-			UploadTime:  "",
-		},
-	}
-
+	resp := &UploadResponse{}
 	if err != nil || file == nil {
-		if err != nil {
-			resp.Msg = err.Error()
-		}
-		resp.Code = 404
-		reposeWithCode(404, resp, nil, c)
+		reposeHandler(resp, err, c)
 		return
 	}
 	fileFull := fmt.Sprintf("%s/%s", destination, filepath.Base(file.Filename))
 	if err := c.SaveUploadedFile(file, fileFull); err != nil {
-		resp.Msg = err.Error()
-		resp.Code = 404
-		reposeWithCode(404, resp, nil, c)
+		reposeHandler(resp, err, c)
 		return
 	}
 	size, err := fileutils.GetFileSize(fileFull)
 	if err != nil {
-		resp.Msg = err.Error()
-		resp.Code = 404
-		reposeWithCode(404, resp, nil, c)
+		reposeHandler(resp, err, c)
 	}
-
 	resp = &UploadResponse{
-		Code: 202,
-		Msg:  "upload ok",
-		Data: struct {
-			Destination string `json:"destination"`
-			File        string `json:"file"`
-			Size        string `json:"size"`
-			UploadTime  string `json:"upload_time"`
-		}{
-			Destination: file.Filename,
-			File:        file.Filename,
-			Size:        TimeTrack(now),
-			UploadTime:  size.String(),
-		},
+		Destination: file.Filename,
+		File:        file.Filename,
+		Size:        size.String(),
+		UploadTime:  TimeTrack(now),
 	}
-	reposeWithCode(202, resp, nil, c)
+	reposeHandler(resp, nil, c)
 
 }
 
@@ -133,26 +95,15 @@ func (inst *Controller) RenameFile(c *gin.Context) {
 	fileFull := fmt.Sprintf("%s/%s", dir, newName)
 
 	if existing == "" || newName == "" {
-		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, gin.H{
-			"error": "path and file name can not be empty",
-			"path":  existing,
-			"new":   fileFull,
-		})
+		reposeHandler(nil, errors.New("path and file name can not be empty"), c)
 		return
 	}
 	if !fileUtils.FileExists(existing) {
-		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, gin.H{
-			"error": "file not found",
-			"path":  existing,
-			"new":   fileFull,
-		})
+		reposeHandler(nil, errors.New("file not found"), c)
 		return
 	}
 	err = fileUtils.Rename(existing, fileFull)
-	httpresp.ReposeHandler(c, http.StatusOK, httpresp.Success, gin.H{
-		"path": existing,
-		"new":  fileFull,
-	})
+	reposeHandler(Message{Message: "rename ok"}, err, c)
 }
 
 func (inst *Controller) MoveFile(c *gin.Context) {
@@ -160,28 +111,16 @@ func (inst *Controller) MoveFile(c *gin.Context) {
 	destination := c.Query("destination")
 
 	if existing == "" || destination == "" {
-		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, gin.H{
-			"error":       "existing and existing name can not be empty",
-			"existing":    existing,
-			"destination": destination,
-		})
+		reposeHandler(nil, errors.New("existing and existing name can not be empty"), c)
 		return
 	}
 
 	err := fileUtils.MoveFile(existing, destination)
 	if err != nil {
-		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, gin.H{
-			"error":       err.Error(),
-			"existing":    existing,
-			"destination": destination,
-		})
+		reposeHandler(nil, err, c)
 		return
 	}
-	httpresp.ReposeHandler(c, http.StatusOK, httpresp.Success, gin.H{
-		"message":     "moved ok",
-		"existing":    existing,
-		"destination": destination,
-	})
+	reposeHandler(Message{Message: "move ok"}, err, c)
 }
 
 func (inst *Controller) CopyDir(c *gin.Context) {
@@ -189,28 +128,16 @@ func (inst *Controller) CopyDir(c *gin.Context) {
 	destination := c.Query("destination")
 	exists := fileUtils.DirExists(existing)
 	if !exists {
-		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, gin.H{
-			"error":       "existing dir not found",
-			"existing":    existing,
-			"destination": destination,
-		})
+		reposeHandler(nil, errors.New("existing dir not found"), c)
 		return
 	}
 
 	err := fileUtils.Copy(existing, destination)
 	if err != nil {
-		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, gin.H{
-			"error":       err.Error(),
-			"existing":    existing,
-			"destination": destination,
-		})
+		reposeHandler(nil, err, c)
 		return
 	}
-	httpresp.ReposeHandler(c, http.StatusOK, httpresp.Success, gin.H{
-		"message":     "moved ok",
-		"existing":    existing,
-		"destination": destination,
-	})
+	reposeHandler(Message{Message: "copy ok"}, err, c)
 }
 
 /*
@@ -242,32 +169,32 @@ func (inst *Controller) delete(c *gin.Context, deleteDir, forceWipeOnDeleteDir b
 
 	if !deleteDir { //delete  a file
 		if !fileUtils.FileExists(localSystemFilePath) {
-			httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, err)
+			reposeHandler(nil, errors.New("not found"), c)
 			return
 		}
-		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Success, gin.H{"path": localSystemFilePath})
+		reposeHandler(Message{Message: "delete file ok"}, nil, c)
 		return
 	}
 
 	if deleteDir { //delete  a dir
 		if !fileUtils.DirExists(localSystemFilePath) {
-			httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, err)
+			reposeHandler(nil, err, c)
 			return
 		}
 		if forceWipeOnDeleteDir {
 			err := fileUtils.RmRF(localSystemFilePath)
 			if err != nil {
-				httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, err)
+				reposeHandler(nil, err, c)
 				return
 			}
 		} else {
 			err := fileUtils.Rm(localSystemFilePath)
 			if err != nil {
-				httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, err)
+				reposeHandler(nil, err, c)
 				return
 			}
 		}
-		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Success, gin.H{"path": localSystemFilePath})
+		reposeHandler(Message{Message: "delete directory ok"}, nil, c)
 		return
 	}
 }
@@ -284,9 +211,9 @@ func (inst *Controller) readFiles(c *gin.Context, downloadFile bool) {
 	outFileName := fmt.Sprintf("attachment; %s", filepath.Base(fileName))
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
-			httpresp.ReposeHandler(c, http.StatusOK, httpresp.StatusNotFound, err)
+			reposeHandler(nil, err, c)
 		} else {
-			httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, err)
+			reposeHandler(nil, err, c)
 		}
 		return
 	}
@@ -294,23 +221,22 @@ func (inst *Controller) readFiles(c *gin.Context, downloadFile bool) {
 	if fileInfo.IsDir() {
 		files, err := ioutil.ReadDir(localSystemFilePath)
 		if err != nil {
-			httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, err)
+			reposeHandler(nil, err, c)
 			return
 		}
 		for _, file := range files {
-			fmt.Println(file)
 			dirContent = append(dirContent, file.Name())
 		}
 	} else {
 		if downloadFile {
 			byteFile, err := ioutil.ReadFile(localSystemFilePath)
 			if err != nil {
-				httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, err)
+				reposeHandler(nil, err, c)
 				return
 			}
 			c.Header("Content-Disposition", outFileName)
 			c.Data(http.StatusOK, "application/octet-stream", byteFile)
 		}
 	}
-	httpresp.ReposeHandler(c, http.StatusOK, httpresp.Success, gin.H{"path": dirContent})
+	reposeHandler(dirContent, nil, c)
 }

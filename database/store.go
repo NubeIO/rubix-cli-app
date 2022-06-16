@@ -149,10 +149,6 @@ func (db *DB) DeleteAppStore(uuid string) (*DeleteMessage, error) {
 	return deleteResponse(query)
 }
 
-type DeleteMessage struct {
-	Message string `json:"message"`
-}
-
 func (db *DB) DropAppStores() (*DeleteMessage, error) {
 	var m *apps.Store
 	query := db.DB.Where("1 = 1")

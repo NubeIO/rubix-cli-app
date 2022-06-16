@@ -1,7 +1,7 @@
 package dbase
 
 import (
-	"errors"
+	"fmt"
 	"github.com/NubeIO/edge/service/apps"
 	"github.com/NubeIO/lib-store/store"
 	log "github.com/sirupsen/logrus"
@@ -12,18 +12,22 @@ type DB struct {
 	DB *gorm.DB
 }
 
+type DeleteMessage struct {
+	Message string `json:"message"`
+}
+
 func deleteResponse(query *gorm.DB) (*DeleteMessage, error) {
 	msg := &DeleteMessage{
-		Message: "delete failed",
+		Message: fmt.Sprintf("no record found, deleted count:%d", 0),
 	}
 	if query.Error != nil {
 		return msg, query.Error
 	}
 	r := query.RowsAffected
 	if r == 0 {
-		return msg, errors.New("not found")
+		return msg, query.Error
 	}
-	msg.Message = "deleted ok"
+	msg.Message = fmt.Sprintf("deleted count:%d", query.RowsAffected)
 	return msg, nil
 }
 

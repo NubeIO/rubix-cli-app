@@ -10,8 +10,8 @@ func (inst *Controller) RunScanner(c *gin.Context) {
 	err = c.ShouldBindJSON(&m)
 	data, err := system.RunScanner(m)
 	if err != nil {
-		reposeWithCode(404, data, err, c)
+		reposeHandler(data, err, c)
 		return
 	}
-	reposeWithCode(202, data, err, c)
+	reposeHandler(data, err, c)
 }

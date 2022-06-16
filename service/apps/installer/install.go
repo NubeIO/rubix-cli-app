@@ -16,7 +16,7 @@ type App struct {
 	Token              string `json:"token"`                 // github token
 	ManualInstall      bool   `json:"manual_install"`        // will not download from GitHub, and will use the app-store download path
 	ManualAssetZipName string `json:"manual_asset_zip_name"` // flow-framework-0.5.5-1575cf89.amd64.zip
-	ManualAssetTag     string `json:"manual_asset_tag"`      // this is the release tag as in v0.0.1
+	ManualAssetTag     string `json:"-"`                     // this is the release tag as in v0.0.1
 	Cleanup            bool   `json:"cleanup"`
 }
 
@@ -269,7 +269,6 @@ func matchRepoName(zipName, repoName string) (bool, int, string, bool, string) {
 				version = part
 				version = strings.Trim(version, ".zip")
 			}
-
 		}
 	}
 	match := 0
@@ -281,13 +280,18 @@ func matchRepoName(zipName, repoName string) (bool, int, string, bool, string) {
 	if match == count {
 		repoMatch = true
 	}
-	arch, _ = getArch()
-	if contains(parts, arch) {
+	if repoName != "wires-builds" { //wires can run on any os
+		arch, _ = getArch()
+		if contains(parts, arch) {
+			if repoName == "wires-builds" {
+
+			}
+			archMatch = true
+		}
+	} else {
 		archMatch = true
 	}
-
 	return repoMatch, count, version, archMatch, arch
-
 }
 
 func getArch() (string, error) {

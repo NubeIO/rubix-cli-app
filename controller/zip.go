@@ -1,10 +1,9 @@
 package controller
 
 import (
+	"errors"
 	"fmt"
-	"github.com/NubeIO/edge/controller/httpresp"
 	"github.com/gin-gonic/gin"
-	"net/http"
 	"os"
 )
 
@@ -29,35 +28,19 @@ func (inst *Controller) Unzip(c *gin.Context) {
 		return
 	}
 	if body.Source == "" {
-		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, gin.H{
-			"error":       "zip source can not be empty, try /home/user/zip.zip",
-			"existing":    pathToZip,
-			"destination": destination,
-		})
+		reposeHandler(nil, errors.New("zip source can not be empty, try /home/user/zip.zip"), c)
 		return
 	}
 	if body.Destination == "" {
-		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, gin.H{
-			"error":       "zip destination can not be empty, try /home/user",
-			"existing":    pathToZip,
-			"destination": destination,
-		})
+		reposeHandler(nil, errors.New("zip destination can not be empty, try /home/user"), c)
 		return
 	}
-	zip, err := fileUtils.UnZip(body.Source, body.Destination, os.FileMode(body.Perm))
+	zip, err := fileUtils.UnZip(pathToZip, destination, os.FileMode(body.Perm))
 	if err != nil {
-		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, gin.H{
-			"error":       err.Error(),
-			"existing":    pathToZip,
-			"destination": destination,
-		})
+		reposeHandler(nil, err, c)
 		return
 	}
-	httpresp.ReposeHandler(c, http.StatusOK, httpresp.Success, gin.H{
-		"message":     fmt.Sprintf("ok amout of files unziped %d", len(zip)),
-		"existing":    pathToZip,
-		"destination": destination,
-	})
+	reposeHandler(Message{Message: fmt.Sprintf("ok amout of files unziped %d", len(zip))}, err, c)
 }
 
 func (inst *Controller) ZipDir(c *gin.Context) {
@@ -69,43 +52,24 @@ func (inst *Controller) ZipDir(c *gin.Context) {
 		return
 	}
 	if body.Source == "" {
-		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, gin.H{
-			"error":       "zip source can not be empty, try /home/user/test",
-			"existing":    pathToZip,
-			"destination": destination,
-		})
+		reposeHandler(nil, errors.New("zip source can not be empty, try try /home/user/test"), c)
 		return
 	}
 	if body.Destination == "" {
-		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, gin.H{
-			"error":       "zip destination can not be empty, try /home/user/test.zip",
-			"existing":    pathToZip,
-			"destination": destination,
-		})
+		reposeHandler(nil, errors.New("zip destination can not be empty, try try /home/user/test.zip"), c)
 		return
 	}
 
 	exists := fileUtils.DirExists(pathToZip)
 	if !exists {
-		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, gin.H{
-			"error":       "existing dir not found",
-			"existing":    pathToZip,
-			"destination": destination,
-		})
+		reposeHandler(nil, errors.New("dir to zip not found"), c)
 		return
 	}
 	err = fileUtils.RecursiveZip(pathToZip, destination)
 	if err != nil {
-		httpresp.ReposeHandler(c, http.StatusOK, httpresp.Error, gin.H{
-			"error":       err.Error(),
-			"existing":    pathToZip,
-			"destination": destination,
-		})
+		reposeHandler(nil, err, c)
 		return
 	}
-	httpresp.ReposeHandler(c, http.StatusOK, httpresp.Success, gin.H{
-		"message":     "zipped ok",
-		"existing":    pathToZip,
-		"destination": destination,
-	})
+	reposeHandler(Message{Message: fmt.Sprintf("new zip:%s", destination)}, nil, c)
+
 }

@@ -1,11 +1,11 @@
 package controller
 
 import (
-	"encoding/json"
 	dbase "github.com/NubeIO/edge/database"
 	"github.com/NubeIO/edge/service/apps/installer"
 	fileutils "github.com/NubeIO/lib-dirs/dirs"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type Controller struct {
@@ -17,44 +17,6 @@ var fileUtils = fileutils.New()
 
 var err error
 
-func bodyAsJSON(c *gin.Context) (interface{}, error) {
-	var body interface{} //get the body and put it into an interface
-	err = c.ShouldBindJSON(&body)
-	if err != nil {
-		return nil, err
-	}
-	return body, err
-}
-
-func resolveHeaderHostID(c *gin.Context) string {
-	return c.GetHeader("host_uuid")
-}
-
-func resolveHeaderHostName(c *gin.Context) string {
-	return c.GetHeader("host_name")
-}
-
-func resolveHeaderGitToken(c *gin.Context) string {
-	return c.GetHeader("git_token")
-}
-
-func reposeWithCode(code int, body interface{}, err error, c *gin.Context) {
-	if err != nil {
-		if err == nil {
-			c.JSON(code, Message{Message: "unknown error"})
-		} else {
-			if body != nil {
-				c.JSON(code, body)
-			} else {
-				c.JSON(code, Message{Message: err.Error()})
-			}
-
-		}
-	} else {
-		c.JSON(code, body)
-	}
-}
-
 type Response struct {
 	StatusCode   int         `json:"status_code"`
 	ErrorMessage string      `json:"error_message"`
@@ -62,23 +24,29 @@ type Response struct {
 	Data         interface{} `json:"data"`
 }
 
-func reposeHandler(body interface{}, err error, c *gin.Context) {
+func reposeHandler(body interface{}, err error, c *gin.Context, statusCode ...int) {
+	var code int
 	if err != nil {
-		if body != nil {
-			j, _ := json.Marshal(body)
-			if string(j) == "null" {
-				c.JSON(404, Message{Message: err.Error()})
-				return
-			}
-			c.JSON(404, body)
+		if len(statusCode) > 0 {
+			code = statusCode[0]
 		} else {
-			c.JSON(404, Message{Message: err.Error()})
+			code = http.StatusNotFound
 		}
+		msg := Message{
+			Message: err.Error(),
+		}
+		c.JSON(code, msg)
 	} else {
-		c.JSON(200, body)
+		if len(statusCode) > 0 {
+			code = statusCode[0]
+		} else {
+			code = http.StatusOK
+		}
+		c.JSON(code, body)
 	}
 }
 
 type Message struct {
-	Message string `json:"message"`
+	Message interface{} `json:"message,omitempty"`
+	Data    interface{} `json:"data,omitempty"`
 }
