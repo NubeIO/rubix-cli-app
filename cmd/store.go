@@ -67,7 +67,6 @@ func runApps(cmd *cobra.Command, args []string) {
 	}
 
 	if flgApp.installApp {
-
 		//app, err := db.InstallApp(&dbase.App{
 		//	AppName: flgApp.appName,
 		//	Version: flgApp.version,
@@ -78,9 +77,7 @@ func runApps(cmd *cobra.Command, args []string) {
 		//	log.Println("install app err", err)
 		//	return
 		//}
-
 	}
-
 }
 
 var flgApp struct {
@@ -105,5 +102,4 @@ func init() {
 	flagSet.StringVar(&flgApp.rubixRootPath, "rubix-path", "", "rubix main path")
 	flagSet.BoolVarP(&flgApp.addStore, "store-add", "", false, "add a new app to the store")
 	flagSet.BoolVarP(&flgApp.installApp, "install", "", false, "install an app")
-
 }

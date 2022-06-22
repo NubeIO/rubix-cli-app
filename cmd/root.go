@@ -4,11 +4,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-//model.Host
-
-)
-
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "nube-cli",
@@ -47,5 +42,4 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&flgRoot.rubixUsername, "rubix-user", "", "admin", "rubix username (default admin)")
 	RootCmd.PersistentFlags().StringVarP(&flgRoot.rubixPassword, "rubix-pass", "", "N00BWires", "rubix password")
 	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
 }
