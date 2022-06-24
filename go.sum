@@ -52,8 +52,8 @@ github.com/NubeIO/lib-dhcpd v0.0.1 h1:Pou7XgOAfMwwBaKf3sYFLDY3U3/+tIaYjrS7QpNZd6
 github.com/NubeIO/lib-dhcpd v0.0.1/go.mod h1:X+9x4ePY4/Ut20HKnoOjzVru0GbXvFpt6eb2dW+cnZU=
 github.com/NubeIO/lib-dirs v0.0.2 h1:8mdDMNpNgmcyXBSllyNdeN/5bgCJ7LssaRqg8N2YVC4=
 github.com/NubeIO/lib-dirs v0.0.2/go.mod h1:PCDWQm82Nezp9oyhkpqyfVH6w6+1lzfDwfRdYVF5sPY=
-github.com/NubeIO/lib-networking v0.0.4 h1:GtemkSetvUmd4c6FHY/OXYj3bu+zdqhDxEIZqdMD8vM=
-github.com/NubeIO/lib-networking v0.0.4/go.mod h1:wO04Ul6Wdr5w/7s8UMZzV1/HMXuVSVFzqq7h5A3Vl6k=
+github.com/NubeIO/lib-networking v0.0.5 h1:JB/YiYI6V2uDINYS789YKy5uLspZwwNTcXwILHRvhq4=
+github.com/NubeIO/lib-networking v0.0.5/go.mod h1:wO04Ul6Wdr5w/7s8UMZzV1/HMXuVSVFzqq7h5A3Vl6k=
 github.com/NubeIO/lib-schema v0.0.2 h1:T1AbNSQpW45U6Q0jv8+ezlhhTyhLaFEo8EhdoOVRMD8=
 github.com/NubeIO/lib-schema v0.0.2/go.mod h1:+XEsOqjtJ/NlVo13p+5nZQK4LDRKkJTB3SxPi6u8vhM=
 github.com/NubeIO/lib-store v0.0.1 h1:7VwFEf70oLnSTDIRckNA2tXELPoxfTkH1rEU5wAkNSw=

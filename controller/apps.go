@@ -1,9 +1,15 @@
 package controller
 
 import (
+	"github.com/NubeIO/edge/pkg/model"
 	"github.com/NubeIO/edge/service/apps"
 	"github.com/gin-gonic/gin"
 )
+
+func getDeviceBody(c *gin.Context) (dto *model.DeviceInfo, err error) {
+	err = c.ShouldBindJSON(&dto)
+	return dto, err
+}
 
 func getAppsBody(c *gin.Context) (dto *apps.App, err error) {
 	err = c.ShouldBindJSON(&dto)

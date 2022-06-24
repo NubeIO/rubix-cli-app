@@ -63,6 +63,7 @@ func Setup() error {
 		&model.User{},
 		&apps.Store{},
 		&apps.App{},
+		&model.DeviceInfo{},
 	)
 
 	if err != nil {

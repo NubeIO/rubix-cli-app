@@ -120,8 +120,17 @@ func Setup(db *gorm.DB) *gin.Engine {
 		appControl.POST("/bulk", api.AppService)
 	}
 
+	device := admin.Group("/device")
+	{
+		device.GET("/", api.GetDeviceInfo)
+		device.POST("/", api.AddDeviceInfo)
+		device.PATCH("/", api.UpdateDeviceInfo)
+
+	}
+
 	system := admin.Group("/system")
 	{
+		system.GET("/ping", api.Ping)
 		system.GET("/time", api.HostTime)
 		system.GET("/product", api.GetProduct)
 		system.POST("/scanner", api.RunScanner)
