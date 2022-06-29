@@ -2,12 +2,15 @@ package config
 
 import (
 	"fmt"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"path"
 
 	"github.com/NubeIO/edge/pkg/logger"
 )
 
 var Config *Configuration
+var rootCmd *cobra.Command
 
 type Configuration struct {
 	Server   ServerConfiguration
@@ -16,7 +19,8 @@ type Configuration struct {
 }
 
 // Setup initialize configuration
-func Setup() error {
+func Setup(rootCmd_ *cobra.Command) error {
+	rootCmd = rootCmd_
 	var configuration *Configuration
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
@@ -38,7 +42,22 @@ func Setup() error {
 	return nil
 }
 
-// GetConfig helps you to get configuration data
-func GetConfig() *Configuration {
-	return Config
+func (conf *Configuration) GetAbsDataDir() string {
+	return path.Join(conf.getGlobalDir(), conf.getDataDir())
+}
+
+func (conf *Configuration) GetAbsConfigDir() string {
+	return path.Join(conf.getGlobalDir(), conf.getConfigDir())
+}
+
+func (conf *Configuration) getGlobalDir() string {
+	return rootCmd.PersistentFlags().Lookup("global-dir").Value.String()
+}
+
+func (conf *Configuration) getDataDir() string {
+	return rootCmd.PersistentFlags().Lookup("data-dir").Value.String()
+}
+
+func (conf *Configuration) getConfigDir() string {
+	return rootCmd.PersistentFlags().Lookup("config-dir").Value.String()
 }

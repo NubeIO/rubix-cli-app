@@ -23,15 +23,14 @@ type InstallResp struct {
 }
 
 func initDB() *dbase.DB {
-	if err := config.Setup(); err != nil {
+	if err := config.Setup(RootCmd); err != nil {
 		log.Errorln("config.Setup() error: %s", err)
 	}
 	if err := database.Setup(); err != nil {
 		log.Errorln("database.Setup() error: %s", err)
 	}
-	db := database.GetDB()
 	appDB := &dbase.DB{
-		DB: db,
+		DB: database.DB,
 	}
 	return appDB
 }

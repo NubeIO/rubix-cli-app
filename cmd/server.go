@@ -23,7 +23,7 @@ func setup() {
 	logger.Init()
 	logger.SetLogLevel(logrus.InfoLevel)
 	logger.InfoLn("try and start rubix-updater")
-	if err := config.Setup(); err != nil {
+	if err := config.Setup(RootCmd); err != nil {
 		logger.Errorf("config.Setup() error: %s", err)
 	}
 	if err := database.Setup(); err != nil {
@@ -33,8 +33,7 @@ func setup() {
 
 func runServer(cmd *cobra.Command, args []string) {
 	setup()
-	db := database.GetDB()
-	r := router.Setup(db)
+	r := router.Setup(database.DB)
 
 	host := "0.0.0.0"
 	if h := viper.GetString("server.host"); h != "" {

@@ -20,7 +20,6 @@ var flgEdgeIp struct {
 }
 
 func runEdge(cmd *cobra.Command, args []string) {
-
 }
 
 func init() {
