@@ -19,9 +19,14 @@ func Execute() {
 }
 
 var flgRoot struct {
-	hostName      string
-	hostIP        string
-	hostPort      int
+	prod          bool
+	port          int
+	globalDir     string
+	dataDir       string
+	configDir     string
+	host          string
+	ip            string
+	sshPort       int
 	hostUsername  string
 	hostPassword  string
 	rubixPort     int
@@ -31,10 +36,14 @@ var flgRoot struct {
 }
 
 func init() {
-
-	RootCmd.PersistentFlags().StringVarP(&flgRoot.hostName, "host", "", "RC", "host name (default RC)")
-	RootCmd.PersistentFlags().StringVarP(&flgRoot.hostIP, "ip", "", "192.168.15.10", "host ip (default 192.168.15.10)")
-	RootCmd.PersistentFlags().IntVarP(&flgRoot.hostPort, "port", "", 22, "SSH Port")
+	RootCmd.PersistentFlags().BoolVarP(&flgRoot.prod, "prod", "", false, "prod")
+	RootCmd.PersistentFlags().IntVarP(&flgRoot.port, "port", "p", 1661, "port (default 1661)")
+	RootCmd.PersistentFlags().StringVarP(&flgRoot.globalDir, "global-dir", "g", "./", "global dir")
+	RootCmd.PersistentFlags().StringVarP(&flgRoot.dataDir, "data-dir", "d", "data", "data dir")
+	RootCmd.PersistentFlags().StringVarP(&flgRoot.configDir, "config-dir", "c", "config", "config dir")
+	RootCmd.PersistentFlags().StringVarP(&flgRoot.host, "host", "", "RC", "host name (default RC)")
+	RootCmd.PersistentFlags().StringVarP(&flgRoot.ip, "ip", "", "192.168.15.10", "host ip (default 192.168.15.10)")
+	RootCmd.PersistentFlags().IntVarP(&flgRoot.sshPort, "ssh-port", "", 22, "SSH Port (default 22)")
 	RootCmd.PersistentFlags().StringVarP(&flgRoot.iface, "iface", "", "", "pc or host network interface example: eth0")
 	RootCmd.PersistentFlags().StringVarP(&flgRoot.hostUsername, "host-user", "", "pi", "host/linux username (default pi)")
 	RootCmd.PersistentFlags().StringVarP(&flgRoot.hostPassword, "host-pass", "", "N00BRCRC", "host/linux password")

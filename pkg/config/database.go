@@ -2,7 +2,7 @@ package config
 
 type DatabaseConfiguration struct {
 	Driver   string
-	Dbname   string
+	Name     string
 	Username string
 	Password string
 	Host     string

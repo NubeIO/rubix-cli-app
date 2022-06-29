@@ -40,9 +40,10 @@ func runServer(cmd *cobra.Command, args []string) {
 	if h := viper.GetString("server.host"); h != "" {
 		host = h
 	}
-	logger.Infof("Server is starting at %s:%s", host, viper.GetString("server.port"))
-	fmt.Printf("server is running at %s:%s Check logs for details\n", host, viper.GetString("server.port"))
-	log.Fatalf("%v", r.Run(host+":"+viper.GetString("server.port")))
+	port := RootCmd.PersistentFlags().Lookup("port").Value.String()
+	logger.Infof("Server is starting at %s:%s", host, port)
+	fmt.Printf("server is running at %s:%s Check logs for details\n", host, port)
+	log.Fatalf("%v", r.Run(fmt.Sprintf("%s:%s", host, port)))
 }
 
 func init() {
