@@ -7,7 +7,6 @@ import (
 	"github.com/spf13/viper"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"os"
 	"path"
 
 	"github.com/NubeIO/edge/pkg/model"
@@ -32,9 +31,6 @@ func Setup() error {
 	if driver == "" {
 		driver = "sqlite"
 	}
-	if err := os.MkdirAll(config.Config.GetAbsDataDir(), 0755); err != nil {
-		panic(err)
-	}
 	connection := fmt.Sprintf("%s?_foreign_keys=on", path.Join(config.Config.GetAbsDataDir(), dbName))
 	switch driver {
 	case "sqlite":
@@ -44,7 +40,7 @@ func Setup() error {
 	}
 
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	// Auto migrate project models

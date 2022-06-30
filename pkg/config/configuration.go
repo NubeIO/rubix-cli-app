@@ -18,7 +18,6 @@ type Configuration struct {
 	Path     PathConfiguration
 }
 
-// Setup initialize configuration
 func Setup(rootCmd_ *cobra.Command) error {
 	rootCmd = rootCmd_
 	var configuration *Configuration
@@ -40,6 +39,10 @@ func Setup(rootCmd_ *cobra.Command) error {
 	viper.SetDefault("database.name", "data.db")
 	Config = configuration
 	return nil
+}
+
+func (conf *Configuration) GetPort() string {
+	return rootCmd.PersistentFlags().Lookup("port").Value.String()
 }
 
 func (conf *Configuration) GetAbsDataDir() string {
