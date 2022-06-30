@@ -7,7 +7,12 @@ import (
 	"github.com/spf13/viper"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
+	"io"
+	"log"
+	"os"
 	"path"
+	"time"
 
 	"github.com/NubeIO/edge/pkg/model"
 	"github.com/NubeIO/edge/service/apps"
@@ -24,6 +29,30 @@ type Database struct {
 
 // Setup opens a database and saves the reference to `Database` struct.
 func Setup() error {
+	logLevel := logger.Silent
+	dbLogLevel := viper.GetString("database.loglevel")
+	if dbLogLevel == "ERROR" {
+		logLevel = logger.Error
+	} else if dbLogLevel == "WARN" {
+		logLevel = logger.Warn
+	} else if dbLogLevel == "INFO" {
+		logLevel = logger.Info
+	}
+	writer := io.MultiWriter(os.Stdout, getWriter())
+	colorful := true
+	if config.Config.Prod() {
+		colorful = false
+	}
+	newDBLogger := logger.New(
+		log.New(writer, "", log.LstdFlags), // io writers
+		logger.Config{
+			SlowThreshold:             time.Millisecond, // Slow SQL threshold
+			LogLevel:                  logLevel,         // Log level (Silent, Error, Warn, Info)
+			IgnoreRecordNotFoundError: true,             // Ignore ErrRecordNotFound error for logger
+			Colorful:                  colorful,         // Disable color
+		},
+	)
+
 	var db = DB
 	dbName := viper.GetString("database.name")
 	driver := viper.GetString("database.driver")
@@ -31,10 +60,15 @@ func Setup() error {
 	if driver == "" {
 		driver = "sqlite"
 	}
-	connection := fmt.Sprintf("%s?_foreign_keys=on", path.Join(config.Config.GetAbsDataDir(), dbName))
 	switch driver {
 	case "sqlite":
-		db, err = gorm.Open(sqlite.Open(connection), &gorm.Config{})
+		connection := fmt.Sprintf("%s?_foreign_keys=on", path.Join(config.Config.GetAbsDataDir(), dbName))
+		db, err = gorm.Open(sqlite.Open(connection), &gorm.Config{
+			Logger: newDBLogger,
+			NowFunc: func() time.Time {
+				return time.Now().UTC()
+			},
+		})
 	default:
 		return errors.New("unsupported database driver")
 	}
@@ -56,4 +90,14 @@ func Setup() error {
 	}
 	DB = db
 	return nil
+}
+
+func getWriter() io.Writer {
+	fileLocation := fmt.Sprintf("%s/edge.db.log", config.Config.GetAbsDataDir())
+	file, err := os.OpenFile(fileLocation, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		return os.Stdout
+	} else {
+		return file
+	}
 }

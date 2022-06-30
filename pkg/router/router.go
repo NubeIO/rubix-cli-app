@@ -1,32 +1,38 @@
 package router
 
 import (
+	"fmt"
 	"github.com/NubeIO/edge/controller"
 	dbase "github.com/NubeIO/edge/database"
+	"github.com/NubeIO/edge/pkg/config"
 	dbhandler "github.com/NubeIO/edge/pkg/handler"
 	"github.com/NubeIO/edge/pkg/logger"
+	"github.com/spf13/viper"
+	"io"
+
 	"github.com/NubeIO/edge/service/apps/installer"
 	"github.com/NubeIO/edge/service/auth"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"io"
 	"os"
 	"time"
 )
 
 func Setup(db *gorm.DB) *gin.Engine {
 	r := gin.New()
-	// Write gin access log to file
-	f, err := os.OpenFile("rubix.access.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+
+	// Set gin access logs
+	fileLocation := fmt.Sprintf("%s/edge.access.log", config.Config.GetAbsDataDir())
+	f, err := os.OpenFile(fileLocation, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0755)
 	if err != nil {
-		logger.Errorf("Failed to create access log file: %v", err)
+		logger.Logger.Errorf("Failed to create access log file: %v", err)
 	} else {
-		gin.DefaultWriter = io.MultiWriter(f)
+		gin.SetMode(viper.GetString("gin.loglevel"))
+		gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
 	}
 
-	// Set default middlewares
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 	r.Use(cors.New(cors.Config{
@@ -57,7 +63,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 	api := controller.Controller{DB: appDB, Installer: install}
 	identityKey := "uuid"
 
-	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
+	authMiddleware, _ := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:         "go-proxy-service",
 		Key:           []byte(os.Getenv("JWTSECRET")),
 		Timeout:       time.Hour * 1000,
@@ -83,7 +89,6 @@ func Setup(db *gorm.DB) *gin.Engine {
 	users := admin.Group("/users")
 	users.Use(authMiddleware.MiddlewareFunc())
 	{
-		//users.GET("/schema", api.UsersSchema)
 		users.GET("/", api.GetUsers)
 		users.GET("/:uuid", api.GetUser)
 		users.PATCH("/:uuid", api.UpdateUser)

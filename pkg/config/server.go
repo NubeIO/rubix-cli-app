@@ -5,4 +5,5 @@ type ServerConfiguration struct {
 	AccessTokenExpireDuration  int
 	RefreshTokenExpireDuration int
 	LimitCountPerRequest       float64
+	LogLevel                   string
 }

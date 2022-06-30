@@ -6,7 +6,6 @@ import (
 	"github.com/NubeIO/edge/pkg/database"
 	"github.com/NubeIO/edge/pkg/logger"
 	"github.com/NubeIO/edge/pkg/router"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"log"
 	"os"
@@ -20,27 +19,24 @@ var serverCmd = &cobra.Command{
 }
 
 func runServer(cmd *cobra.Command, args []string) {
-	logger.Init()
-	logger.SetLogLevel(logrus.InfoLevel)
-	logger.InfoLn("starting edge...")
-
 	if err := config.Setup(RootCmd); err != nil {
-		logger.Errorf("config.Setup() error: %s", err)
+		logger.Logger.Errorf("config.Setup() error: %s", err)
 	}
-
 	if err := os.MkdirAll(config.Config.GetAbsDataDir(), 0755); err != nil {
 		panic(err)
 	}
+	logger.Init()
+	logger.Logger.Infoln("starting edge...")
 
 	if err := database.Setup(); err != nil {
-		logger.Fatalf("database.Setup() error: %s", err)
+		logger.Logger.Fatalf("database.Setup() error: %s", err)
 	}
 
 	r := router.Setup(database.DB)
 
 	host := "0.0.0.0"
 	port := config.Config.GetPort()
-	logger.Infof("server is starting at %s:%s", host, port)
+	logger.Logger.Infof("server is starting at %s:%s", host, port)
 	log.Fatalf("%v", r.Run(fmt.Sprintf("%s:%s", host, port)))
 }
 

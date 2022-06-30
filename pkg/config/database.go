@@ -7,5 +7,5 @@ type DatabaseConfiguration struct {
 	Password string
 	Host     string
 	Port     string
-	LogMode  bool
+	LogLevel string
 }
