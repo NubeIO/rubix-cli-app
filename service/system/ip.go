@@ -89,7 +89,6 @@ func (ip *IP) updateEdge() (bool, error) {
 	fmt.Println("SET IP not finished")
 	fmt.Println(nets)
 	return false, errors.New("code not finished")
-
 }
 
 func (ip *IP) updateRC() (bool, error) {
@@ -97,5 +96,4 @@ func (ip *IP) updateRC() (bool, error) {
 	fmt.Println("SET IP not finished")
 	fmt.Println(nets)
 	return false, errors.New("code not finished")
-
 }

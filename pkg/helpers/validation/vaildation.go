@@ -41,6 +41,5 @@ func NormaliseIPAddr(ip string) string {
 			ip = strings.TrimSuffix(ip, "/128")
 		}
 	}
-
 	return ip
 }

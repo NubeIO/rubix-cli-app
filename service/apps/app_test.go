@@ -7,7 +7,6 @@ import (
 
 func TestInstall(t *testing.T) {
 	inst := &Apps{
-
 		App: &Store{
 			ServiceName: "nubeio-flow-framework",
 		},

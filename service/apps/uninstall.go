@@ -12,7 +12,7 @@ import (
 */
 
 // UninstallService
-//	-service nubeio-flow-framework
+//	- service nubeio-flow-framework
 func (inst *Apps) UninstallService(service string) (*ctl.RemoveRes, error) {
 	resp := &ctl.RemoveRes{}
 	ser := ctl.New(service, "")
