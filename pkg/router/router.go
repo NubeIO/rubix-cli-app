@@ -5,14 +5,11 @@ import (
 	"github.com/NubeIO/edge/controller"
 	dbase "github.com/NubeIO/edge/database"
 	"github.com/NubeIO/edge/pkg/config"
-	dbhandler "github.com/NubeIO/edge/pkg/handler"
 	"github.com/NubeIO/edge/pkg/logger"
 	"github.com/spf13/viper"
 	"io"
 
 	"github.com/NubeIO/edge/service/apps/installer"
-	"github.com/NubeIO/edge/service/auth"
-	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -21,7 +18,7 @@ import (
 )
 
 func Setup(db *gorm.DB) *gin.Engine {
-	r := gin.New()
+	engine := gin.New()
 
 	// Set gin access logs
 	fileLocation := fmt.Sprintf("%s/edge.access.log", config.Config.GetAbsDataDir())
@@ -33,9 +30,9 @@ func Setup(db *gorm.DB) *gin.Engine {
 		gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
 	}
 
-	r.Use(gin.Logger())
-	r.Use(gin.Recovery())
-	r.Use(cors.New(cors.Config{
+	engine.Use(gin.Logger())
+	engine.Use(gin.Recovery())
+	engine.Use(cors.New(cors.Config{
 		AllowMethods: []string{"GET", "POST", "DELETE", "OPTIONS", "PUT", "PATCH"},
 		AllowHeaders: []string{
 			"X-FLOW-Key", "Authorization", "Content-Type", "Upgrade", "Origin",
@@ -51,52 +48,16 @@ func Setup(db *gorm.DB) *gin.Engine {
 	appDB := &dbase.DB{
 		DB: db,
 	}
-	dbHandler := &dbhandler.Handler{
-		DB: appDB,
-	}
-	dbhandler.Init(dbHandler)
 
 	install := installer.New(&installer.Installer{
 		DB: appDB,
 	})
 
 	api := controller.Controller{DB: appDB, Installer: install}
-	identityKey := "uuid"
 
-	authMiddleware, _ := jwt.New(&jwt.GinJWTMiddleware{
-		Realm:         "go-proxy-service",
-		Key:           []byte(os.Getenv("JWTSECRET")),
-		Timeout:       time.Hour * 1000,
-		MaxRefresh:    time.Hour,
-		IdentityKey:   identityKey,
-		PayloadFunc:   auth.MapClaims,
-		Authenticator: api.Login,
-		Unauthorized: func(c *gin.Context, code int, message string) {
-			c.JSON(code, gin.H{
-				"code":    code,
-				"message": message,
-			})
-		},
-		TokenLookup: "header: Authorization",
-		TimeFunc:    time.Now,
-	})
+	apiRoutes := engine.Group("/api")
 
-	admin := r.Group("/api")
-
-	r.POST("/api/users", api.AddUser)
-	r.POST("/api/users/login", authMiddleware.LoginHandler)
-
-	users := admin.Group("/users")
-	users.Use(authMiddleware.MiddlewareFunc())
-	{
-		users.GET("/", api.GetUsers)
-		users.GET("/:uuid", api.GetUser)
-		users.PATCH("/:uuid", api.UpdateUser)
-		users.DELETE("/:uuid", api.DeleteUser)
-		users.DELETE("/drop", api.DropUsers)
-	}
-
-	store := admin.Group("/stores")
+	store := apiRoutes.Group("/stores")
 	{
 		store.GET("/", api.GetAppStores)
 		store.POST("/", api.CreateAppStore)
@@ -106,7 +67,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 		store.DELETE("/drop", api.DropAppStores)
 	}
 
-	app := admin.Group("/apps")
+	app := apiRoutes.Group("/apps")
 	{
 		app.GET("/", api.GetApps)
 		app.POST("/", api.InstallApp)
@@ -114,26 +75,26 @@ func Setup(db *gorm.DB) *gin.Engine {
 		app.PATCH("/:uuid", api.UpdateApp)
 		app.DELETE("/", api.UnInstallApp)
 		app.DELETE("/drop", api.DropApps)
+
 		// stats
 		app.POST("/progress/install", api.GetInstallProgress)
 		app.POST("/progress/uninstall", api.GetUnInstallProgress)
 		app.POST("/stats", api.AppStats)
 	}
-	appControl := admin.Group("/apps/control")
+	appControl := apiRoutes.Group("/apps/control")
 	{
 		appControl.POST("/", api.AppService)
 		appControl.POST("/bulk", api.AppService)
 	}
 
-	device := admin.Group("/device")
+	device := apiRoutes.Group("/device")
 	{
 		device.GET("/", api.GetDeviceInfo)
 		device.POST("/", api.AddDeviceInfo)
 		device.PATCH("/", api.UpdateDeviceInfo)
-
 	}
 
-	system := admin.Group("/system")
+	system := apiRoutes.Group("/system")
 	{
 		system.GET("/ping", api.Ping)
 		system.GET("/time", api.HostTime)
@@ -141,7 +102,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 		system.POST("/scanner", api.RunScanner)
 	}
 
-	networking := admin.Group("/networking")
+	networking := apiRoutes.Group("/networking")
 	{
 		networking.GET("/networks", api.Networking)
 		networking.GET("/interfaces", api.GetInterfacesNames)
@@ -151,7 +112,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 		networking.POST("/update/static", api.SetStaticIP)
 	}
 
-	files := admin.Group("/files")
+	files := apiRoutes.Group("/files")
 	{
 		files.GET("/read/*filePath", api.ReadDirs)
 		files.POST("/download/*filePath", api.DownloadFile)
@@ -161,18 +122,18 @@ func Setup(db *gorm.DB) *gin.Engine {
 		files.POST("/upload", api.UploadFile)
 	}
 
-	dirs := admin.Group("/dirs")
+	dirs := apiRoutes.Group("/dirs")
 	{
 		dirs.DELETE("/delete/*filePath", api.DeleteDir)
 		dirs.DELETE("/force/*filePath", api.DeleteDirForce)
 		dirs.POST("/move", api.CopyDir)
 
 	}
-	zip := admin.Group("/zip")
+	zip := apiRoutes.Group("/zip")
 	{
 		zip.POST("/unzip", api.Unzip)
 		zip.POST("/zip", api.ZipDir)
 	}
 
-	return r
+	return engine
 }

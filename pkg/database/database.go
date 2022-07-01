@@ -79,7 +79,6 @@ func Setup() error {
 
 	// Auto migrate project models
 	err = db.AutoMigrate(
-		&model.User{},
 		&apps.Store{},
 		&apps.App{},
 		&model.DeviceInfo{},

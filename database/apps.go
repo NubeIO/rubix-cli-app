@@ -47,7 +47,7 @@ func (db *DB) AppStats(body *apps.App) (*AppStats, error) {
 func (db *DB) GetApp(uuid string) (*apps.App, error) {
 	var m *apps.App
 	if err := db.DB.Where("uuid = ? ", uuid).First(&m).Error; err != nil {
-		return nil, handelNotFound(appName)
+		return nil, handleNotFound(appName)
 	}
 	return m, nil
 }
@@ -63,7 +63,7 @@ func (db *DB) GetAppAndStore(body *apps.App) (*apps.Store, *apps.App, error) {
 	} else {
 		appById, err := db.GetApp(body.UUID)
 		if err != nil {
-			return nil, nil, handelNotFound(appName)
+			return nil, nil, handleNotFound(appName)
 		}
 		app = appById
 	}
@@ -78,7 +78,7 @@ func (db *DB) GetAppAndStore(body *apps.App) (*apps.Store, *apps.App, error) {
 func (db *DB) GetAppByName(name string) (*apps.App, error) {
 	var m *apps.App
 	if err := db.DB.Where("app_store_name = ? ", name).First(&m).Error; err != nil {
-		return nil, handelNotFound(appName)
+		return nil, handleNotFound(appName)
 	}
 	return m, nil
 }
@@ -109,7 +109,7 @@ func (db *DB) UpdateApp(uuid string, app *apps.App) (*apps.App, error) {
 	var m *apps.App
 	query := db.DB.Where("uuid = ?", uuid).Find(&m).Updates(app)
 	if query.Error != nil {
-		return nil, handelNotFound(appName)
+		return nil, handleNotFound(appName)
 	} else {
 		return app, query.Error
 	}

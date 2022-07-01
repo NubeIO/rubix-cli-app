@@ -39,6 +39,6 @@ func initAppService(serviceName string) (*apps.Apps, error) {
 	return app, err
 }
 
-func handelNotFound(name string) error {
+func handleNotFound(name string) error {
 	return fmt.Errorf("no %s with that id was found", name)
 }
