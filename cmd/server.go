@@ -7,7 +7,6 @@ import (
 	"github.com/NubeIO/edge/pkg/logger"
 	"github.com/NubeIO/edge/pkg/router"
 	"github.com/spf13/cobra"
-	"log"
 	"os"
 )
 
@@ -37,7 +36,7 @@ func runServer(cmd *cobra.Command, args []string) {
 	host := "0.0.0.0"
 	port := config.Config.GetPort()
 	logger.Logger.Infof("server is starting at %s:%s", host, port)
-	log.Fatalf("%v", r.Run(fmt.Sprintf("%s:%s", host, port)))
+	logger.Logger.Fatalf("%v", r.Run(fmt.Sprintf("%s:%s", host, port)))
 }
 
 func init() {

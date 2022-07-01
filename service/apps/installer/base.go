@@ -1,11 +1,11 @@
 package installer
 
 import (
+	"github.com/NubeIO/edge/pkg/logger"
 	"github.com/NubeIO/edge/service/apps"
 	"github.com/NubeIO/lib-command/command"
 	"github.com/NubeIO/lib-command/unixcmd"
 	"github.com/NubeIO/lib-store/store"
-	log "github.com/sirupsen/logrus"
 )
 
 func initAppService(serviceName string) (*apps.Apps, error) {
@@ -39,7 +39,7 @@ func initApp(initApp *apps.Apps, appStore *apps.Store) (*apps.Apps, error) {
 	}
 	app, err := apps.New(inst)
 	if err != nil {
-		log.Errorln("new app: failed to init a new app", err)
+		logger.Logger.Errorln("new app: failed to init a new app", err)
 		return app, err
 	}
 	return app, err
