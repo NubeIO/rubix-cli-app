@@ -25,32 +25,32 @@ func MakeTopicUUID(attribute string) string {
 	u, _ := MakeUUID()
 	divider := "_"
 
-	fln := "fln" //flow network
-	str := "str" //stream
-	stc := "stc" //stream clone
-	pro := "pro" //producers
-	prh := "prh" //producer history
-	wrc := "wrc" //writerClone
-	con := "con" //consumers
-	wri := "wri" //writer
-	hos := "hos" //host
+	fln := "fln" // flow network
+	str := "str" // stream
+	stc := "stc" // stream clone
+	pro := "pro" // producers
+	prh := "prh" // producer history
+	wrc := "wrc" // writerClone
+	con := "con" // consumers
+	wri := "wri" // writer
+	hos := "hos" // host
 
-	fnc := "rfn" //flow network clone
-	plg := "plg" //plugin
-	net := "net" //network
-	dev := "dev" //device
-	pnt := "pnt" //point
-	job := "job" //job
-	sch := "sch" //schedule
-	ing := "ing" //integration
+	fnc := "rfn" // flow network clone
+	plg := "plg" // plugin
+	net := "net" // network
+	dev := "dev" // device
+	pnt := "pnt" // point
+	job := "job" // job
+	sch := "sch" // schedule
+	ing := "ing" // integration
 
-	stl := "stl" //list of flow network gateway
-	alt := "alt" //alerts
-	msg := "msg" //alerts messages
-	cmd := "cmd" //command
-	rub := "rbx" //rubix uuid
-	rxg := "rxg" //rubix global uuid
-	tem := "tem" //teams
+	stl := "stl" // list of flow network gateway
+	alt := "alt" // alerts
+	msg := "msg" // alerts messages
+	cmd := "cmd" // command
+	rub := "rbx" // rubix uuid
+	rxg := "rxg" // rubix global uuid
+	tem := "tem" // teams
 
 	switch attribute {
 	case model.CommonNaming.Plugin:

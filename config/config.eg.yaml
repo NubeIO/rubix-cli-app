@@ -1,0 +1,8 @@
+database:
+  driver: sqlite
+  name: data.db
+  loglevel: INFO # SILENT, ERROR, WARN, INFO
+server:
+  loglevel: INFO # PANIC, FATAL, ERROR, WARN, INFO, DEBUG, TRACE
+gin:
+  loglevel: debug # debug, release, test

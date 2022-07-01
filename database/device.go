@@ -10,7 +10,7 @@ const deviceInfo = "device info"
 func (db *DB) GetDeviceInfo(uuid string) (*model.DeviceInfo, error) {
 	var m *model.DeviceInfo
 	if err := db.DB.Where("uuid = ? ", uuid).First(&m).Error; err != nil {
-		return nil, handelNotFound(deviceInfo)
+		return nil, handleNotFound(deviceInfo)
 	}
 	return m, nil
 }
@@ -43,7 +43,7 @@ func (db *DB) UpdateDeviceInfo(uuid string, app *model.DeviceInfo) (*model.Devic
 	var m *model.DeviceInfo
 	query := db.DB.Where("uuid = ?", uuid).Find(&m).Updates(app)
 	if query.Error != nil {
-		return nil, handelNotFound(deviceInfo)
+		return nil, handleNotFound(deviceInfo)
 	} else {
 		return app, query.Error
 	}

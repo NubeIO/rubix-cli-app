@@ -2,9 +2,9 @@ package installer
 
 import (
 	"fmt"
+	"github.com/NubeIO/edge/pkg/logger"
 	"github.com/NubeIO/edge/service/apps"
 	"github.com/NubeIO/lib-systemctl-go/ctl"
-	log "github.com/sirupsen/logrus"
 )
 
 type unInstallLog struct {
@@ -85,7 +85,7 @@ func (inst *Installer) unInstallApp(body *App) (*UnInstallResponse, error) {
 	}
 	app, err := apps.New(newApps)
 	if err != nil {
-		log.Errorln("new app: failed to init a new app", err)
+		logger.Logger.Errorln("new app: failed to init a new app", err)
 		resp.UnInstallLog.InitApp = "new app: failed to init a new app"
 		SetProgress(progressKey, resp)
 		return resp, err
@@ -119,5 +119,4 @@ func (inst *Installer) unInstallApp(body *App) (*UnInstallResponse, error) {
 	}
 	SetProgress(progressKey, resp)
 	return resp, err
-
 }

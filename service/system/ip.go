@@ -12,10 +12,10 @@ import (
 
 type IP struct {
 	Interface        string `json:"interface"`
-	ConfirmInterface bool   `json:"confirm_interface"` //check if the interface exists
-	IPAddress        string `json:"ip_address"`        //192.168.15.10
-	Netmask          string `json:"netmask"`           //255.255.255.0
-	Gateway          string `json:"gateway"`           //192.168.15.1
+	ConfirmInterface bool   `json:"confirm_interface"` // check if the interface exists
+	IPAddress        string `json:"ip_address"`        // 192.168.15.10
+	Netmask          string `json:"netmask"`           // 255.255.255.0
+	Gateway          string `json:"gateway"`           // 192.168.15.1
 	DHCP             bool   `json:"-"`
 }
 
@@ -89,7 +89,6 @@ func (ip *IP) updateEdge() (bool, error) {
 	fmt.Println("SET IP not finished")
 	fmt.Println(nets)
 	return false, errors.New("code not finished")
-
 }
 
 func (ip *IP) updateRC() (bool, error) {
@@ -97,5 +96,4 @@ func (ip *IP) updateRC() (bool, error) {
 	fmt.Println("SET IP not finished")
 	fmt.Println(nets)
 	return false, errors.New("code not finished")
-
 }

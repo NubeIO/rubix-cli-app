@@ -61,7 +61,6 @@ func (inst *Controller) DeleteApp(c *gin.Context) {
 		return
 	}
 	reposeHandler(data, err, c)
-
 }
 
 func (inst *Controller) DropApps(c *gin.Context) {

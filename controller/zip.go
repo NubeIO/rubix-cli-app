@@ -71,5 +71,4 @@ func (inst *Controller) ZipDir(c *gin.Context) {
 		return
 	}
 	reposeHandler(Message{Message: fmt.Sprintf("new zip:%s", destination)}, nil, c)
-
 }

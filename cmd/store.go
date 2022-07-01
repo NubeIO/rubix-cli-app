@@ -6,8 +6,8 @@ import (
 	"github.com/NubeIO/edge/pkg/config"
 	"github.com/NubeIO/edge/pkg/database"
 	pprint "github.com/NubeIO/edge/pkg/helpers/print"
+	"github.com/NubeIO/edge/pkg/logger"
 	"github.com/NubeIO/edge/service/apps"
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -23,15 +23,14 @@ type InstallResp struct {
 }
 
 func initDB() *dbase.DB {
-	if err := config.Setup(); err != nil {
-		log.Errorln("config.Setup() error: %s", err)
+	if err := config.Setup(RootCmd); err != nil {
+		logger.Logger.Errorln("config.Setup() error: %s", err)
 	}
 	if err := database.Setup(); err != nil {
-		log.Errorln("database.Setup() error: %s", err)
+		logger.Logger.Errorln("database.Setup() error: %s", err)
 	}
-	db := database.GetDB()
 	appDB := &dbase.DB{
-		DB: db,
+		DB: database.DB,
 	}
 	return appDB
 }
@@ -60,27 +59,24 @@ func runApps(cmd *cobra.Command, args []string) {
 
 		app, err := db.CreateAppStore(store)
 		if err != nil {
-			log.Errorln(err)
+			logger.Logger.Errorln(err)
 			return
 		}
 		pprint.PrintJOSN(app)
 	}
 
 	if flgApp.installApp {
-
-		//app, err := db.InstallApp(&dbase.App{
+		// app, err := db.InstallApp(&dbase.App{
 		//	AppName: flgApp.appName,
 		//	Version: flgApp.version,
 		//	Token:   flgApp.token,
-		//})
-		//pprint.PrintJOSN(app)
-		//if err != nil {
-		//	log.Println("install app err", err)
+		// })
+		// pprint.PrintJOSN(app)
+		// if err != nil {
+		//	logger.Logger.Println("install app err", err)
 		//	return
-		//}
-
+		// }
 	}
-
 }
 
 var flgApp struct {
@@ -105,5 +101,4 @@ func init() {
 	flagSet.StringVar(&flgApp.rubixRootPath, "rubix-path", "", "rubix main path")
 	flagSet.BoolVarP(&flgApp.addStore, "store-add", "", false, "add a new app to the store")
 	flagSet.BoolVarP(&flgApp.installApp, "install", "", false, "install an app")
-
 }

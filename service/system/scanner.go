@@ -25,7 +25,6 @@ func RunScanner(params *Scanner) (*scanner.Hosts, error) {
 		if len(params.Ports) > 0 {
 			ports = params.Ports
 		}
-
 	}
 	scan := scanner.New()
 	address, err := scan.ResoleAddress(ip, count, iface)

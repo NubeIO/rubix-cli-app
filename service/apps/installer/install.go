@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 	dbase "github.com/NubeIO/edge/database"
+	"github.com/NubeIO/edge/pkg/logger"
 	"github.com/NubeIO/edge/service/apps"
-	log "github.com/sirupsen/logrus"
 	"strconv"
 	"strings"
 )
@@ -113,7 +113,7 @@ func (inst *Installer) installApp(body *App) (*InstallResponse, error) {
 	newApp, err := apps.New(newApps)
 	SetProgress(progressKey, resp)
 	if err != nil {
-		log.Errorln("new app: failed to init a new app", err)
+		logger.Logger.Errorln("new app: failed to init a new app", err)
 		return resp, err
 	}
 	if err = newApps.MakeDownloadDir(); err != nil {
@@ -142,7 +142,7 @@ func (inst *Installer) installApp(body *App) (*InstallResponse, error) {
 			resp.InstallLog.ManualInstall = "zip folder name can not be empty, try flow-framework-0.5.5-1575cf89.amd64.zip"
 			return resp, errors.New("zip folder name can not be empty, try flow-framework-0.5.5-1575cf89.amd64.zip")
 		}
-		if err = newApps.BuildExists(body.ManualAssetZipName); err != nil { //check if it is there
+		if err = newApps.BuildExists(body.ManualAssetZipName); err != nil { // check if it is there
 			resp.InstallLog.ManualInstall = err.Error()
 			return resp, err
 		}
@@ -158,7 +158,7 @@ func (inst *Installer) installApp(body *App) (*InstallResponse, error) {
 		download, err := newApp.GitDownload(newApps.App.DownloadPath)
 		SetProgress(progressKey, resp)
 		if err != nil {
-			log.Errorf("git: download error %s \n", err.Error())
+			logger.Logger.Errorf("git: download error %s \n", err.Error())
 			resp.InstallLog.GitDownload = err.Error()
 			SetProgress(progressKey, resp)
 			return resp, err
@@ -184,7 +184,7 @@ func (inst *Installer) installApp(body *App) (*InstallResponse, error) {
 	tmpFileDir := newApp.App.DownloadPath
 	SetProgress(progressKey, resp)
 	if _, err = newApp.GenerateServiceFile(newApp, tmpFileDir); err != nil { // make systemd file
-		log.Errorf("make service file build: failed error:%s \n", err.Error())
+		logger.Logger.Errorf("make service file build: failed error:%s \n", err.Error())
 		resp.InstallLog.GenerateService = err.Error()
 		SetProgress(progressKey, resp)
 		return resp, err
@@ -231,14 +231,14 @@ func (inst *Installer) installApp(body *App) (*InstallResponse, error) {
 		resp.InstallLog.AppInstall = fmt.Sprintf("an existing app was installed upgraded from: %s to: %s", existingVersion, assetTag)
 	} else {
 		resp.InstallLog.AppInstall = "installed a new app"
-		log.Infof(fmt.Sprintf("an existing app was installed upgraded from:%s to:%s", app.InstalledVersion, assetTag))
+		logger.Logger.Infof(fmt.Sprintf("an existing app was installed upgraded from:%s to:%s", app.InstalledVersion, assetTag))
 	}
 
 	SetProgress(progressKey, resp)
 	return resp, err
 }
 
-//matchRepoName get the tag name from the zip eg, wires-builds-0.5.5-1575cf89.amd64.zip => wires-builds
+// matchRepoName get the tag name from the zip eg, wires-builds-0.5.5-1575cf89.amd64.zip => wires-builds
 // 	returns
 // 	- true if is a match if it is a match
 // 	- match count
@@ -280,7 +280,7 @@ func matchRepoName(zipName, repoName string) (bool, int, string, bool, string) {
 	if match == count {
 		repoMatch = true
 	}
-	if repoName != "wires-builds" { //wires can run on any os
+	if repoName != "wires-builds" { // wires can run on any os
 		arch, _ = getArch()
 		if contains(parts, arch) {
 			if repoName == "wires-builds" {

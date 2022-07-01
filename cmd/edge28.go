@@ -20,7 +20,6 @@ var flgEdgeIp struct {
 }
 
 func runEdge(cmd *cobra.Command, args []string) {
-
 }
 
 func init() {
@@ -29,5 +28,4 @@ func init() {
 	edge28CMD.Flags().StringVarP(&flgEdgeIp.iPAddress, "ip", "", "192.168.15.40", "ip addr")
 	edge28CMD.Flags().StringVarP(&flgEdgeIp.subnetMask, "subnet", "", "255.255.255.0", "ip addr")
 	edge28CMD.Flags().StringVarP(&flgEdgeIp.gateway, "gateway", "", "", "ip addr")
-
 }

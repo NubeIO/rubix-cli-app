@@ -6,7 +6,6 @@ import (
 )
 
 func TestPort(t *testing.T) {
-
 	port := 8080
 	ok := ValidPort(port)
 	fmt.Println("port:", port, "is ok", ok)

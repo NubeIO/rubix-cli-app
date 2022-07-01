@@ -28,7 +28,7 @@ func TimeTrack(start time.Time) (out string) {
 	return out
 }
 
-const dirPath = "/home/aidan/testing" //TODO add in config
+const dirPath = "/home/aidan/testing" // TODO add in config
 
 type UploadResponse struct {
 	Destination string `json:"destination"`
@@ -167,7 +167,7 @@ func (inst *Controller) DeleteDirForce(c *gin.Context) {
 func (inst *Controller) delete(c *gin.Context, deleteDir, forceWipeOnDeleteDir bool) {
 	localSystemFilePath := concatPath(c.Param("filePath"))
 
-	if !deleteDir { //delete  a file
+	if !deleteDir { // delete  a file
 		if !fileUtils.FileExists(localSystemFilePath) {
 			reposeHandler(nil, errors.New("not found"), c)
 			return
@@ -176,7 +176,7 @@ func (inst *Controller) delete(c *gin.Context, deleteDir, forceWipeOnDeleteDir b
 		return
 	}
 
-	if deleteDir { //delete  a dir
+	if deleteDir { // delete  a dir
 		if !fileUtils.DirExists(localSystemFilePath) {
 			reposeHandler(nil, err, c)
 			return
