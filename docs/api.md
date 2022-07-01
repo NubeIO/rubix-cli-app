@@ -6,8 +6,9 @@
 - `POST`
 
 #### allowable_products
-if an app is added to the store and allowable_products is meant to be used so the user can install an app on the incorrect target device
 
+if an app is added to the store and allowable_products is meant to be used so the user can install an app on the
+incorrect target device
 
 ```
 {
@@ -39,7 +40,6 @@ if an app is added to the store and allowable_products is meant to be used so th
 
 ```
 
-
 ### install an app
 
 - `http://{{rubix_apps_ip}}:{{rubix_apps_port}}/api/apps`
@@ -63,7 +63,6 @@ if an app is added to the store and allowable_products is meant to be used so th
     "app_name": "flow-framework"
 }
 ```
-
 
 ### uninstall an app
 

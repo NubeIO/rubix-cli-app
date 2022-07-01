@@ -5,10 +5,9 @@ import (
 )
 
 func TestHost(*testing.T) {
-
-	//cli := New("", 0)
-	//file, err := cli.UploadFile("/home/aidan/Downloads/fileutils-master.zip", "/home/aidan")
+	// cli := New("", 0)
+	// file, err := cli.UploadFile("/home/aidan/Downloads/fileutils-master.zip", "/home/aidan")
 	//
-	//pprint.PrintJOSN(file)
-	//fmt.Println(err)
+	// pprint.PrintJOSN(file)
+	// fmt.Println(err)
 }

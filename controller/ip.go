@@ -9,8 +9,8 @@ import (
 var nets = networking.New()
 
 func (inst *Controller) GetIpSchema(c *gin.Context) {
-	//data := model.GetIpSchema()
-	//httpresp.ReposeHandler(c, http.StatusOK, httpresp.Success, data)
+	// data := model.GetIpSchema()
+	// httpresp.ReposeHandler(c, http.StatusOK, httpresp.Success, data)
 }
 
 func (inst *Controller) Networking(c *gin.Context) {

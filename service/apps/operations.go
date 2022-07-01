@@ -50,7 +50,7 @@ type massResponse struct {
 
 func (inst *Apps) Mass(mass *Mass) ([]massResponse, error) {
 	var response []massResponse
-	//for _, app := range mass.Apps {
+	// for _, app := range mass.Apps {
 	//	appService := &AppService{}
 	//	actionType := appService.Action
 	//	actionResp, err := inst.Action(appService)
@@ -65,6 +65,6 @@ func (inst *Apps) Mass(mass *Mass) ([]massResponse, error) {
 	//		Err:     actionResp.Err,
 	//	}
 	//	httpresp = append(httpresp, res)
-	//}
+	// }
 	return response, nil
 }

@@ -11,7 +11,7 @@ import (
 - delete files from data as in db, /data/flow-framework (optional)
 */
 
-//UninstallService
+// UninstallService
 //	-service nubeio-flow-framework
 func (inst *Apps) UninstallService(service string) (*ctl.RemoveRes, error) {
 	resp := &ctl.RemoveRes{}

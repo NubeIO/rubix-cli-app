@@ -12,10 +12,10 @@ import (
 
 type IP struct {
 	Interface        string `json:"interface"`
-	ConfirmInterface bool   `json:"confirm_interface"` //check if the interface exists
-	IPAddress        string `json:"ip_address"`        //192.168.15.10
-	Netmask          string `json:"netmask"`           //255.255.255.0
-	Gateway          string `json:"gateway"`           //192.168.15.1
+	ConfirmInterface bool   `json:"confirm_interface"` // check if the interface exists
+	IPAddress        string `json:"ip_address"`        // 192.168.15.10
+	Netmask          string `json:"netmask"`           // 255.255.255.0
+	Gateway          string `json:"gateway"`           // 192.168.15.1
 	DHCP             bool   `json:"-"`
 }
 
