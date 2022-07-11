@@ -6,30 +6,48 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type DirsParams struct {
+	Path string `json:"path"`
+	From string `json:"from"`
+	To   string `json:"to"`
+}
+
+func getDirsBody(c *gin.Context) (dto *DirsParams, err error) {
+	err = c.ShouldBindJSON(&dto)
+	return dto, err
+}
+
 func (inst *Controller) CreateDir(c *gin.Context) {
-	path := c.Query("path")
-	if path == "" {
+	body, err := getDirsBody(c)
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	if body.Path == "" {
 		reposeHandler(nil, errors.New("path can not be empty"), c)
 		return
 	}
-	err := files.MakeDirectoryIfNotExists(path)
+	err = files.MakeDirectoryIfNotExists(body.Path)
 	reposeHandler(Message{Message: "directory creation is successfully executed"}, err, c)
 }
 
 func (inst *Controller) CopyDir(c *gin.Context) {
-	from := c.Query("from")
-	to := c.Query("to")
-	if from == "" || to == "" {
+	body, err := getDirsBody(c)
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	if body.From == "" || body.To == "" {
 		reposeHandler(nil, errors.New("from and to directories name can not be empty"), c)
 		return
 	}
-	exists := fileUtils.DirExists(from)
+	exists := fileUtils.DirExists(body.From)
 	if !exists {
 		reposeHandler(nil, errors.New("from dir not found"), c)
 		return
 	}
 
-	err := fileUtils.Copy(from, to)
+	err = fileUtils.Copy(body.From, body.To)
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
@@ -38,24 +56,28 @@ func (inst *Controller) CopyDir(c *gin.Context) {
 }
 
 func (inst *Controller) DeleteDir(c *gin.Context) {
-	path := c.Query("path")
+	body, err := getDirsBody(c)
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
 	force := c.Query("force") == "true"
-	if path == "" {
+	if body.Path == "" {
 		reposeHandler(nil, errors.New("path can not be empty"), c)
 		return
 	}
-	if !fileUtils.DirExists(path) {
+	if !fileUtils.DirExists(body.Path) {
 		reposeHandler(nil, err, c)
 		return
 	}
 	if force {
-		err := fileUtils.RmRF(path)
+		err := fileUtils.RmRF(body.Path)
 		if err != nil {
 			reposeHandler(nil, err, c)
 			return
 		}
 	} else {
-		err := fileUtils.Rm(path)
+		err := fileUtils.Rm(body.Path)
 		if err != nil {
 			reposeHandler(nil, err, c)
 			return
