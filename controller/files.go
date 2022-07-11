@@ -15,6 +15,177 @@ import (
 	"time"
 )
 
+type FilesParams struct {
+	File      string `json:"file"`
+	Directory string `json:"directory"`
+	From      string `json:"from"`
+	To        string `json:"to"`
+}
+
+func getFilesBody(c *gin.Context) (dto *FilesParams, err error) {
+	err = c.ShouldBindJSON(&dto)
+	return dto, err
+}
+
+func (inst *Controller) ListFiles(c *gin.Context) {
+	file := c.Query("file")
+	fileInfo, err := os.Stat(file)
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	var dirContent []string
+	if fileInfo.IsDir() {
+		files, err := ioutil.ReadDir(file)
+		if err != nil {
+			reposeHandler(nil, err, c)
+			return
+		}
+		for _, file := range files {
+			dirContent = append(dirContent, file.Name())
+		}
+	} else {
+		reposeHandler(dirContent, errors.New("it needs to be a directory, found file"), c)
+		return
+	}
+	reposeHandler(dirContent, nil, c)
+}
+
+func (inst *Controller) RenameFile(c *gin.Context) {
+	body, err := getFilesBody(c)
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	if body.Directory == "" || body.From == "" || body.To == "" {
+		reposeHandler(nil, errors.New("directory, from and to files name can not be empty"), c)
+		return
+	}
+	fromFileLocation := path.Join(body.Directory, body.From)
+	toFileLocation := path.Join(body.Directory, body.To)
+	if !fileUtils.FileExists(fromFileLocation) {
+		reposeHandler(nil, errors.New("file not found"), c)
+		return
+	}
+	err = fileUtils.Rename(fromFileLocation, toFileLocation)
+	reposeHandler(Message{Message: "renaming is successfully done"}, err, c)
+}
+
+func (inst *Controller) CopyFile(c *gin.Context) {
+	body, err := getFilesBody(c)
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+
+	if body.From == "" || body.To == "" {
+		reposeHandler(nil, errors.New("from and to files name can not be empty"), c)
+		return
+	}
+
+	err = fileUtils.Copy(body.From, body.To)
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	reposeHandler(Message{Message: "copying is successfully done"}, err, c)
+}
+
+func (inst *Controller) MoveFile(c *gin.Context) {
+	body, err := getFilesBody(c)
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+
+	if body.From == "" || body.To == "" {
+		reposeHandler(nil, errors.New("from and to files name can not be empty"), c)
+		return
+	}
+
+	err = fileUtils.MoveFile(body.From, body.To)
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	reposeHandler(Message{Message: "moving is successfully done"}, err, c)
+}
+
+func (inst *Controller) DownloadFile(c *gin.Context) {
+	body, err := getFilesBody(c)
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	fileInfo, err := os.Stat(body.File)
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	var dirContent []string
+	if fileInfo.IsDir() {
+		reposeHandler(dirContent, errors.New("it needs to be a file, found directory"), c)
+		return
+	} else {
+		byteFile, err := ioutil.ReadFile(body.File)
+		if err != nil {
+			reposeHandler(nil, err, c)
+			return
+		}
+		fileName, _ := filepath.Abs(body.File)
+		outFileName := fmt.Sprintf("attachment; filename=%s", filepath.Base(fileName))
+		c.Header("Content-Disposition", outFileName)
+		c.Data(http.StatusOK, "application/octet-stream", byteFile)
+	}
+	reposeHandler(dirContent, nil, c)
+}
+
+/*
+UploadFile
+// curl -X POST http://localhost:1661/api/files/upload?to=/data/ -F "file=@/home/user/Downloads/bios-master.zip" -H "Content-Type: multipart/form-data"
+*/
+func (inst *Controller) UploadFile(c *gin.Context) {
+	now := time.Now()
+	to := c.Query("to")
+	file, err := c.FormFile("file")
+	resp := &UploadResponse{}
+	if err != nil || file == nil {
+		reposeHandler(resp, err, c)
+		return
+	}
+	toFileLocation := fmt.Sprintf("%s/%s", to, filepath.Base(file.Filename))
+	if err := c.SaveUploadedFile(file, toFileLocation); err != nil {
+		reposeHandler(resp, err, c)
+		return
+	}
+	size, err := fileutils.GetFileSize(toFileLocation)
+	if err != nil {
+		reposeHandler(resp, err, c)
+	}
+	resp = &UploadResponse{
+		Destination: file.Filename,
+		File:        file.Filename,
+		Size:        size.String(),
+		UploadTime:  TimeTrack(now),
+	}
+	reposeHandler(resp, nil, c)
+}
+
+func (inst *Controller) DeleteFile(c *gin.Context) {
+	body, err := getFilesBody(c)
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+
+	if !fileUtils.FileExists(body.File) {
+		reposeHandler(nil, errors.New("file doesn't exist"), c)
+		return
+	}
+	err = fileUtils.Rm(body.File)
+	reposeHandler(Message{Message: "file has been deleted"}, err, c)
+}
+
 func TimeTrack(start time.Time) (out string) {
 	elapsed := time.Since(start)
 	// Skip this function, and fetch the PC and file for its parent.
@@ -28,215 +199,9 @@ func TimeTrack(start time.Time) (out string) {
 	return out
 }
 
-const dirPath = "/home/aidan/testing" // TODO add in config
-
 type UploadResponse struct {
 	Destination string `json:"destination"`
 	File        string `json:"file"`
 	Size        string `json:"size"`
 	UploadTime  string `json:"upload_time"`
-}
-
-/*
-UploadFile
-// curl -X POST http://localhost:1661/api/files/upload?destination=/home/user   -F "file=@/home/user/Downloads/bios-master.zip"   -H "Content-Type: multipart/form-data"
-*/
-func (inst *Controller) UploadFile(c *gin.Context) {
-	now := time.Now()
-	destination := c.Query("destination")
-	file, err := c.FormFile("file")
-	resp := &UploadResponse{}
-	if err != nil || file == nil {
-		reposeHandler(resp, err, c)
-		return
-	}
-	fileFull := fmt.Sprintf("%s/%s", destination, filepath.Base(file.Filename))
-	if err := c.SaveUploadedFile(file, fileFull); err != nil {
-		reposeHandler(resp, err, c)
-		return
-	}
-	size, err := fileutils.GetFileSize(fileFull)
-	if err != nil {
-		reposeHandler(resp, err, c)
-	}
-	resp = &UploadResponse{
-		Destination: file.Filename,
-		File:        file.Filename,
-		Size:        size.String(),
-		UploadTime:  TimeTrack(now),
-	}
-	reposeHandler(resp, nil, c)
-
-}
-
-/*
-DownloadFile
-curl -X GET http://localhost:1661/api/files/download/<pathAndFile>
-eg curl -X GET http://localhost:1661/api/dirs/Downloads/flow-framework-0.5.4-13ac6506.amd64.zip
-*/
-func (inst *Controller) DownloadFile(c *gin.Context) {
-	inst.readFiles(c, true)
-}
-
-/*
-ReadDirs
-curl -X GET http://localhost:1661/api/files/dirs/<path>
-
-*/
-func (inst *Controller) ReadDirs(c *gin.Context) {
-	inst.readFiles(c, false)
-}
-
-// RenameFile ...
-func (inst *Controller) RenameFile(c *gin.Context) {
-	existing := c.Query("existing")
-	newName := c.Query("new")
-	dir, _ := filepath.Split(existing)
-	fileFull := fmt.Sprintf("%s/%s", dir, newName)
-
-	if existing == "" || newName == "" {
-		reposeHandler(nil, errors.New("path and file name can not be empty"), c)
-		return
-	}
-	if !fileUtils.FileExists(existing) {
-		reposeHandler(nil, errors.New("file not found"), c)
-		return
-	}
-	err = fileUtils.Rename(existing, fileFull)
-	reposeHandler(Message{Message: "rename ok"}, err, c)
-}
-
-func (inst *Controller) MoveFile(c *gin.Context) {
-	existing := c.Query("existing")
-	destination := c.Query("destination")
-
-	if existing == "" || destination == "" {
-		reposeHandler(nil, errors.New("existing and existing name can not be empty"), c)
-		return
-	}
-
-	err := fileUtils.MoveFile(existing, destination)
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
-	reposeHandler(Message{Message: "move ok"}, err, c)
-}
-
-func (inst *Controller) CopyDir(c *gin.Context) {
-	existing := c.Query("existing")
-	destination := c.Query("destination")
-	exists := fileUtils.DirExists(existing)
-	if !exists {
-		reposeHandler(nil, errors.New("existing dir not found"), c)
-		return
-	}
-
-	err := fileUtils.Copy(existing, destination)
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
-	reposeHandler(Message{Message: "copy ok"}, err, c)
-}
-
-/*
-DeleteFile
-curl -X DELETE http://localhost:1661/api/files/delete/<pathAndFile>
-*/
-func (inst *Controller) DeleteFile(c *gin.Context) {
-	inst.delete(c, false, false)
-}
-
-/*
-DeleteDir
-curl -X DELETE http://localhost:1661/api/files/delete/<pathAndFile>
-*/
-func (inst *Controller) DeleteDir(c *gin.Context) {
-	inst.delete(c, true, false)
-}
-
-/*
-DeleteDirForce
-curl -X DELETE http://localhost:1661/api/files/force/<pathAndFile>
-*/
-func (inst *Controller) DeleteDirForce(c *gin.Context) {
-	inst.delete(c, true, true)
-}
-
-func (inst *Controller) delete(c *gin.Context, deleteDir, forceWipeOnDeleteDir bool) {
-	localSystemFilePath := concatPath(c.Param("filePath"))
-
-	if !deleteDir { // delete  a file
-		if !fileUtils.FileExists(localSystemFilePath) {
-			reposeHandler(nil, errors.New("not found"), c)
-			return
-		}
-		reposeHandler(Message{Message: "delete file ok"}, nil, c)
-		return
-	}
-
-	if deleteDir { // delete  a dir
-		if !fileUtils.DirExists(localSystemFilePath) {
-			reposeHandler(nil, err, c)
-			return
-		}
-		if forceWipeOnDeleteDir {
-			err := fileUtils.RmRF(localSystemFilePath)
-			if err != nil {
-				reposeHandler(nil, err, c)
-				return
-			}
-		} else {
-			err := fileUtils.Rm(localSystemFilePath)
-			if err != nil {
-				reposeHandler(nil, err, c)
-				return
-			}
-		}
-		reposeHandler(Message{Message: "delete directory ok"}, nil, c)
-		return
-	}
-}
-
-func concatPath(localSystemFilePath string) string {
-	localSystemFilePath = path.Join(filepath.Dir(dirPath), localSystemFilePath)
-	return localSystemFilePath
-}
-
-func (inst *Controller) readFiles(c *gin.Context, downloadFile bool) {
-	localSystemFilePath := concatPath(c.Param("filePath")) // /api/files/*filePath
-	fileInfo, err := os.Stat(localSystemFilePath)
-	fileName, _ := filepath.Abs(localSystemFilePath)
-	outFileName := fmt.Sprintf("attachment; %s", filepath.Base(fileName))
-	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			reposeHandler(nil, err, c)
-		} else {
-			reposeHandler(nil, err, c)
-		}
-		return
-	}
-	var dirContent []string
-	if fileInfo.IsDir() {
-		files, err := ioutil.ReadDir(localSystemFilePath)
-		if err != nil {
-			reposeHandler(nil, err, c)
-			return
-		}
-		for _, file := range files {
-			dirContent = append(dirContent, file.Name())
-		}
-	} else {
-		if downloadFile {
-			byteFile, err := ioutil.ReadFile(localSystemFilePath)
-			if err != nil {
-				reposeHandler(nil, err, c)
-				return
-			}
-			c.Header("Content-Disposition", outFileName)
-			c.Data(http.StatusOK, "application/octet-stream", byteFile)
-		}
-	}
-	reposeHandler(dirContent, nil, c)
 }

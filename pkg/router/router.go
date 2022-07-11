@@ -114,21 +114,22 @@ func Setup(db *gorm.DB) *gin.Engine {
 
 	files := apiRoutes.Group("/files")
 	{
-		files.GET("/read/*filePath", api.ReadDirs)
-		files.POST("/download/*filePath", api.DownloadFile)
-		files.DELETE("/delete/*filePath", api.DeleteFile)
+		files.GET("/list", api.ListFiles)
 		files.POST("/rename", api.RenameFile)
+		files.POST("/copy", api.CopyFile)
 		files.POST("/move", api.MoveFile)
 		files.POST("/upload", api.UploadFile)
+		files.POST("/download", api.DownloadFile)
+		files.DELETE("/delete", api.DeleteFile)
 	}
 
 	dirs := apiRoutes.Group("/dirs")
 	{
-		dirs.DELETE("/delete/*filePath", api.DeleteDir)
-		dirs.DELETE("/force/*filePath", api.DeleteDirForce)
-		dirs.POST("/move", api.CopyDir)
-
+		dirs.POST("/create", api.CreateDir)
+		dirs.POST("/copy", api.CopyDir)
+		dirs.DELETE("/delete", api.DeleteDir)
 	}
+
 	zip := apiRoutes.Group("/zip")
 	{
 		zip.POST("/unzip", api.Unzip)

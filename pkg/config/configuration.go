@@ -8,7 +8,7 @@ import (
 )
 
 var Config *Configuration
-var rootCmd *cobra.Command
+var RootCmd *cobra.Command
 
 type Configuration struct {
 	Server   ServerConfiguration
@@ -18,7 +18,7 @@ type Configuration struct {
 }
 
 func Setup(rootCmd_ *cobra.Command) error {
-	rootCmd = rootCmd_
+	RootCmd = rootCmd_
 	configuration := &Configuration{}
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
@@ -38,11 +38,11 @@ func Setup(rootCmd_ *cobra.Command) error {
 	return nil
 }
 func (conf *Configuration) Prod() bool {
-	return rootCmd.PersistentFlags().Lookup("prod").Value.String() == "true"
+	return RootCmd.PersistentFlags().Lookup("prod").Value.String() == "true"
 }
 
 func (conf *Configuration) GetPort() string {
-	return rootCmd.PersistentFlags().Lookup("port").Value.String()
+	return RootCmd.PersistentFlags().Lookup("port").Value.String()
 }
 
 func (conf *Configuration) GetAbsDataDir() string {
@@ -54,13 +54,15 @@ func (conf *Configuration) GetAbsConfigDir() string {
 }
 
 func (conf *Configuration) getGlobalDir() string {
-	return rootCmd.PersistentFlags().Lookup("global-dir").Value.String()
+	rootDir := RootCmd.PersistentFlags().Lookup("root-dir").Value.String()
+	appDir := RootCmd.PersistentFlags().Lookup("app-dir").Value.String()
+	return path.Join(rootDir, appDir)
 }
 
 func (conf *Configuration) getDataDir() string {
-	return rootCmd.PersistentFlags().Lookup("data-dir").Value.String()
+	return RootCmd.PersistentFlags().Lookup("data-dir").Value.String()
 }
 
 func (conf *Configuration) getConfigDir() string {
-	return rootCmd.PersistentFlags().Lookup("config-dir").Value.String()
+	return RootCmd.PersistentFlags().Lookup("config-dir").Value.String()
 }

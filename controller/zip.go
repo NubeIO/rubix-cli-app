@@ -3,8 +3,10 @@ package controller
 import (
 	"errors"
 	"fmt"
+	"github.com/NubeIO/nubeio-rubix-lib-helpers-go/pkg/system/files"
 	"github.com/gin-gonic/gin"
 	"os"
+	"path"
 )
 
 type ZipParams struct {
@@ -21,18 +23,18 @@ func getZipBody(c *gin.Context) (dto *ZipParams, err error) {
 
 func (inst *Controller) Unzip(c *gin.Context) {
 	body, err := getZipBody(c)
-	pathToZip := body.Source
-	destination := body.Destination
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
 	}
+	pathToZip := body.Source
+	destination := body.Destination
 	if body.Source == "" {
-		reposeHandler(nil, errors.New("zip source can not be empty, try /home/user/zip.zip"), c)
+		reposeHandler(nil, errors.New("zip source can not be empty, try /data/zip.zip"), c)
 		return
 	}
 	if body.Destination == "" {
-		reposeHandler(nil, errors.New("zip destination can not be empty, try /home/user"), c)
+		reposeHandler(nil, errors.New("zip destination can not be empty, try /data/unzip-test"), c)
 		return
 	}
 	zip, err := fileUtils.UnZip(pathToZip, destination, os.FileMode(body.Perm))
@@ -40,23 +42,23 @@ func (inst *Controller) Unzip(c *gin.Context) {
 		reposeHandler(nil, err, c)
 		return
 	}
-	reposeHandler(Message{Message: fmt.Sprintf("ok amout of files unziped %d", len(zip))}, err, c)
+	reposeHandler(Message{Message: fmt.Sprintf("unzipped successfully, files count: %d", len(zip))}, err, c)
 }
 
 func (inst *Controller) ZipDir(c *gin.Context) {
 	body, err := getZipBody(c)
-	pathToZip := body.Source
-	destination := body.Destination
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
 	}
+	pathToZip := body.Source
+	destination := body.Destination
 	if body.Source == "" {
-		reposeHandler(nil, errors.New("zip source can not be empty, try try /home/user/test"), c)
+		reposeHandler(nil, errors.New("zip source can not be empty, try /data/flow-framework"), c)
 		return
 	}
 	if body.Destination == "" {
-		reposeHandler(nil, errors.New("zip destination can not be empty, try try /home/user/test.zip"), c)
+		reposeHandler(nil, errors.New("zip destination can not be empty, try /home/test/flow-framework.zip"), c)
 		return
 	}
 
@@ -65,10 +67,11 @@ func (inst *Controller) ZipDir(c *gin.Context) {
 		reposeHandler(nil, errors.New("dir to zip not found"), c)
 		return
 	}
+	files.MakeDirectoryIfNotExists(path.Dir(destination))
 	err = fileUtils.RecursiveZip(pathToZip, destination)
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
 	}
-	reposeHandler(Message{Message: fmt.Sprintf("new zip:%s", destination)}, nil, c)
+	reposeHandler(Message{Message: fmt.Sprintf("zip file is created on: %s", destination)}, nil, c)
 }

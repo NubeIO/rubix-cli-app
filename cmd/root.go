@@ -21,7 +21,8 @@ func Execute() {
 var flgRoot struct {
 	prod          bool
 	port          int
-	globalDir     string
+	rootDir       string
+	appDir        string
 	dataDir       string
 	configDir     string
 	host          string
@@ -38,7 +39,8 @@ var flgRoot struct {
 func init() {
 	RootCmd.PersistentFlags().BoolVarP(&flgRoot.prod, "prod", "", false, "prod")
 	RootCmd.PersistentFlags().IntVarP(&flgRoot.port, "port", "p", 1661, "port (default 1661)")
-	RootCmd.PersistentFlags().StringVarP(&flgRoot.globalDir, "global-dir", "g", "./", "global dir")
+	RootCmd.PersistentFlags().StringVarP(&flgRoot.rootDir, "root-dir", "r", "./", "root dir") // in production it will be `/data`
+	RootCmd.PersistentFlags().StringVarP(&flgRoot.appDir, "app-dir", "a", "./", "global dir") // in production it will be `/edge`
 	RootCmd.PersistentFlags().StringVarP(&flgRoot.dataDir, "data-dir", "d", "data", "data dir")
 	RootCmd.PersistentFlags().StringVarP(&flgRoot.configDir, "config-dir", "c", "config", "config dir")
 	RootCmd.PersistentFlags().StringVarP(&flgRoot.host, "host", "", "RC", "host name (default RC)")
