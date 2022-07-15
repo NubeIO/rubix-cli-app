@@ -24,24 +24,24 @@ type AppStats struct {
 }
 
 func (db *DB) AppStats(body *apps.App) (*AppStats, error) {
-	appStats := &AppStats{
-		Stats: systemctl.SystemState{},
-	}
-	appStore, getApp, err := db.GetAppAndStore(body)
-	if err != nil {
-		return nil, err
-	}
-	service, err := initAppService(appStore.ServiceName)
-	if err != nil {
-		return nil, err
-	}
-	status, err := service.ServiceStats(apps.DefaultTimeout)
-	if err != nil {
-		return nil, err
-	}
-	appStats.App = getApp
-	appStats.Stats = status
-	return appStats, nil
+	//appStats := &AppStats{
+	//	Stats: systemctl.SystemState{},
+	//}
+	//appStore, getApp, err := db.GetAppAndStore(body)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//service, err := initAppService(appStore.ServiceName)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//status, err := service.ServiceStats(apps.DefaultTimeout)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//appStats.App = getApp
+	//appStats.Stats = status
+	return nil, nil
 }
 
 func (db *DB) GetApp(uuid string) (*apps.App, error) {

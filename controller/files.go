@@ -5,6 +5,7 @@ import (
 	"fmt"
 	fileutils "github.com/NubeIO/lib-dirs/dirs"
 	"github.com/gin-gonic/gin"
+	"io/fs"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -12,6 +13,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"runtime"
+	"strings"
 	"time"
 )
 
@@ -25,6 +27,38 @@ type FilesParams struct {
 func getFilesBody(c *gin.Context) (dto *FilesParams, err error) {
 	err = c.ShouldBindJSON(&dto)
 	return dto, err
+}
+
+type App struct {
+	App     string
+	Version string
+}
+
+func (inst *Controller) WalkFile(c *gin.Context) {
+	rootDir := c.Query("file")
+	var files []App
+	app := App{}
+	err := filepath.WalkDir(rootDir, func(p string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() && strings.Count(p, string(os.PathSeparator)) == 6 {
+			parts := strings.Split(p, "/")
+			if len(parts) >= 5 { // app name
+				app.App = parts[5]
+			}
+			if len(parts) >= 6 { // version
+				app.Version = parts[6]
+			}
+			files = append(files, app)
+		}
+		return nil
+	})
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	reposeHandler(files, nil, c)
 }
 
 func (inst *Controller) ListFiles(c *gin.Context) {
