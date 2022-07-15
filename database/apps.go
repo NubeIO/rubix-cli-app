@@ -2,9 +2,9 @@ package dbase
 
 import (
 	"errors"
-	"github.com/NubeIO/edge/service/apps"
 	"github.com/NubeIO/lib-systemctl-go/systemctl"
 	"github.com/NubeIO/lib-uuid/uuid"
+	"github.com/NubeIO/rubix-edge/service/apps"
 )
 
 const appName = "app"

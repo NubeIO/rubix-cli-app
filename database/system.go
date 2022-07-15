@@ -1,7 +1,7 @@
 package dbase
 
 import (
-	"github.com/NubeIO/edge/service/apps"
+	"github.com/NubeIO/rubix-edge/service/apps"
 )
 
 type SystemCtl struct {

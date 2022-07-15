@@ -3,9 +3,9 @@ package installer
 import (
 	"errors"
 	"fmt"
-	dbase "github.com/NubeIO/edge/database"
-	"github.com/NubeIO/edge/pkg/logger"
-	"github.com/NubeIO/edge/service/apps"
+	dbase "github.com/NubeIO/rubix-edge/database"
+	"github.com/NubeIO/rubix-edge/pkg/logger"
+	"github.com/NubeIO/rubix-edge/service/apps"
 	"strconv"
 	"strings"
 )

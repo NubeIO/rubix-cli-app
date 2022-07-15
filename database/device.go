@@ -2,7 +2,7 @@ package dbase
 
 import (
 	"errors"
-	"github.com/NubeIO/edge/pkg/model"
+	"github.com/NubeIO/rubix-edge/pkg/model"
 )
 
 const deviceInfo = "device info"

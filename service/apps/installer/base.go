@@ -1,11 +1,11 @@
 package installer
 
 import (
-	"github.com/NubeIO/edge/pkg/logger"
-	"github.com/NubeIO/edge/service/apps"
 	"github.com/NubeIO/lib-command/command"
 	"github.com/NubeIO/lib-command/unixcmd"
 	"github.com/NubeIO/lib-store/store"
+	"github.com/NubeIO/rubix-edge/pkg/logger"
+	"github.com/NubeIO/rubix-edge/service/apps"
 )
 
 func initAppService(serviceName string) (*apps.Apps, error) {

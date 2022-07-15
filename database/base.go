@@ -2,7 +2,7 @@ package dbase
 
 import (
 	"fmt"
-	"github.com/NubeIO/edge/service/apps"
+	"github.com/NubeIO/rubix-edge/service/apps"
 	"gorm.io/gorm"
 )
 

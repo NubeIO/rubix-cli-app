@@ -1,9 +1,9 @@
 package controller
 
 import (
-	dbase "github.com/NubeIO/edge/database"
-	"github.com/NubeIO/edge/service/apps/installer"
 	fileutils "github.com/NubeIO/lib-dirs/dirs"
+	dbase "github.com/NubeIO/rubix-edge/database"
+	"github.com/NubeIO/rubix-edge/service/apps/installer"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
