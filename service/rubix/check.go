@@ -1,8 +1,11 @@
 package rubix
 
 import (
+	"fmt"
+	fileutils "github.com/NubeIO/lib-dirs/dirs"
 	"github.com/NubeIO/lib-systemctl-go/systemctl"
 	"io/fs"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -23,7 +26,54 @@ var systemOpts = systemctl.Options{
 	Timeout:  DefaultTimeout,
 }
 
-func (inst *Rubix) InstalledApps() ([]AppResponse, error) {
+func (inst *App) ConfirmAppDir(appName string) bool {
+	return fileutils.New().DirExists(fmt.Sprintf("%s/%s", DataDir, appName))
+}
+
+func (inst *App) ConfirmAppInstallDir(appInstallName string) bool {
+	return fileutils.New().DirExists(fmt.Sprintf("%s/%s", AppsInstallDir, appInstallName))
+}
+
+func (inst *App) GetAppVersion(appInstallName string) string {
+	file := fmt.Sprintf("%s/%s", AppsInstallDir, appInstallName)
+	fileInfo, err := os.Stat(file)
+	if err != nil {
+		return ""
+	}
+	if fileInfo.IsDir() {
+		files, err := ioutil.ReadDir(file)
+		if err != nil {
+			return ""
+		}
+		for _, file := range files {
+			fmt.Println(file.Name())
+			if checkVersionBool(file.Name()) {
+				return file.Name()
+			}
+		}
+	}
+	return ""
+}
+
+func (inst *App) listFiles(file string) ([]string, error) {
+	fileInfo, err := os.Stat(file)
+	if err != nil {
+		return nil, err
+	}
+	var dirContent []string
+	if fileInfo.IsDir() {
+		files, err := ioutil.ReadDir(file)
+		if err != nil {
+			return nil, err
+		}
+		for _, file := range files {
+			dirContent = append(dirContent, file.Name())
+		}
+	}
+	return dirContent, nil
+}
+
+func (inst *App) InstalledApps() ([]AppResponse, error) {
 	rootDir := AppsInstallDir
 	var files []AppResponse
 	app := AppResponse{}
@@ -50,7 +100,7 @@ func (inst *Rubix) InstalledApps() ([]AppResponse, error) {
 	return files, nil
 }
 
-func (inst *Rubix) ConfirmInstalledApps(apps []string) ([]AppResponse, error) {
+func (inst *App) ConfirmInstalledApps(apps []string) ([]AppResponse, error) {
 	var out []AppResponse
 	app := AppResponse{}
 	for _, ap := range apps {

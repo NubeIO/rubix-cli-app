@@ -3,11 +3,41 @@ package rubix
 import (
 	"errors"
 	"fmt"
+	fileutils "github.com/NubeIO/lib-dirs/dirs"
+	log "github.com/sirupsen/logrus"
 	"os"
 	"strings"
 )
 
-func (inst *Rubix) MakeAllDirs() error {
+// DirsInstallApp make all the installation dirs
+//	appDirName => rubix-wires
+//	appInstallName => wires-builds
+func (inst *App) DirsInstallApp(appName, appBuildName, version string) error {
+
+	err := inst.MakeAllDirs()
+	if err != nil {
+		return err
+	}
+	err = inst.MakeAppDir(appName)
+	if err != nil {
+		return err
+	}
+	err = inst.MakeAppInstallDir(appBuildName)
+	if err != nil {
+		return err
+	}
+
+	err = inst.MakeAppVersionDir(appBuildName, version)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+// MakeAllDirs make all the required dirs
+func (inst *App) MakeAllDirs() error {
 	err := inst.MakeDataDir()
 	if err != nil {
 		return err
@@ -20,54 +50,58 @@ func (inst *Rubix) MakeAllDirs() error {
 	if err != nil {
 		return err
 	}
+	err = inst.MakeDownloadDir()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 //MakeTmpDir  => /data/tmp
-func (inst *Rubix) MakeTmpDir() error {
+func (inst *App) MakeTmpDir() error {
 	if err := checkDir(inst.DataDir); err != nil {
 		return errors.New(fmt.Sprintf("dir not exists %s", inst.DataDir))
 	}
 	return makeDirectoryIfNotExists(TmpDir, os.FileMode(FilePerm))
 }
 
-//MakeAppInstallDir  => /data/rubix-service/apps/install/flow-framework
-func (inst *Rubix) MakeAppInstallDir(appName string) error {
-	if err := emptyPath(appName); err != nil {
+//MakeAppInstallDir  => /data/rubix-service/apps/install/wires-builds
+func (inst *App) MakeAppInstallDir(appBuildName string) error {
+	if err := emptyPath(appBuildName); err != nil {
 		return err
 	}
-	if err := checkDir(inst.DataDir); err != nil {
-		return errors.New(fmt.Sprintf("dir not exists %s", inst.DataDir))
+	appInstallDir := fmt.Sprintf("%s/%s", AppsInstallDir, appBuildName)
+
+	err := fileutils.New().Rm(appInstallDir)
+	fmt.Println(11111, err)
+	if err != nil {
+		log.Errorf("delete existing install dir: %s", err.Error())
 	}
-	if err := checkDir(AppsInstallDir); err != nil {
-		return errors.New(fmt.Sprintf("dir not exists %s", AppsInstallDir))
-	}
-	return makeDirectoryIfNotExists(fmt.Sprintf("%s/%s", AppsInstallDir, appName), os.FileMode(FilePerm))
+
+	return makeDirectoryIfNotExists(fmt.Sprintf("%s/%s", AppsInstallDir, appBuildName), os.FileMode(FilePerm))
 }
 
-//MakeAppVersionDir  => /data/rubix-service/apps/install/flow-framework/v0.0.1
-func (inst *Rubix) MakeAppVersionDir(appName, version string) error {
-	if err := emptyPath(appName); err != nil {
+// GetAppInstallPath get the full app install path and version => /data/rubix-service/apps/install/wires-builds/v0.0.1
+func (inst *App) GetAppInstallPath(appBuildName, version string) string {
+	appDir := fmt.Sprintf("%s/%s", AppsInstallDir, appBuildName)
+	return fmt.Sprintf("%s/%s", appDir, version)
+}
+
+//MakeAppVersionDir  => /data/rubix-service/apps/install/wires-builds/v0.0.1
+func (inst *App) MakeAppVersionDir(appBuildName, version string) error {
+	if err := emptyPath(appBuildName); err != nil {
 		return err
 	}
 	if err := checkVersion(version); err != nil {
 		return err
 	}
-	if err := checkDir(inst.DataDir); err != nil {
-		return errors.New(fmt.Sprintf("dir not exists %s", inst.DataDir))
-	}
-	if err := checkDir(AppsInstallDir); err != nil {
-		return errors.New(fmt.Sprintf("dir not exists %s", AppsInstallDir))
-	}
-	appDir := fmt.Sprintf("%s/%s", AppsInstallDir, appName)
-	if err := checkDir(appDir); err != nil {
-		return errors.New(fmt.Sprintf("dir not exists %s", appDir))
-	}
+	appDir := fmt.Sprintf("%s/%s", AppsInstallDir, appBuildName)
+	fmt.Println("make version dir ", fmt.Sprintf("%s/%s", appDir, version))
 	return makeDirectoryIfNotExists(fmt.Sprintf("%s/%s", appDir, version), os.FileMode(FilePerm))
 }
 
 //MakeAppDir  => /data/flow-framework
-func (inst *Rubix) MakeAppDir(appName string) error {
+func (inst *App) MakeAppDir(appName string) error {
 	if err := emptyPath(appName); err != nil {
 		return err
 	}
@@ -78,15 +112,23 @@ func (inst *Rubix) MakeAppDir(appName string) error {
 }
 
 //MakeInstallDir  => /data/rubix-service/install
-func (inst *Rubix) MakeInstallDir() error {
+func (inst *App) MakeInstallDir() error {
 	if AppsInstallDir == "" {
 		return errors.New("path can not be empty")
 	}
 	return os.MkdirAll(AppsInstallDir, os.FileMode(FilePerm))
 }
 
+//MakeDownloadDir  => /data/rubix-service/download
+func (inst *App) MakeDownloadDir() error {
+	if AppsInstallDir == "" {
+		return errors.New("path can not be empty")
+	}
+	return os.MkdirAll(AppsDownloadDir, os.FileMode(FilePerm))
+}
+
 //MakeDataDir  => /data
-func (inst *Rubix) MakeDataDir() error {
+func (inst *App) MakeDataDir() error {
 	if inst.DataDir == "" {
 		return errors.New("path can not be empty")
 	}
@@ -104,6 +146,13 @@ func makeDirectoryIfNotExists(path string, perm os.FileMode) error {
 	return nil
 }
 
+func empty(name string) error {
+	if name == "" {
+		return errors.New("can not be empty")
+	}
+	return nil
+}
+
 func emptyPath(path string) error {
 	if path == "" {
 		return errors.New("path can not be empty")
@@ -116,6 +165,22 @@ func checkDir(path string) error {
 		return err
 	}
 	return nil
+}
+
+func checkVersionBool(version string) bool {
+	var hasV bool
+	var correctLen bool
+	if version[0:1] == "v" { // make sure have a v at the start v0.1.1
+		hasV = true
+	}
+	p := strings.Split(version, ".")
+	if len(p) >= 2 && len(p) < 4 {
+		correctLen = true
+	}
+	if hasV && correctLen {
+		return true
+	}
+	return false
 }
 
 func checkVersion(version string) error {
