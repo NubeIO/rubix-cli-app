@@ -2,8 +2,8 @@ package client
 
 import (
 	"fmt"
-	"github.com/NubeIO/edge/service/apps"
-	"github.com/NubeIO/edge/service/apps/installer"
+	"github.com/NubeIO/rubix-edge/service/apps"
+	"github.com/NubeIO/rubix-edge/service/apps/installer"
 )
 
 type AppsResp struct {

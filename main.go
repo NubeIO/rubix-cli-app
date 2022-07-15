@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/NubeIO/edge/cmd"
+	"github.com/NubeIO/rubix-edge/cmd"
 )
 
 func main() {

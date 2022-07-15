@@ -3,10 +3,10 @@ package dbase
 import (
 	"encoding/json"
 	"errors"
-	"github.com/NubeIO/edge/pkg/logger"
-	"github.com/NubeIO/edge/service/apps"
 	"github.com/NubeIO/lib-command/product"
 	"github.com/NubeIO/lib-uuid/uuid"
+	"github.com/NubeIO/rubix-edge/pkg/logger"
+	"github.com/NubeIO/rubix-edge/service/apps"
 )
 
 const storeName = "store"

@@ -1,4 +1,4 @@
-module github.com/NubeIO/edge
+module github.com/NubeIO/rubix-edge
 
 //replace github.com/NubeIO/lib-dirs => /home/aidan/code/go/nube/lib/lib-dirs
 
@@ -15,6 +15,7 @@ require (
 	github.com/NubeIO/lib-store v0.0.1
 	github.com/NubeIO/lib-systemctl-go v0.0.5
 	github.com/NubeIO/lib-uuid v0.0.1
+	github.com/NubeIO/nubeio-rubix-lib-helpers-go v0.2.7
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-resty/resty/v2 v2.7.0
@@ -28,7 +29,6 @@ require (
 )
 
 require (
-	github.com/NubeIO/nubeio-rubix-lib-helpers-go v0.2.7 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.13.0 // indirect

@@ -4,12 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/NubeIO/edge/pkg/logger"
 	"github.com/NubeIO/git/pkg/git"
 	fileutils "github.com/NubeIO/lib-dirs/dirs"
 	"github.com/NubeIO/lib-systemctl-go/builder"
 	"github.com/NubeIO/lib-systemctl-go/ctl"
 	"github.com/NubeIO/lib-systemctl-go/systemctl"
+	"github.com/NubeIO/rubix-edge/pkg/logger"
 	"os"
 	"time"
 )

@@ -3,7 +3,7 @@ package database
 import (
 	"errors"
 	"fmt"
-	"github.com/NubeIO/edge/pkg/config"
+	"github.com/NubeIO/rubix-edge/pkg/config"
 	"github.com/spf13/viper"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -14,8 +14,8 @@ import (
 	"path"
 	"time"
 
-	"github.com/NubeIO/edge/pkg/model"
-	"github.com/NubeIO/edge/service/apps"
+	"github.com/NubeIO/rubix-edge/pkg/model"
+	"github.com/NubeIO/rubix-edge/service/apps"
 )
 
 var (

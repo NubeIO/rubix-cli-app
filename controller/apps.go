@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"github.com/NubeIO/edge/pkg/model"
-	"github.com/NubeIO/edge/service/apps"
+	"github.com/NubeIO/rubix-edge/pkg/model"
+	"github.com/NubeIO/rubix-edge/service/apps"
 	"github.com/gin-gonic/gin"
 )
 

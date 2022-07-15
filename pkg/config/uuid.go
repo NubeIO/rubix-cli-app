@@ -4,7 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
-	"github.com/NubeIO/edge/pkg/model"
+	"github.com/NubeIO/rubix-edge/pkg/model"
 	"github.com/google/uuid"
 )
 

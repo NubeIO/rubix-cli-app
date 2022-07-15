@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"github.com/NubeIO/edge/service/apps/installer"
+	"github.com/NubeIO/rubix-edge/service/apps/installer"
 	"github.com/gin-gonic/gin"
 )
 

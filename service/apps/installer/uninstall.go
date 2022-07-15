@@ -2,9 +2,9 @@ package installer
 
 import (
 	"fmt"
-	"github.com/NubeIO/edge/pkg/logger"
-	"github.com/NubeIO/edge/service/apps"
 	"github.com/NubeIO/lib-systemctl-go/ctl"
+	"github.com/NubeIO/rubix-edge/pkg/logger"
+	"github.com/NubeIO/rubix-edge/service/apps"
 )
 
 type unInstallLog struct {

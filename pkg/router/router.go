@@ -2,14 +2,14 @@ package router
 
 import (
 	"fmt"
-	"github.com/NubeIO/edge/controller"
-	dbase "github.com/NubeIO/edge/database"
-	"github.com/NubeIO/edge/pkg/config"
-	"github.com/NubeIO/edge/pkg/logger"
+	"github.com/NubeIO/rubix-edge/controller"
+	dbase "github.com/NubeIO/rubix-edge/database"
+	"github.com/NubeIO/rubix-edge/pkg/config"
+	"github.com/NubeIO/rubix-edge/pkg/logger"
 	"github.com/spf13/viper"
 	"io"
 
-	"github.com/NubeIO/edge/service/apps/installer"
+	"github.com/NubeIO/rubix-edge/service/apps/installer"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
