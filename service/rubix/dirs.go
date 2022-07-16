@@ -3,7 +3,6 @@ package rubix
 import (
 	"errors"
 	"fmt"
-	fileutils "github.com/NubeIO/lib-dirs/dirs"
 	log "github.com/sirupsen/logrus"
 	"os"
 	"strings"
@@ -31,7 +30,6 @@ func (inst *App) DirsInstallApp(appName, appBuildName, version string) error {
 	if err != nil {
 		return err
 	}
-
 	return nil
 
 }
@@ -71,20 +69,11 @@ func (inst *App) MakeAppInstallDir(appBuildName string) error {
 		return err
 	}
 	appInstallDir := fmt.Sprintf("%s/%s", AppsInstallDir, appBuildName)
-
-	err := fileutils.New().Rm(appInstallDir)
-	fmt.Println(11111, err)
+	err := inst.RmRF(appInstallDir)
 	if err != nil {
 		log.Errorf("delete existing install dir: %s", err.Error())
 	}
-
 	return makeDirectoryIfNotExists(fmt.Sprintf("%s/%s", AppsInstallDir, appBuildName), os.FileMode(FilePerm))
-}
-
-// GetAppInstallPath get the full app install path and version => /data/rubix-service/apps/install/wires-builds/v0.0.1
-func (inst *App) GetAppInstallPath(appBuildName, version string) string {
-	appDir := fmt.Sprintf("%s/%s", AppsInstallDir, appBuildName)
-	return fmt.Sprintf("%s/%s", appDir, version)
 }
 
 //MakeAppVersionDir  => /data/rubix-service/apps/install/wires-builds/v0.0.1
@@ -95,9 +84,9 @@ func (inst *App) MakeAppVersionDir(appBuildName, version string) error {
 	if err := checkVersion(version); err != nil {
 		return err
 	}
-	appDir := fmt.Sprintf("%s/%s", AppsInstallDir, appBuildName)
-	fmt.Println("make version dir ", fmt.Sprintf("%s/%s", appDir, version))
-	return makeDirectoryIfNotExists(fmt.Sprintf("%s/%s", appDir, version), os.FileMode(FilePerm))
+	appDir := fmt.Sprintf("%s/%s/%s", AppsInstallDir, appBuildName, version)
+	fmt.Println("make version dir ", appDir)
+	return makeDirectoryIfNotExists(appDir, os.FileMode(FilePerm))
 }
 
 //MakeAppDir  => /data/flow-framework

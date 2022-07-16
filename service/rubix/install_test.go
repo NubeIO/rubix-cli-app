@@ -7,7 +7,7 @@ import (
 )
 
 func Test_checkVersion(t *testing.T) {
-
+	var err error
 	homeDir, _ := fileutils.Dir()
 	fmt.Println(homeDir)
 	app := New(&App{DataDir: "/data", Perm: nonRoot, HostDownloadPath: fmt.Sprintf("%s/Downloads", homeDir)})
@@ -16,7 +16,7 @@ func Test_checkVersion(t *testing.T) {
 
 	fmt.Println(version)
 
-	err := app.InstallApp("rubix-wires", "wires-builds", "v2.7.2", nil, "wires-builds-2.7.2.zip")
+	err = app.InstallApp("rubix-wires", "wires-builds", "v2.7.2", nil, "wires-builds-2.7.2.zip")
 	fmt.Println(err)
 	if err != nil {
 		return
@@ -25,7 +25,7 @@ func Test_checkVersion(t *testing.T) {
 
 	fmt.Println(version)
 
-	err = app.InstallApp("rubix-wires", "wires-builds-2.7.3.zip", "v2.7.3", nil, "wires-builds-2.7.3.zip")
+	err = app.InstallApp("rubix-wires", "wires-builds", "v2.7.3", nil, "wires-builds-2.7.3.zip")
 	fmt.Println(err)
 	if err != nil {
 		return
