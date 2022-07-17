@@ -12,35 +12,33 @@ func Test_checkVersion(t *testing.T) {
 	fmt.Println(homeDir)
 	app := New(&App{DataDir: "/data", Perm: nonRoot, HostDownloadPath: fmt.Sprintf("%s/Downloads", homeDir)})
 
-	version := app.GetAppVersion("wires-builds")
+	appName := "rubix-wires"
+	appInstallName := "wires-builds"
+	serviceName := "nubeio-rubix-wires"
+	appVersion := "v2.7.2"
+	appZip := "wires-builds-2.7.2.zip"
+	version := app.GetAppVersion(appInstallName)
 
 	fmt.Println(version)
 
-	err = app.InstallApp("rubix-wires", "wires-builds", "v2.7.2", nil, "wires-builds-2.7.2.zip")
+	err = app.installApp(appName, appInstallName, appVersion, appZip)
 	fmt.Println(err)
 	if err != nil {
 		return
 	}
-	version = app.GetAppVersion("wires-builds")
+	version = app.GetAppVersion(appInstallName)
 
-	fmt.Println(version)
-
-	err = app.InstallApp("rubix-wires", "wires-builds", "v2.7.3", nil, "wires-builds-2.7.3.zip")
-	fmt.Println(err)
-	if err != nil {
-		return
-	}
-
-	files, err := app.listFiles(fmt.Sprintf("%s/%s", AppsInstallDir, "wires-builds"))
+	files, err := app.listFiles(fmt.Sprintf("%s/%s", AppsInstallDir, appInstallName))
 	fmt.Println(err)
 	if err != nil {
 		return
 	}
 
 	fmt.Println(files)
+	fmt.Println(serviceName)
 
-	version = app.GetAppVersion("wires-builds")
-
-	fmt.Println(version)
+	//uninstall, err := app.UninstallService(appName, appInstallName, serviceName)
+	//fmt.Println(err)
+	//pprint.PrintJOSN(uninstall)
 
 }

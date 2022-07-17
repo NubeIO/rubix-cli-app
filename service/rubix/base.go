@@ -17,6 +17,7 @@ var HostDownloadPath = ""
 var AppsDownloadDir = ""
 var LibSystemPath = "/lib/systemd"
 var EtcSystemPath = "/etc/systemd"
+var DefaultTimeout = 30
 
 type App struct {
 	Name             string `json:"app"`            // rubix-wires
@@ -28,6 +29,7 @@ type App struct {
 	ServiceName      string `json:"service_name"`       // nubeio-rubix-wires
 	LibSystemPath    string `json:"lib_system_path"`    // /lib/systemd/
 	EtcSystemPath    string `json:"etc_system_path"`    // /etc/systemd/
+	DefaultTimeout   int    `json:"default_timeout"`
 }
 
 func New(app *App) *App {
@@ -39,6 +41,9 @@ func New(app *App) *App {
 	}
 	if app.Perm == 0 {
 		app.Perm = FilePerm
+	}
+	if app.DefaultTimeout == 0 {
+		app.DefaultTimeout = DefaultTimeout
 	}
 	if app.LibSystemPath == "" {
 		app.LibSystemPath = LibSystemPath

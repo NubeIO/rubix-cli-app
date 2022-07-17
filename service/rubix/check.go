@@ -12,18 +12,32 @@ import (
 )
 
 type AppResponse struct {
-	Name       string                 `json:"app"`
-	Version    string                 `json:"version,omitempty"`
-	IsAService bool                   `json:"is_service"`
-	AppStatus  *systemctl.SystemState `json:"app_status,omitempty"`
-	Error      string                 `json:"error,omitempty"`
+	Name        string                 `json:"app"`
+	Version     string                 `json:"version,omitempty"`
+	IsInstalled bool                   `json:"is_installed"`
+	IsAService  bool                   `json:"is_service"`
+	AppStatus   *systemctl.SystemState `json:"app_status,omitempty"`
+	Error       string                 `json:"error,omitempty"`
 }
-
-var DefaultTimeout = 30
 
 var systemOpts = systemctl.Options{
 	UserMode: false,
 	Timeout:  DefaultTimeout,
+}
+
+func (inst *App) ConfirmAppInstalled(appName, serviceName string) *AppResponse {
+	hasDir := inst.ConfirmAppDir(appName)
+	installed, _ := inst.IsInstalled(serviceName, DefaultTimeout)
+	var isAService bool
+	if installed != nil {
+		isAService = installed.Is
+	}
+	return &AppResponse{
+		Name:        appName,
+		IsInstalled: hasDir,
+		IsAService:  isAService,
+	}
+
 }
 
 func (inst *App) ConfirmAppDir(appName string) bool {
@@ -46,7 +60,6 @@ func (inst *App) GetAppVersion(appInstallName string) string {
 			return ""
 		}
 		for _, file := range files {
-			fmt.Println(file.Name())
 			if checkVersionBool(file.Name()) {
 				return file.Name()
 			}
@@ -73,7 +86,7 @@ func (inst *App) listFiles(file string) ([]string, error) {
 	return dirContent, nil
 }
 
-func (inst *App) InstalledApps() ([]AppResponse, error) {
+func (inst *App) DiscoverInstalled() ([]AppResponse, error) {
 	rootDir := AppsInstallDir
 	var files []AppResponse
 	app := AppResponse{}

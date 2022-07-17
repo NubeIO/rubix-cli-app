@@ -6,6 +6,7 @@ import (
 	dbase "github.com/NubeIO/rubix-edge/database"
 	"github.com/NubeIO/rubix-edge/pkg/config"
 	"github.com/NubeIO/rubix-edge/pkg/logger"
+	"github.com/NubeIO/rubix-edge/service/rubix"
 	"github.com/spf13/viper"
 	"io"
 
@@ -53,7 +54,9 @@ func Setup(db *gorm.DB) *gin.Engine {
 		DB: appDB,
 	})
 
-	api := controller.Controller{DB: appDB, Installer: install}
+	rubixApps := rubix.New(&rubix.App{})
+
+	api := controller.Controller{DB: appDB, Installer: install, Rubix: rubixApps}
 
 	apiRoutes := engine.Group("/api")
 
@@ -70,14 +73,16 @@ func Setup(db *gorm.DB) *gin.Engine {
 	app := apiRoutes.Group("/apps")
 	{
 		app.GET("/", api.GetApps)
-		app.POST("/", api.InstallApp)
+		app.POST("/upload", api.UploadApp)
+		app.POST("/install", api.InstallApp)
+		app.POST("/service", api.InstallApp)
 		app.GET("/:uuid", api.GetApp)
 		app.PATCH("/:uuid", api.UpdateApp)
 		app.DELETE("/", api.UnInstallApp)
 		app.DELETE("/drop", api.DropApps)
 
 		// stats
-		app.POST("/progress/install", api.GetInstallProgress)
+		//app.POST("/progress/install", api.GetInstallProgress)
 		app.POST("/progress/uninstall", api.GetUnInstallProgress)
 		app.POST("/stats", api.AppStats)
 	}

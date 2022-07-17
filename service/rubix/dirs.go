@@ -3,6 +3,7 @@ package rubix
 import (
 	"errors"
 	"fmt"
+	"github.com/NubeIO/lib-uuid/uuid"
 	log "github.com/sirupsen/logrus"
 	"os"
 	"strings"
@@ -25,7 +26,6 @@ func (inst *App) DirsInstallApp(appName, appBuildName, version string) error {
 	if err != nil {
 		return err
 	}
-
 	err = inst.MakeAppVersionDir(appBuildName, version)
 	if err != nil {
 		return err
@@ -61,6 +61,16 @@ func (inst *App) MakeTmpDir() error {
 		return errors.New(fmt.Sprintf("dir not exists %s", inst.DataDir))
 	}
 	return makeDirectoryIfNotExists(TmpDir, os.FileMode(FilePerm))
+}
+
+//MakeTmpDirUpload  => /data/tmp
+func (inst *App) MakeTmpDirUpload() (string, error) {
+	if err := checkDir(inst.DataDir); err != nil {
+		return "", errors.New(fmt.Sprintf("dir not exists %s", inst.DataDir))
+	}
+	tmpDir := fmt.Sprintf("%s/%s", TmpDir, uuid.ShortUUID("tmp"))
+	err := makeDirectoryIfNotExists(tmpDir, os.FileMode(FilePerm))
+	return tmpDir, err
 }
 
 //MakeAppInstallDir  => /data/rubix-service/apps/install/wires-builds

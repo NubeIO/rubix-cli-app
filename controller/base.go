@@ -4,6 +4,7 @@ import (
 	fileutils "github.com/NubeIO/lib-dirs/dirs"
 	dbase "github.com/NubeIO/rubix-edge/database"
 	"github.com/NubeIO/rubix-edge/service/apps/installer"
+	"github.com/NubeIO/rubix-edge/service/rubix"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -11,6 +12,7 @@ import (
 type Controller struct {
 	DB        *dbase.DB
 	Installer *installer.Installer
+	Rubix     *rubix.App
 }
 
 var fileUtils = fileutils.New()
