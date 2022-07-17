@@ -1,6 +1,7 @@
 package rubix
 
 import (
+	"errors"
 	"fmt"
 	fileutils "github.com/NubeIO/lib-dirs/dirs"
 	log "github.com/sirupsen/logrus"
@@ -18,8 +19,8 @@ type Upload struct {
 }
 
 type UploadResponse struct {
-	TmpFile     string `json:"tmp_file"`
-	UploadedZip string `json:"uploaded_zip"`
+	TmpFile      string `json:"tmp_file"`
+	UploadedFile string `json:"uploaded_file"`
 }
 
 func (inst *App) UploadApp(app *Upload) (*UploadResponse, error) {
@@ -49,8 +50,43 @@ func (inst *App) uploadApp(appName, appBuildName, version string, zip *multipart
 		return nil, err
 	}
 	return &UploadResponse{
-		TmpFile:     tmpDir,
-		UploadedZip: zipSource,
+		TmpFile:      tmpDir,
+		UploadedFile: zipSource,
+	}, err
+}
+
+func (inst *App) UploadServiceFile(app *Upload) (*UploadResponse, error) {
+	var appName = app.Name
+	var appBuildName = app.BuildName
+	var version = app.Version
+	var file = app.File
+	return inst.uploadServiceFile(appName, appBuildName, version, file)
+}
+
+// uploadApp
+func (inst *App) uploadServiceFile(appName, appBuildName, version string, file *multipart.FileHeader) (*UploadResponse, error) {
+	// make the dirs
+	var err error
+	if filepath.Ext(file.Filename) != ".service" {
+		return nil, errors.New(fmt.Sprintf("service file provided:%s, did not have correct file extension must be (.service)", file.Filename))
+	}
+	if err := inst.MakeTmpDir(); err != nil {
+		return nil, err
+	}
+	var tmpDir string
+	if tmpDir, err = inst.MakeTmpDirUpload(); err != nil {
+		return nil, err
+	}
+	log.Infof("upload service to tmp dir:%s", tmpDir)
+	log.Infof("app:%s buildName:%s version:%s", appName, appBuildName, version)
+	// save app in tmp dir
+	zipSource, err := inst.saveUploadedFile(file, tmpDir)
+	if err != nil {
+		return nil, err
+	}
+	return &UploadResponse{
+		TmpFile:      tmpDir,
+		UploadedFile: zipSource,
 	}, err
 }
 

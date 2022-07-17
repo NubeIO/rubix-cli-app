@@ -40,10 +40,32 @@ func (inst *Controller) InstallApp(c *gin.Context) {
 	reposeHandler(data, nil, c)
 }
 
-func (inst *Controller) InstallAppService(c *gin.Context) {
+// UploadService
+// upload the service file
+func (inst *Controller) UploadService(c *gin.Context) {
+	file, err := c.FormFile("file")
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	m := &rubix.Upload{
+		Name:      c.Query("name"),
+		BuildName: c.Query("buildName"),
+		Version:   c.Query("version"),
+		File:      file,
+	}
+	data, err := inst.Rubix.UploadServiceFile(m)
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	reposeHandler(data, nil, c)
+}
+
+func (inst *Controller) InstallService(c *gin.Context) {
 	var m *rubix.Install
 	err = c.ShouldBindJSON(&m)
-	data, err := inst.Rubix.InstallApp(m)
+	data, err := inst.Rubix.InstallService(m)
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return

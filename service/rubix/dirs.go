@@ -13,7 +13,6 @@ import (
 //	appDirName => rubix-wires
 //	appInstallName => wires-builds
 func (inst *App) DirsInstallApp(appName, appBuildName, version string) error {
-
 	err := inst.MakeAllDirs()
 	if err != nil {
 		return err
@@ -184,12 +183,12 @@ func checkVersionBool(version string) bool {
 
 func checkVersion(version string) error {
 	if version[0:1] != "v" { // make sure have a v at the start v0.1.1
-		return errors.New(fmt.Sprintf("there version number should start with a v eg:v1.2.3 %s", version))
+		return errors.New(fmt.Sprintf("incorrect provided:%s version number try: v1.2.3", version))
 	}
 	p := strings.Split(version, ".")
 	if len(p) >= 2 && len(p) < 4 {
 	} else {
-		return errors.New(fmt.Sprintf("there version number should match v1.2.3 %s", version))
+		return errors.New(fmt.Sprintf("incorrect lenght provided:%s version number try: v1.2.3", version))
 	}
 	return nil
 }

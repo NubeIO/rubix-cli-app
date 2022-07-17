@@ -48,6 +48,10 @@ func (inst *App) ConfirmAppInstallDir(appInstallName string) bool {
 	return fileutils.New().DirExists(fmt.Sprintf("%s/%s", AppsInstallDir, appInstallName))
 }
 
+func (inst *App) ConfirmServiceFile(serviceName string) bool {
+	return fileutils.New().FileExists(fmt.Sprintf("%s/%s", LibSystemPath, serviceName))
+}
+
 func (inst *App) GetAppVersion(appInstallName string) string {
 	file := fmt.Sprintf("%s/%s", AppsInstallDir, appInstallName)
 	fileInfo, err := os.Stat(file)

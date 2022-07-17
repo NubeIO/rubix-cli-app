@@ -60,32 +60,22 @@ func Setup(db *gorm.DB) *gin.Engine {
 
 	apiRoutes := engine.Group("/api")
 
-	store := apiRoutes.Group("/stores")
+	appUpload := apiRoutes.Group("/apps/upload")
 	{
-		store.GET("/", api.GetAppStores)
-		store.POST("/", api.CreateAppStore)
-		store.GET("/:uuid", api.GetAppStore)
-		store.PATCH("/:uuid", api.UpdateAppStore)
-		store.DELETE("/:uuid", api.DeleteAppStore)
-		store.DELETE("/drop", api.DropAppStores)
+		appUpload.POST("/", api.UploadApp)
 	}
 
-	app := apiRoutes.Group("/apps")
+	appInstall := apiRoutes.Group("/apps/install")
 	{
-		app.GET("/", api.GetApps)
-		app.POST("/upload", api.UploadApp)
-		app.POST("/install", api.InstallApp)
-		app.POST("/service", api.InstallApp)
-		app.GET("/:uuid", api.GetApp)
-		app.PATCH("/:uuid", api.UpdateApp)
-		app.DELETE("/", api.UnInstallApp)
-		app.DELETE("/drop", api.DropApps)
-
-		// stats
-		//app.POST("/progress/install", api.GetInstallProgress)
-		app.POST("/progress/uninstall", api.GetUnInstallProgress)
-		app.POST("/stats", api.AppStats)
+		appInstall.POST("/", api.InstallApp)
 	}
+
+	appService := apiRoutes.Group("/apps/service")
+	{
+		appService.POST("/upload", api.UploadService)
+		appService.POST("/install", api.InstallService)
+	}
+
 	appControl := apiRoutes.Group("/apps/control")
 	{
 		appControl.POST("/", api.AppService)
