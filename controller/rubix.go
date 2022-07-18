@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"github.com/NubeIO/rubix-edge/service/rubix"
+	"github.com/NubeIO/lib-rubix-installer/installer"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,7 +13,7 @@ func (inst *Controller) UploadApp(c *gin.Context) {
 		reposeHandler(nil, err, c)
 		return
 	}
-	m := &rubix.Upload{
+	m := &installer.Upload{
 		Name:      c.Query("name"),
 		BuildName: c.Query("buildName"),
 		Version:   c.Query("version"),
@@ -30,7 +30,7 @@ func (inst *Controller) UploadApp(c *gin.Context) {
 // InstallApp
 // make all the dirs and install the uploaded build
 func (inst *Controller) InstallApp(c *gin.Context) {
-	var m *rubix.Install
+	var m *installer.Install
 	err = c.ShouldBindJSON(&m)
 	data, err := inst.Rubix.InstallApp(m)
 	if err != nil {
@@ -48,7 +48,7 @@ func (inst *Controller) UploadService(c *gin.Context) {
 		reposeHandler(nil, err, c)
 		return
 	}
-	m := &rubix.Upload{
+	m := &installer.Upload{
 		Name:      c.Query("name"),
 		BuildName: c.Query("buildName"),
 		Version:   c.Query("version"),
@@ -63,7 +63,7 @@ func (inst *Controller) UploadService(c *gin.Context) {
 }
 
 func (inst *Controller) InstallService(c *gin.Context) {
-	var m *rubix.Install
+	var m *installer.Install
 	err = c.ShouldBindJSON(&m)
 	data, err := inst.Rubix.InstallService(m)
 	if err != nil {

@@ -2,17 +2,16 @@ package controller
 
 import (
 	fileutils "github.com/NubeIO/lib-dirs/dirs"
+	"github.com/NubeIO/lib-rubix-installer/installer"
 	dbase "github.com/NubeIO/rubix-edge/database"
-	"github.com/NubeIO/rubix-edge/service/apps/installer"
-	"github.com/NubeIO/rubix-edge/service/rubix"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 type Controller struct {
-	DB        *dbase.DB
-	Installer *installer.Installer
-	Rubix     *rubix.App
+	DB *dbase.DB
+	//Installer *installer.Installer
+	Rubix *installer.App
 }
 
 var fileUtils = fileutils.New()

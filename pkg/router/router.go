@@ -2,18 +2,16 @@ package router
 
 import (
 	"fmt"
+	"github.com/NubeIO/lib-rubix-installer/installer"
 	"github.com/NubeIO/rubix-edge/controller"
 	dbase "github.com/NubeIO/rubix-edge/database"
 	"github.com/NubeIO/rubix-edge/pkg/config"
 	"github.com/NubeIO/rubix-edge/pkg/logger"
-	"github.com/NubeIO/rubix-edge/service/rubix"
-	"github.com/spf13/viper"
-	"io"
-
-	"github.com/NubeIO/rubix-edge/service/apps/installer"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	"gorm.io/gorm"
+	"io"
 	"os"
 	"time"
 )
@@ -50,13 +48,9 @@ func Setup(db *gorm.DB) *gin.Engine {
 		DB: db,
 	}
 
-	install := installer.New(&installer.Installer{
-		DB: appDB,
-	})
+	rubixApps := installer.New(&installer.App{})
 
-	rubixApps := rubix.New(&rubix.App{})
-
-	api := controller.Controller{DB: appDB, Installer: install, Rubix: rubixApps}
+	api := controller.Controller{DB: appDB, Rubix: rubixApps}
 
 	apiRoutes := engine.Group("/api")
 
