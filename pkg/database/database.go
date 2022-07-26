@@ -15,7 +15,6 @@ import (
 	"time"
 
 	"github.com/NubeIO/rubix-edge/pkg/model"
-	"github.com/NubeIO/rubix-edge/service/apps"
 )
 
 var (
@@ -79,8 +78,6 @@ func Setup() error {
 
 	// Auto migrate project models
 	err = db.AutoMigrate(
-		&apps.Store{},
-		&apps.App{},
 		&model.DeviceInfo{},
 	)
 
