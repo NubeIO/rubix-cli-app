@@ -2,7 +2,7 @@ package dbase
 
 import (
 	"fmt"
-	"github.com/NubeIO/rubix-edge/service/apps"
+
 	"gorm.io/gorm"
 )
 
@@ -27,16 +27,6 @@ func deleteResponse(query *gorm.DB) (*DeleteMessage, error) {
 	}
 	msg.Message = fmt.Sprintf("deleted count:%d", query.RowsAffected)
 	return msg, nil
-}
-
-func initAppService(serviceName string) (*apps.Apps, error) {
-	inst := &apps.Apps{
-		App: &apps.Store{
-			ServiceName: serviceName,
-		},
-	}
-	app, err := apps.New(inst)
-	return app, err
 }
 
 func handleNotFound(name string) error {

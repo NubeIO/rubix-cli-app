@@ -66,13 +66,6 @@ func Setup(db *gorm.DB) *gin.Engine {
 		appControl.POST("/bulk", api.AppService)
 	}
 
-	device := apiRoutes.Group("/device")
-	{
-		device.GET("/", api.GetDeviceInfo)
-		device.POST("/", api.AddDeviceInfo)
-		device.PATCH("/", api.UpdateDeviceInfo)
-	}
-
 	system := apiRoutes.Group("/system")
 	{
 		system.GET("/ping", api.Ping)
