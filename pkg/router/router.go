@@ -2,17 +2,16 @@ package router
 
 import (
 	"fmt"
+	"github.com/NubeIO/lib-rubix-installer/installer"
 	"github.com/NubeIO/rubix-edge/controller"
 	dbase "github.com/NubeIO/rubix-edge/database"
 	"github.com/NubeIO/rubix-edge/pkg/config"
 	"github.com/NubeIO/rubix-edge/pkg/logger"
-	"github.com/spf13/viper"
-	"io"
-
-	"github.com/NubeIO/rubix-edge/service/apps/installer"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	"gorm.io/gorm"
+	"io"
 	"os"
 	"time"
 )
@@ -49,37 +48,17 @@ func Setup(db *gorm.DB) *gin.Engine {
 		DB: db,
 	}
 
-	install := installer.New(&installer.Installer{
-		DB: appDB,
-	})
+	rubixApps := installer.New(&installer.App{})
 
-	api := controller.Controller{DB: appDB, Installer: install}
+	api := controller.Controller{DB: appDB, Rubix: rubixApps}
 
 	apiRoutes := engine.Group("/api")
 
-	store := apiRoutes.Group("/stores")
+	apps := apiRoutes.Group("/apps")
 	{
-		store.GET("/", api.GetAppStores)
-		store.POST("/", api.CreateAppStore)
-		store.GET("/:uuid", api.GetAppStore)
-		store.PATCH("/:uuid", api.UpdateAppStore)
-		store.DELETE("/:uuid", api.DeleteAppStore)
-		store.DELETE("/drop", api.DropAppStores)
-	}
-
-	app := apiRoutes.Group("/apps")
-	{
-		app.GET("/", api.GetApps)
-		app.POST("/", api.InstallApp)
-		app.GET("/:uuid", api.GetApp)
-		app.PATCH("/:uuid", api.UpdateApp)
-		app.DELETE("/", api.UnInstallApp)
-		app.DELETE("/drop", api.DropApps)
-
-		// stats
-		app.POST("/progress/install", api.GetInstallProgress)
-		app.POST("/progress/uninstall", api.GetUnInstallProgress)
-		app.POST("/stats", api.AppStats)
+		apps.POST("/add", api.AddUploadApp)
+		apps.POST("/service/upload", api.UploadService)
+		apps.POST("/service/install", api.InstallService)
 	}
 	appControl := apiRoutes.Group("/apps/control")
 	{
@@ -114,7 +93,8 @@ func Setup(db *gorm.DB) *gin.Engine {
 
 	files := apiRoutes.Group("/files")
 	{
-		files.GET("/list", api.ListFiles)
+		files.GET("/walk", api.WalkFile)  // /api/files/walk?file=/data
+		files.GET("/list", api.ListFiles) // /api/files/list?file=/data
 		files.POST("/rename", api.RenameFile)
 		files.POST("/copy", api.CopyFile)
 		files.POST("/move", api.MoveFile)

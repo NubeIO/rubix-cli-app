@@ -1,73 +1,61 @@
 package controller
 
 import (
-	"github.com/NubeIO/rubix-edge/pkg/model"
-	"github.com/NubeIO/rubix-edge/service/apps"
+	"github.com/NubeIO/lib-rubix-installer/installer"
 	"github.com/gin-gonic/gin"
 )
 
-func getDeviceBody(c *gin.Context) (dto *model.DeviceInfo, err error) {
-	err = c.ShouldBindJSON(&dto)
-	return dto, err
-}
-
-func getAppsBody(c *gin.Context) (dto *apps.App, err error) {
-	err = c.ShouldBindJSON(&dto)
-	return dto, err
-}
-
-func (inst *Controller) GetApps(c *gin.Context) {
-	data, err := inst.DB.GetApps()
-	if err != nil {
-		reposeHandler(data, err, c)
-		return
-	}
-	reposeHandler(data, err, c)
-}
-
-func (inst *Controller) AppStats(c *gin.Context) {
-	body, err := getAppsBody(c)
+// AddUploadApp
+// upload the build
+func (inst *Controller) AddUploadApp(c *gin.Context) {
+	file, err := c.FormFile("file")
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
 	}
-	data, err := inst.DB.AppStats(body)
-	reposeHandler(data, err, c)
-}
-
-func (inst *Controller) GetApp(c *gin.Context) {
-	data, err := inst.DB.GetApp(c.Params.ByName("uuid"))
+	m := &installer.Upload{
+		Name:      c.Query("name"),
+		BuildName: c.Query("buildName"),
+		Version:   c.Query("version"),
+		File:      file,
+	}
+	data, err := inst.Rubix.AddUploadEdgeApp(m)
 	if err != nil {
-		reposeHandler(data, err, c)
+		reposeHandler(nil, err, c)
 		return
 	}
-	reposeHandler(data, err, c)
+	reposeHandler(data, nil, c)
 }
 
-func (inst *Controller) UpdateApp(c *gin.Context) {
-	body, _ := getAppsBody(c)
-	data, err := inst.DB.UpdateApp(c.Params.ByName("uuid"), body)
+// UploadService
+// upload the service file
+func (inst *Controller) UploadService(c *gin.Context) {
+	file, err := c.FormFile("file")
 	if err != nil {
-		reposeHandler(data, err, c)
+		reposeHandler(nil, err, c)
 		return
 	}
-	reposeHandler(data, err, c)
+	m := &installer.Upload{
+		Name:      c.Query("name"),
+		BuildName: c.Query("buildName"),
+		Version:   c.Query("version"),
+		File:      file,
+	}
+	data, err := inst.Rubix.UploadServiceFile(m)
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	reposeHandler(data, nil, c)
 }
 
-func (inst *Controller) DeleteApp(c *gin.Context) {
-	data, err := inst.DB.DeleteApp(c.Params.ByName("uuid"))
+func (inst *Controller) InstallService(c *gin.Context) {
+	var m *installer.Install
+	err = c.ShouldBindJSON(&m)
+	data, err := inst.Rubix.InstallService(m)
 	if err != nil {
-		reposeHandler(data, err, c)
+		reposeHandler(nil, err, c)
 		return
 	}
-	reposeHandler(data, err, c)
-}
-
-func (inst *Controller) DropApps(c *gin.Context) {
-	data, err := inst.DB.DropApps()
-	if err != nil {
-		reposeHandler(data, err, c)
-		return
-	}
-	reposeHandler(data, err, c)
+	reposeHandler(data, nil, c)
 }

@@ -45,15 +45,15 @@ func (inst *Apps) MakeDownloadDir() error {
 }
 
 func (inst *Apps) MakeInstallDir() error {
-	action, err := inst.Stop(DefaultTimeout)
-	if err != nil {
-		logger.Logger.Errorf("stop app:%s failed err:%s \n", inst.App.Name, err.Error())
-	}
-	if action.Ok {
-		logger.Logger.Infof("stop app:%s  it was running \n", inst.App.Name)
-	} else {
-		logger.Logger.Infof("stop app:%s  failed or was not running msg:%s \n", inst.App.Name, action.Message)
-	}
+	//action, err := inst.Stop(DefaultTimeout)
+	//if err != nil {
+	//	logger.Logger.Errorf("stop app:%s failed err:%s \n", inst.App.Name, err.Error())
+	//}
+	//if action.Ok {
+	//	logger.Logger.Infof("stop app:%s  it was running \n", inst.App.Name)
+	//} else {
+	//	logger.Logger.Infof("stop app:%s  failed or was not running msg:%s \n", inst.App.Name, action.Message)
+	//}
 
 	installPath := fmt.Sprintf(inst.App.AppsPath) // /data/rubix-apps/installed/flow-framework
 	if !dirs.DirExists(installPath) {
@@ -197,7 +197,7 @@ func (inst *Apps) InstallService(service, tmpServiceFile string) (*ctl.InstallRe
 	resp := &ctl.InstallResp{}
 
 	// path := "/tmp/nubeio-rubix-bios.service"
-	timeOut := DefaultTimeout
+	timeOut := 30
 	ser := ctl.New(service, tmpServiceFile)
 	ser.InstallOpts = ctl.InstallOpts{
 		Options: systemctl.Options{Timeout: timeOut},

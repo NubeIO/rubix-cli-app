@@ -1,6 +1,7 @@
 module github.com/NubeIO/rubix-edge
 
 //replace github.com/NubeIO/lib-dirs => /home/aidan/code/go/nube/lib/lib-dirs
+//replace github.com/NubeIO/lib-rubix-installer => /home/aidan/code/go/nube/lib/lib-rubix-installer
 
 go 1.17
 
@@ -11,10 +12,11 @@ require (
 	github.com/NubeIO/lib-dhcpd v0.0.1
 	github.com/NubeIO/lib-dirs v0.0.2
 	github.com/NubeIO/lib-networking v0.0.5
+	github.com/NubeIO/lib-rubix-installer v0.0.2
 	github.com/NubeIO/lib-schema v0.0.2
 	github.com/NubeIO/lib-store v0.0.1
 	github.com/NubeIO/lib-systemctl-go v0.0.5
-	github.com/NubeIO/lib-uuid v0.0.1
+	github.com/NubeIO/lib-uuid v0.0.2
 	github.com/NubeIO/nubeio-rubix-lib-helpers-go v0.2.7
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.7.7

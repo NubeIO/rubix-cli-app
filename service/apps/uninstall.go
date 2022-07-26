@@ -17,7 +17,7 @@ func (inst *Apps) UninstallService(service string) (*ctl.RemoveRes, error) {
 	resp := &ctl.RemoveRes{}
 	ser := ctl.New(service, "")
 	ser.InstallOpts = ctl.InstallOpts{
-		Options: systemctl.Options{Timeout: DefaultTimeout},
+		Options: systemctl.Options{Timeout: 30},
 	}
 	resp, err := ser.Remove()
 	return resp, err
