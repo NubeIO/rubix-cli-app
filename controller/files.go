@@ -131,12 +131,10 @@ func (inst *Controller) MoveFile(c *gin.Context) {
 		reposeHandler(nil, err, c)
 		return
 	}
-
 	if body.From == "" || body.To == "" {
 		reposeHandler(nil, errors.New("from and to files name can not be empty"), c)
 		return
 	}
-
 	err = fileUtils.MoveFile(body.From, body.To)
 	if err != nil {
 		reposeHandler(nil, err, c)

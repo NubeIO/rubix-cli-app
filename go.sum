@@ -73,8 +73,8 @@ github.com/NubeIO/lib-dirs v0.0.2/go.mod h1:PCDWQm82Nezp9oyhkpqyfVH6w6+1lzfDwfRd
 github.com/NubeIO/lib-networking v0.0.3/go.mod h1:wO04Ul6Wdr5w/7s8UMZzV1/HMXuVSVFzqq7h5A3Vl6k=
 github.com/NubeIO/lib-networking v0.0.5 h1:JB/YiYI6V2uDINYS789YKy5uLspZwwNTcXwILHRvhq4=
 github.com/NubeIO/lib-networking v0.0.5/go.mod h1:wO04Ul6Wdr5w/7s8UMZzV1/HMXuVSVFzqq7h5A3Vl6k=
-github.com/NubeIO/lib-rubix-installer v0.0.1 h1:AX//+3lo8Pj3tmud/149/yQUiQOC3FGTtULLQXt3ZOI=
-github.com/NubeIO/lib-rubix-installer v0.0.1/go.mod h1:DWjLRPYmqR3OwUMgyJVNhvH9oxbUSdJ2CeUzR2MnPd8=
+github.com/NubeIO/lib-rubix-installer v0.0.2 h1:8XFBEHF7xaiHdG6HuQt3a4Uzn6H2s9gdou30sKpqMpQ=
+github.com/NubeIO/lib-rubix-installer v0.0.2/go.mod h1:3+ljNXcX6czFSXwJ+bOXb/eYn/7o9XqHi1oaQUfMTFs=
 github.com/NubeIO/lib-schema v0.0.2 h1:T1AbNSQpW45U6Q0jv8+ezlhhTyhLaFEo8EhdoOVRMD8=
 github.com/NubeIO/lib-schema v0.0.2/go.mod h1:+XEsOqjtJ/NlVo13p+5nZQK4LDRKkJTB3SxPi6u8vhM=
 github.com/NubeIO/lib-store v0.0.1 h1:7VwFEf70oLnSTDIRckNA2tXELPoxfTkH1rEU5wAkNSw=

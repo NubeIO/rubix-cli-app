@@ -54,22 +54,12 @@ func Setup(db *gorm.DB) *gin.Engine {
 
 	apiRoutes := engine.Group("/api")
 
-	appUpload := apiRoutes.Group("/apps/upload")
+	apps := apiRoutes.Group("/apps")
 	{
-		appUpload.POST("/", api.UploadApp)
+		apps.POST("/add", api.AddUploadApp)
+		apps.POST("/service/upload", api.UploadService)
+		apps.POST("/service/install", api.InstallService)
 	}
-
-	appInstall := apiRoutes.Group("/apps/install")
-	{
-		appInstall.POST("/", api.InstallApp)
-	}
-
-	appService := apiRoutes.Group("/apps/service")
-	{
-		appService.POST("/upload", api.UploadService)
-		appService.POST("/install", api.InstallService)
-	}
-
 	appControl := apiRoutes.Group("/apps/control")
 	{
 		appControl.POST("/", api.AppService)
