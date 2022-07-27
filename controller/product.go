@@ -1,12 +1,11 @@
 package controller
 
 import (
-	"github.com/NubeIO/lib-command/product"
 	"github.com/gin-gonic/gin"
 )
 
 func (inst *Controller) GetProduct(c *gin.Context) {
-	data, err := product.Get()
+	data, err := inst.Rubix.GetProduct()
 	if err != nil {
 		reposeHandler(data, err, c)
 		return

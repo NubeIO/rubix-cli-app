@@ -11,14 +11,16 @@ go build main.go && sudo ./main server
 
 ## product file (this is for hardware identification)
 
-https://github.com/NubeIO/rubix-edge/blob/master/service/product/funcs.go#L28
+https://github.com/NubeIO/lib-command/blob/master/product/product.go#L7
 
 `sudo nano /data/product.json`
+
+
 
 ```
 {
     "version": "v1.1.1",
-    "type": "status"
+    "type": "AllLinux"
 }
 ```
 

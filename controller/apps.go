@@ -17,6 +17,8 @@ func (inst *Controller) AddUploadApp(c *gin.Context) {
 		Name:      c.Query("name"),
 		BuildName: c.Query("buildName"),
 		Version:   c.Query("version"),
+		Product:   c.Query("product"),
+		Arch:      c.Query("arch"),
 		File:      file,
 	}
 	data, err := inst.Rubix.AddUploadEdgeApp(m)
