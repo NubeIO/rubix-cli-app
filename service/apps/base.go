@@ -12,10 +12,9 @@ const root = 0777
 //var FilePerm = root
 
 type EdgeApps struct {
-	App              *installer.App
-	Perm             int    `json:"file_perm"`
-	TmpUploadDirHome string `json:"tmp_upload_dir_home"`
-	Ctl              *systemctl.Ctl
+	App  *installer.App
+	Perm int `json:"file_perm"`
+	Ctl  *systemctl.Ctl
 }
 
 func New(apps *EdgeApps) (*EdgeApps, error) {
@@ -30,9 +29,6 @@ func New(apps *EdgeApps) (*EdgeApps, error) {
 	}
 	if apps.App.DataDir == "" {
 		apps.App.DataDir = "/data"
-	}
-	if apps.TmpUploadDirHome == "" {
-		apps.TmpUploadDirHome = "/tmp_uploads"
 	}
 	apps.App = installer.New(apps.App)
 	apps.Ctl = systemctl.New(&systemctl.Ctl{
