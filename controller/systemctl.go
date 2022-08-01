@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// CtlAction start, stop, enable, disable a service
 func (inst *Controller) CtlAction(c *gin.Context) {
 	var m *apps.CtlBody
 	err = c.ShouldBindJSON(&m)
@@ -20,6 +21,7 @@ func (inst *Controller) CtlAction(c *gin.Context) {
 	reposeHandler(data, nil, c)
 }
 
+// CtlStatus check isRunning, isInstalled, isEnabled, isActive, isFailed for a service
 func (inst *Controller) CtlStatus(c *gin.Context) {
 	var m *apps.CtlBody
 	err = c.ShouldBindJSON(&m)
@@ -35,6 +37,7 @@ func (inst *Controller) CtlStatus(c *gin.Context) {
 	reposeHandler(data, nil, c)
 }
 
+// ServiceMassAction start, stop, enable, disable a service
 func (inst *Controller) ServiceMassAction(c *gin.Context) {
 	var m *apps.CtlBody
 	err = c.ShouldBindJSON(&m)
@@ -50,14 +53,15 @@ func (inst *Controller) ServiceMassAction(c *gin.Context) {
 	reposeHandler(data, nil, c)
 }
 
-func (inst *Controller) ServiceMassCheck(c *gin.Context) {
+// ServiceMassStatus on mass check isRunning, isInstalled, isEnabled, isActive, isFailed for a service
+func (inst *Controller) ServiceMassStatus(c *gin.Context) {
 	var m *apps.CtlBody
 	err = c.ShouldBindJSON(&m)
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
 	}
-	data, err := inst.Rubix.ServiceMassCheck(m)
+	data, err := inst.Rubix.ServiceMassStatus(m)
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return

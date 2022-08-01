@@ -21,6 +21,6 @@ func (inst *EdgeApps) ServiceMassAction(body *CtlBody) ([]systemctl.MassSystemRe
 	return inst.Ctl.ServiceMassAction(body.ServiceNames, body.Action, body.Timeout)
 }
 
-func (inst *EdgeApps) ServiceMassCheck(body *CtlBody) ([]systemctl.MassSystemResponseChecks, error) {
-	return inst.Ctl.ServiceMassCheck(body.ServiceNames, body.Action, body.Timeout)
+func (inst *EdgeApps) ServiceMassStatus(body *CtlBody) ([]systemctl.MassSystemResponseChecks, error) {
+	return inst.Ctl.ServiceMassStatus(body.ServiceNames, body.Action, body.Timeout)
 }

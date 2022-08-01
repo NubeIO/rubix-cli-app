@@ -60,10 +60,21 @@ func Setup(db *gorm.DB) *gin.Engine {
 		edgeApps.POST("/service/upload", api.UploadService)
 		edgeApps.POST("/service/install", api.InstallService)
 	}
+
 	appControl := apiRoutes.Group("/apps/control")
 	{
-		appControl.POST("/", api.AppService)
-		appControl.POST("/bulk", api.AppService)
+		appControl.POST("/action", api.CtlAction)              // start, stop
+		appControl.POST("/action/mass", api.ServiceMassAction) // mass operation start, stop
+		appControl.POST("/status", api.CtlStatus)              // isRunning, isInstalled and so on
+		appControl.POST("/status/mass", api.ServiceMassStatus) // mass isRunning, isInstalled and so on
+	}
+
+	appBackups := apiRoutes.Group("/apps/backups")
+	{
+		appBackups.POST("/run/full", api.CtlAction)         // start, stop
+		appBackups.POST("/run/app", api.ServiceMassAction)  // mass operation start, stop
+		appBackups.POST("/list/full", api.CtlStatus)        // isRunning, isInstalled and so on
+		appBackups.POST("/list/app", api.ServiceMassStatus) // mass isRunning, isInstalled and so on
 	}
 
 	system := apiRoutes.Group("/system")
