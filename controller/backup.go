@@ -1,8 +1,28 @@
 package controller
 
 import (
+	"github.com/NubeIO/lib-rubix-installer/installer"
 	"github.com/gin-gonic/gin"
 )
+
+/*
+RESTORE A BACK-UP
+*/
+
+func (inst *Controller) RestoreAppBackup(c *gin.Context) {
+	var m *installer.RestoreBackup
+	err = c.ShouldBindJSON(&m)
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	data, err := inst.Rubix.RestoreAppBackup(m)
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	reposeHandler(data, nil, c)
+}
 
 /*
 RUN A BACK-UP

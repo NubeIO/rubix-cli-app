@@ -15,7 +15,7 @@ require (
 	github.com/NubeIO/lib-networking v0.0.5
 	github.com/NubeIO/lib-rubix-installer v0.0.3
 	github.com/NubeIO/lib-schema v0.0.2
-	github.com/NubeIO/lib-uuid v0.0.2
+	github.com/NubeIO/lib-systemctl-go v0.0.6
 	github.com/NubeIO/nubeio-rubix-lib-helpers-go v0.2.7
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.8.1
@@ -28,7 +28,7 @@ require (
 )
 
 require (
-	github.com/NubeIO/lib-systemctl-go v0.0.5 // indirect
+	github.com/NubeIO/lib-uuid v0.0.2 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
