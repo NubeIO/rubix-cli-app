@@ -72,11 +72,11 @@ func Setup(db *gorm.DB) *gin.Engine {
 
 	appBackups := apiRoutes.Group("/backup")
 	{
-		appBackups.POST("/restore/full", api.RestoreAppBackup) // start, stop
-		appBackups.POST("/restore/app", api.RestoreAppBackup)  // mass operation start, stop
-		appBackups.POST("/run/full", api.FullBackUp)           // start, stop
-		appBackups.POST("/run/app", api.BackupApp)             // mass operation start, stop
-		appBackups.GET("/list/full", api.ListFullBackups)      // isRunning, isInstalled and so on
+		appBackups.POST("/restore/full", api.RestoreBackup)
+		appBackups.POST("/restore/app", api.RestoreAppBackup)
+		appBackups.POST("/run/full", api.FullBackUp)
+		appBackups.POST("/run/app", api.BackupApp)
+		appBackups.GET("/list/full", api.ListFullBackups)
 		appBackups.GET("/list/apps", api.ListAppBackupsDirs)
 		appBackups.GET("/list/app", api.ListBackupsByApp)
 	}

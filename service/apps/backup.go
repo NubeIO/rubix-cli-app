@@ -30,20 +30,15 @@ func (inst *EdgeApps) RestoreBackup(back *installer.RestoreBackup) (*installer.R
 	if back == nil {
 		return nil, errors.New("RestoreBackup interface can not be empty")
 	}
-	if back.Destination == "" {
-		return nil, errors.New("destination can not be empty")
-	}
-	resp := &installer.RestoreResponse{}
 	restoreResp, err := inst.App.RestoreBackup(back)
 	if err != nil {
 		return nil, err
 	}
-	resp.TakeBackupPath = restoreResp.TakeBackupPath
 	if back.RebootDevice {
-		resp.Message = "device will reboot in 10 seconds"
+		restoreResp.Message = "device will reboot in 10 seconds"
 		go reboot()
 	}
-	return resp, nil
+	return restoreResp, nil
 }
 
 // RestoreAppBackup restore a backup an app
@@ -54,16 +49,11 @@ func (inst *EdgeApps) RestoreAppBackup(back *installer.RestoreBackup) (*installe
 	if back.AppName == "" {
 		return nil, errors.New("app name can not be empty")
 	}
-	if back.Destination == "" {
-		return nil, errors.New("destination can not be empty")
-	}
-	resp := &installer.RestoreResponse{}
 	restoreResp, err := inst.App.RestoreAppBackup(back)
 	if err != nil {
 		return nil, err
 	}
-	resp.TakeBackupPath = restoreResp.TakeBackupPath
-	return resp, nil
+	return restoreResp, nil
 }
 
 func (inst *EdgeApps) FullBackUp(deiceName ...string) (*BackupResp, error) {
@@ -76,7 +66,7 @@ func (inst *EdgeApps) BackupApp(appName string, deiceName ...string) (*BackupRes
 	return &BackupResp{BackupPath: path}, err
 }
 
-func (inst *EdgeApps) ListFullBackups() ([]string, error) {
+func (inst *EdgeApps) ListFullBackups() ([]installer.ListBackups, error) {
 	return inst.App.ListFullBackups()
 }
 
@@ -84,7 +74,7 @@ func (inst *EdgeApps) ListAppBackupsDirs() ([]string, error) {
 	return inst.App.ListAppBackupsDirs()
 }
 
-func (inst *EdgeApps) ListBackupsByApp(appName string) ([]string, error) {
+func (inst *EdgeApps) ListBackupsByApp(appName string) ([]installer.ListBackups, error) {
 	return inst.App.ListBackupsByApp(appName)
 }
 

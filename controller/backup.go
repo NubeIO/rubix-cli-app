@@ -10,6 +10,30 @@ import (
 RESTORE A BACK-UP
 */
 
+func (inst *Controller) RestoreBackup(c *gin.Context) {
+	file, err := c.FormFile("file")
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	takeBackup := c.Query("take_backup")
+	_takeBackup, _ := strconv.ParseBool(takeBackup)
+	m := &installer.RestoreBackup{
+		TakeBackup: _takeBackup,
+		File:       file,
+	}
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	data, err := inst.Rubix.RestoreBackup(m)
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	reposeHandler(data, nil, c)
+}
+
 func (inst *Controller) RestoreAppBackup(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
@@ -19,10 +43,9 @@ func (inst *Controller) RestoreAppBackup(c *gin.Context) {
 	takeBackup := c.Query("take_backup")
 	_takeBackup, _ := strconv.ParseBool(takeBackup)
 	m := &installer.RestoreBackup{
-		AppName:     c.Query("app_name"),
-		Destination: c.Query("destination"),
-		TakeBackup:  _takeBackup,
-		File:        file,
+		AppName:    c.Query("app_name"),
+		TakeBackup: _takeBackup,
+		File:       file,
 	}
 	if err != nil {
 		reposeHandler(nil, err, c)
@@ -82,7 +105,7 @@ func (inst *Controller) ListAppBackupsDirs(c *gin.Context) {
 }
 
 func (inst *Controller) ListBackupsByApp(c *gin.Context) {
-	appName := c.Query("name")
+	appName := c.Query("app_name")
 	data, err := inst.Rubix.ListBackupsByApp(appName)
 	if err != nil {
 		reposeHandler(nil, err, c)
