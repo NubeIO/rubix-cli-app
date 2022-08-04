@@ -2,6 +2,7 @@ package router
 
 import (
 	"fmt"
+	"github.com/NubeIO/lib-rubix-installer/installer"
 	"github.com/NubeIO/rubix-edge/controller"
 	dbase "github.com/NubeIO/rubix-edge/database"
 	"github.com/NubeIO/rubix-edge/pkg/config"
@@ -48,7 +49,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 		DB: db,
 	}
 
-	rubixApps, _ := apps.New(&apps.EdgeApps{})
+	rubixApps, _ := apps.New(&apps.EdgeApps{App: &installer.App{}})
 
 	api := controller.Controller{DB: appDB, Rubix: rubixApps}
 
@@ -69,14 +70,15 @@ func Setup(db *gorm.DB) *gin.Engine {
 		appControl.POST("/status/mass", api.ServiceMassStatus) // mass isRunning, isInstalled and so on
 	}
 
-	appBackups := apiRoutes.Group("/apps/backup")
+	appBackups := apiRoutes.Group("/backup")
 	{
-		appBackups.POST("/restore/full", api.CtlAction)       // start, stop
-		appBackups.POST("/restore/app", api.RestoreAppBackup) // mass operation start, stop
-		appBackups.POST("/run/full", api.CtlAction)           // start, stop
-		appBackups.POST("/run/app", api.ServiceMassAction)    // mass operation start, stop
-		appBackups.GET("/list/full", api.CtlStatus)           // isRunning, isInstalled and so on
-		appBackups.GET("/list/app", api.ServiceMassStatus)    // mass isRunning, isInstalled and so on
+		appBackups.POST("/restore/full", api.RestoreAppBackup) // start, stop
+		appBackups.POST("/restore/app", api.RestoreAppBackup)  // mass operation start, stop
+		appBackups.POST("/run/full", api.FullBackUp)           // start, stop
+		appBackups.POST("/run/app", api.BackupApp)             // mass operation start, stop
+		appBackups.GET("/list/full", api.ListFullBackups)      // isRunning, isInstalled and so on
+		appBackups.GET("/list/apps", api.ListAppBackupsDirs)
+		appBackups.GET("/list/app", api.ListBackupsByApp)
 	}
 
 	system := apiRoutes.Group("/system")

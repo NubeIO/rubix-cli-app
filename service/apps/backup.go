@@ -30,6 +30,9 @@ func (inst *EdgeApps) RestoreBackup(back *installer.RestoreBackup) (*installer.R
 	if back == nil {
 		return nil, errors.New("RestoreBackup interface can not be empty")
 	}
+	if back.Destination == "" {
+		return nil, errors.New("destination can not be empty")
+	}
 	resp := &installer.RestoreResponse{}
 	restoreResp, err := inst.App.RestoreBackup(back)
 	if err != nil {
@@ -50,6 +53,9 @@ func (inst *EdgeApps) RestoreAppBackup(back *installer.RestoreBackup) (*installe
 	}
 	if back.AppName == "" {
 		return nil, errors.New("app name can not be empty")
+	}
+	if back.Destination == "" {
+		return nil, errors.New("destination can not be empty")
 	}
 	resp := &installer.RestoreResponse{}
 	restoreResp, err := inst.App.RestoreAppBackup(back)

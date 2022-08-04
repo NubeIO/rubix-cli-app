@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/NubeIO/lib-rubix-installer/installer"
 	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
 /*
@@ -10,8 +11,19 @@ RESTORE A BACK-UP
 */
 
 func (inst *Controller) RestoreAppBackup(c *gin.Context) {
-	var m *installer.RestoreBackup
-	err = c.ShouldBindJSON(&m)
+	file, err := c.FormFile("file")
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	takeBackup := c.Query("take_backup")
+	_takeBackup, _ := strconv.ParseBool(takeBackup)
+	m := &installer.RestoreBackup{
+		AppName:     c.Query("app_name"),
+		Destination: c.Query("destination"),
+		TakeBackup:  _takeBackup,
+		File:        file,
+	}
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
@@ -38,7 +50,7 @@ func (inst *Controller) FullBackUp(c *gin.Context) {
 }
 
 func (inst *Controller) BackupApp(c *gin.Context) {
-	appName := c.Query("name")
+	appName := c.Query("app_name")
 	data, err := inst.Rubix.BackupApp(appName)
 	if err != nil {
 		reposeHandler(nil, err, c)
