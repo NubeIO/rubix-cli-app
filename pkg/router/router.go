@@ -7,6 +7,7 @@ import (
 	dbase "github.com/NubeIO/rubix-edge/database"
 	"github.com/NubeIO/rubix-edge/pkg/config"
 	"github.com/NubeIO/rubix-edge/pkg/logger"
+	"github.com/NubeIO/rubix-edge/service/apps"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -48,22 +49,36 @@ func Setup(db *gorm.DB) *gin.Engine {
 		DB: db,
 	}
 
-	rubixApps := installer.New(&installer.App{})
+	rubixApps, _ := apps.New(&apps.EdgeApps{App: &installer.App{}})
 
 	api := controller.Controller{DB: appDB, Rubix: rubixApps}
 
 	apiRoutes := engine.Group("/api")
 
-	apps := apiRoutes.Group("/apps")
+	edgeApps := apiRoutes.Group("/apps")
 	{
-		apps.POST("/add", api.AddUploadApp)
-		apps.POST("/service/upload", api.UploadService)
-		apps.POST("/service/install", api.InstallService)
+		edgeApps.POST("/add", api.AddUploadApp)
+		edgeApps.POST("/service/upload", api.UploadService)
+		edgeApps.POST("/service/install", api.InstallService)
 	}
+
 	appControl := apiRoutes.Group("/apps/control")
 	{
-		appControl.POST("/", api.AppService)
-		appControl.POST("/bulk", api.AppService)
+		appControl.POST("/action", api.CtlAction)              // start, stop
+		appControl.POST("/action/mass", api.ServiceMassAction) // mass operation start, stop
+		appControl.POST("/status", api.CtlStatus)              // isRunning, isInstalled and so on
+		appControl.POST("/status/mass", api.ServiceMassStatus) // mass isRunning, isInstalled and so on
+	}
+
+	appBackups := apiRoutes.Group("/backup")
+	{
+		appBackups.POST("/restore/full", api.RestoreAppBackup) // start, stop
+		appBackups.POST("/restore/app", api.RestoreAppBackup)  // mass operation start, stop
+		appBackups.POST("/run/full", api.FullBackUp)           // start, stop
+		appBackups.POST("/run/app", api.BackupApp)             // mass operation start, stop
+		appBackups.GET("/list/full", api.ListFullBackups)      // isRunning, isInstalled and so on
+		appBackups.GET("/list/apps", api.ListAppBackupsDirs)
+		appBackups.GET("/list/app", api.ListBackupsByApp)
 	}
 
 	system := apiRoutes.Group("/system")

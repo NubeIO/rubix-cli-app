@@ -5,7 +5,7 @@ import (
 )
 
 func (inst *Controller) GetProduct(c *gin.Context) {
-	data, err := inst.Rubix.GetProduct()
+	data, err := inst.Rubix.App.GetProduct()
 	if err != nil {
 		reposeHandler(data, err, c)
 		return

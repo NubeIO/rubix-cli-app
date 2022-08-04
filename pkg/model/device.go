@@ -11,6 +11,7 @@ type BuildInfo struct {
 }
 
 type DeviceInfo struct {
+	UUID        string    `json:"-"`
 	GlobalUUID  string    `json:"global_uuid"`
 	ClientId    string    `json:"client_id"`
 	ClientName  string    `json:"client_name"`
