@@ -22,7 +22,7 @@ func Init() {
 }
 
 func New() *logrus.Logger {
-	logLevel := viper.GetString("server.loglevel")
+	logLevel := viper.GetString("server.log.level")
 	logrusLevel := logrus.InfoLevel
 	switch logLevel {
 	case "PANIC":
@@ -55,10 +55,12 @@ func New() *logrus.Logger {
 		Level: logrusLevel,
 	}
 	logger.SetReportCaller(true)
-	file := fmt.Sprintf("%s/edge.log", config.Config.GetAbsDataDir())
-	fileHook, err := NewLogrusFileHook(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if err == nil {
-		logger.Hooks.Add(fileHook)
+	if viper.GetBool("server.log.store") {
+		file := fmt.Sprintf("%s/edge.log", config.Config.GetAbsDataDir())
+		fileHook, err := NewLogrusFileHook(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+		if err == nil {
+			logger.Hooks.Add(fileHook)
+		}
 	}
 	return logger
 }
