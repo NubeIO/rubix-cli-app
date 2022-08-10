@@ -1,8 +1,14 @@
 database:
   driver: sqlite
   name: data.db
-  loglevel: INFO # SILENT, ERROR, WARN, INFO
+  log:
+    store: false
+    level: info # silent, error, warn, info
 server:
-  loglevel: INFO # PANIC, FATAL, ERROR, WARN, INFO, DEBUG, TRACE
+  log:
+    store: false
+    level: info # panic, fatal, error, warn, info, debugG, trace
 gin:
-  loglevel: debug # debug, release, test
+  log:
+    store: false
+    level: debug # debug, release, test

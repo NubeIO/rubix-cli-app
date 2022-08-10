@@ -29,7 +29,7 @@ type Database struct {
 // Setup opens a database and saves the reference to `Database` struct.
 func Setup() error {
 	logLevel := logger.Silent
-	dbLogLevel := viper.GetString("database.loglevel")
+	dbLogLevel := viper.GetString("database.log.level")
 	if dbLogLevel == "ERROR" {
 		logLevel = logger.Error
 	} else if dbLogLevel == "WARN" {
@@ -89,11 +89,13 @@ func Setup() error {
 }
 
 func getWriter() io.Writer {
+	if viper.GetBool("database.log.store") == false {
+		return os.Stdout
+	}
 	fileLocation := fmt.Sprintf("%s/edge.db.log", config.Config.GetAbsDataDir())
 	file, err := os.OpenFile(fileLocation, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		return os.Stdout
-	} else {
-		return file
 	}
+	return file
 }

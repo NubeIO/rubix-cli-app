@@ -21,15 +21,16 @@ func Setup(db *gorm.DB) *gin.Engine {
 	engine := gin.New()
 
 	// Set gin access logs
-	fileLocation := fmt.Sprintf("%s/edge.access.log", config.Config.GetAbsDataDir())
-	f, err := os.OpenFile(fileLocation, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0755)
-	if err != nil {
-		logger.Logger.Errorf("Failed to create access log file: %v", err)
-	} else {
-		gin.SetMode(viper.GetString("gin.loglevel"))
-		gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
+	if viper.GetBool("gin.log.store") {
+		fileLocation := fmt.Sprintf("%s/edge.access.log", config.Config.GetAbsDataDir())
+		f, err := os.OpenFile(fileLocation, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0755)
+		if err != nil {
+			logger.Logger.Errorf("Failed to create access log file: %v", err)
+		} else {
+			gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
+		}
 	}
-
+	gin.SetMode(viper.GetString("gin.log.level"))
 	engine.Use(gin.Logger())
 	engine.Use(gin.Recovery())
 	engine.Use(cors.New(cors.Config{
