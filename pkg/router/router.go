@@ -58,6 +58,9 @@ func Setup(db *gorm.DB) *gin.Engine {
 
 	edgeApps := apiRoutes.Group("/apps")
 	{
+		edgeApps.GET("/", api.ListApps)
+		edgeApps.GET("/services", api.ListAppsAndService)
+		edgeApps.GET("/services/nube", api.ListNubeServices)
 		edgeApps.POST("/add", api.AddUploadApp)
 		edgeApps.POST("/service/upload", api.UploadService)
 		edgeApps.POST("/service/install", api.InstallService)

@@ -1,7 +1,7 @@
 module github.com/NubeIO/rubix-edge
 
 //replace github.com/NubeIO/lib-dirs => /home/aidan/code/go/nube/lib/lib-dirs
-//replace github.com/NubeIO/lib-rubix-installer => /home/aidan/code/go/nube/lib/lib-rubix-installer
+replace github.com/NubeIO/lib-rubix-installer => /home/aidan/code/go/nube/lib/lib-rubix-installer
 
 go 1.17
 
