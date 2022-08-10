@@ -3,11 +3,11 @@ database:
   name: data.db
   log:
     store: false
-    level: info # silent, error, warn, info
+    level: INFO # SILENT, ERROR, WARN, INFO
 server:
   log:
     store: false
-    level: info # panic, fatal, error, warn, info, debugG, trace
+    level: INFO # PANIC, FATAL, ERROR, WARN, INFO, DEBUG, TRACE
 gin:
   log:
     store: false
