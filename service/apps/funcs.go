@@ -3,39 +3,10 @@ package apps
 import (
 	"errors"
 	"fmt"
-	fileutils "github.com/NubeIO/lib-dirs/dirs"
 	log "github.com/sirupsen/logrus"
-	"os"
 	"path/filepath"
 	"strings"
 )
-
-func userHomeDir() string {
-	homeDir, _ := fileutils.Dir()
-	return homeDir
-}
-
-func empty(name string) error {
-	if name == "" {
-		return errors.New("can not be empty")
-	}
-	return nil
-}
-
-func emptyPath(path string) error {
-	if path == "" {
-		return errors.New("path can not be empty")
-	}
-	return nil
-}
-
-func checkDir(path string) error {
-	path = filePath(path)
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		return err
-	}
-	return nil
-}
 
 // filePath make the file path work for unix or windows
 func filePath(path string, debug ...bool) string {
