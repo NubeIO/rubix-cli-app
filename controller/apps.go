@@ -112,6 +112,7 @@ func (inst *Controller) InstallService(c *gin.Context) {
 	reposeHandler(data, nil, c)
 }
 
+// UninstallService full uninstallation of an app
 func (inst *Controller) UninstallService(c *gin.Context) {
 	deleteApp, _ := strconv.ParseBool(c.Query("delete"))
 	data, err := inst.Rubix.App.UninstallApp(c.Query("name"), c.Query("service"), deleteApp)

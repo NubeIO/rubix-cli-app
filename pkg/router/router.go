@@ -64,6 +64,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 		edgeApps.POST("/add", api.AddUploadApp)
 		edgeApps.POST("/service/upload", api.UploadService)
 		edgeApps.POST("/service/install", api.InstallService)
+		edgeApps.DELETE("/", api.UninstallService)
 	}
 
 	appControl := apiRoutes.Group("/apps/control")
