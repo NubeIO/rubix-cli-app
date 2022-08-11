@@ -1,4 +1,7 @@
 # CHANGELOG
+## [v0.1.1](https://github.com/NubeIO/rubix-edge/tree/v0.1.1) (2022-08-11)
+
+- stop service on install app
 
 ## [v0.1.0](https://github.com/NubeIO/rubix-edge/tree/v0.1.0) (2022-08-11)
 
