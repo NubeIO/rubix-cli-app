@@ -1,10 +1,61 @@
 package controller
 
 import (
+	"errors"
+	"fmt"
 	"github.com/NubeIO/lib-rubix-installer/installer"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
+
+// ListApps apps by listed in the installation (/data/rubix-service/apps/install)
+func (inst *Controller) ListApps(c *gin.Context) {
+	data, err := inst.Rubix.App.ListApps()
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	reposeHandler(data, nil, c)
+}
+
+// ListAppsAndService get all the apps by listed in the installation (/data/rubix-service/apps/install) dir and then check the service
+func (inst *Controller) ListAppsAndService(c *gin.Context) {
+	data, err := inst.Rubix.App.ListAppsAndService()
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	reposeHandler(data, nil, c)
+}
+
+// ListNubeServices list all the services by filtering all the service files with name nubeio
+func (inst *Controller) ListNubeServices(c *gin.Context) {
+	data, err := inst.Rubix.App.ListNubeServices()
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	reposeHandler(data, nil, c)
+}
+
+// ConfirmAppInstalled will check the app is installed and the service exists
+func (inst *Controller) ConfirmAppInstalled(c *gin.Context) {
+	data, err := inst.Rubix.App.ConfirmAppInstalled(c.Query("name"))
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	reposeHandler(data, nil, c)
+}
+
+func (inst *Controller) GetAppVersion(c *gin.Context) {
+	data := inst.Rubix.App.GetAppVersion(c.Query("name"))
+	if data == "" {
+		reposeHandler(nil, errors.New(fmt.Sprintf("failed to find the app:%s", c.Query("name"))), c)
+		return
+	}
+	reposeHandler(data, nil, c)
+}
 
 // AddUploadApp
 // upload the build
@@ -77,7 +128,9 @@ func (inst *Controller) RemoveApp(c *gin.Context) {
 		reposeHandler(nil, err, c)
 		return
 	}
-	reposeHandler("deleted app ok", nil, c)
+	reposeHandler(Message{
+		Message: "remove app ok",
+	}, nil, c)
 }
 
 func (inst *Controller) RemoveAppInstall(c *gin.Context) {
@@ -86,5 +139,7 @@ func (inst *Controller) RemoveAppInstall(c *gin.Context) {
 		reposeHandler(nil, err, c)
 		return
 	}
-	reposeHandler("deleted app ok", nil, c)
+	reposeHandler(Message{
+		Message: "deleted app ok",
+	}, nil, c)
 }
