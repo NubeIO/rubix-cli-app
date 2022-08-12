@@ -7,37 +7,27 @@ import (
 	"github.com/gin-gonic/gin"
 	"os"
 	"path"
+	"strconv"
 )
 
-type ZipParams struct {
-	Source             string `json:"source"`
-	Destination        string `json:"destination"`
-	Perm               int    `json:"perm"`
-	OverrideIfExisting bool   `json:"override_if_existing"`
-}
-
-func getZipBody(c *gin.Context) (dto *ZipParams, err error) {
-	err = c.ShouldBindJSON(&dto)
-	return dto, err
-}
-
 func (inst *Controller) Unzip(c *gin.Context) {
-	body, err := getZipBody(c)
+	source := c.Query("source")
+	destination := c.Query("destination")
+	permission, err := strconv.Atoi(c.Query("permission"))
 	if err != nil {
-		reposeHandler(nil, err, c)
+		reposeHandler(nil, errors.New("failed to get file permissions"), c)
 		return
 	}
-	pathToZip := body.Source
-	destination := body.Destination
-	if body.Source == "" {
+	pathToZip := source
+	if source == "" {
 		reposeHandler(nil, errors.New("zip source can not be empty, try /data/zip.zip"), c)
 		return
 	}
-	if body.Destination == "" {
+	if destination == "" {
 		reposeHandler(nil, errors.New("zip destination can not be empty, try /data/unzip-test"), c)
 		return
 	}
-	zip, err := fileUtils.UnZip(pathToZip, destination, os.FileMode(body.Perm))
+	zip, err := fileUtils.UnZip(pathToZip, destination, os.FileMode(permission))
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
@@ -46,18 +36,18 @@ func (inst *Controller) Unzip(c *gin.Context) {
 }
 
 func (inst *Controller) ZipDir(c *gin.Context) {
-	body, err := getZipBody(c)
+	source := c.Query("source")
+	destination := c.Query("destination")
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
 	}
-	pathToZip := body.Source
-	destination := body.Destination
-	if body.Source == "" {
+	pathToZip := source
+	if source == "" {
 		reposeHandler(nil, errors.New("zip source can not be empty, try /data/flow-framework"), c)
 		return
 	}
-	if body.Destination == "" {
+	if destination == "" {
 		reposeHandler(nil, errors.New("zip destination can not be empty, try /home/test/flow-framework.zip"), c)
 		return
 	}
@@ -67,7 +57,11 @@ func (inst *Controller) ZipDir(c *gin.Context) {
 		reposeHandler(nil, errors.New("dir to zip not found"), c)
 		return
 	}
-	files.MakeDirectoryIfNotExists(path.Dir(destination))
+	err := files.MakeDirectoryIfNotExists(path.Dir(destination))
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
 	err = fileUtils.RecursiveZip(pathToZip, destination)
 	if err != nil {
 		reposeHandler(nil, err, c)

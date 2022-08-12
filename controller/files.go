@@ -5,72 +5,25 @@ import (
 	"fmt"
 	fileutils "github.com/NubeIO/lib-dirs/dirs"
 	"github.com/gin-gonic/gin"
-	"io/fs"
 	"io/ioutil"
 	"net/http"
 	"os"
-	"path"
 	"path/filepath"
 	"regexp"
 	"runtime"
-	"strings"
 	"time"
 )
 
-type FilesParams struct {
-	File      string `json:"file"`
-	Directory string `json:"directory"`
-	From      string `json:"from"`
-	To        string `json:"to"`
-}
-
-func getFilesBody(c *gin.Context) (dto *FilesParams, err error) {
-	err = c.ShouldBindJSON(&dto)
-	return dto, err
-}
-
-type App struct {
-	App     string
-	Version string
-}
-
-func (inst *Controller) WalkFile(c *gin.Context) {
-	rootDir := c.Query("file")
-	var files []App
-	app := App{}
-	err := filepath.WalkDir(rootDir, func(p string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if d.IsDir() && strings.Count(p, string(os.PathSeparator)) == 6 {
-			parts := strings.Split(p, "/")
-			if len(parts) >= 5 { // app name
-				app.App = parts[5]
-			}
-			if len(parts) >= 6 { // version
-				app.Version = parts[6]
-			}
-			files = append(files, app)
-		}
-		return nil
-	})
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
-	reposeHandler(files, nil, c)
-}
-
 func (inst *Controller) ListFiles(c *gin.Context) {
-	file := c.Query("file")
-	fileInfo, err := os.Stat(file)
+	path := c.Query("path")
+	fileInfo, err := os.Stat(path)
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
 	}
 	var dirContent []string
 	if fileInfo.IsDir() {
-		files, err := ioutil.ReadDir(file)
+		files, err := ioutil.ReadDir(path)
 		if err != nil {
 			reposeHandler(nil, err, c)
 			return
@@ -82,42 +35,33 @@ func (inst *Controller) ListFiles(c *gin.Context) {
 		reposeHandler(dirContent, errors.New("it needs to be a directory, found file"), c)
 		return
 	}
+
 	reposeHandler(dirContent, nil, c)
 }
 
 func (inst *Controller) RenameFile(c *gin.Context) {
-	body, err := getFilesBody(c)
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
-	if body.Directory == "" || body.From == "" || body.To == "" {
+	oldName := c.Query("old_name_and_path")
+	newName := c.Query("new_name_and_path")
+	if oldName == "" || newName == "" {
 		reposeHandler(nil, errors.New("directory, from and to files name can not be empty"), c)
 		return
 	}
-	fromFileLocation := path.Join(body.Directory, body.From)
-	toFileLocation := path.Join(body.Directory, body.To)
-	if !fileUtils.FileExists(fromFileLocation) {
-		reposeHandler(nil, errors.New("file not found"), c)
-		return
-	}
-	err = fileUtils.Rename(fromFileLocation, toFileLocation)
+	err = fileUtils.Rename(oldName, newName)
 	reposeHandler(Message{Message: "renaming is successfully done"}, err, c)
 }
 
 func (inst *Controller) CopyFile(c *gin.Context) {
-	body, err := getFilesBody(c)
+	from := c.Query("from")
+	to := c.Query("to")
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
 	}
-
-	if body.From == "" || body.To == "" {
+	if from == "" || to == "" {
 		reposeHandler(nil, errors.New("from and to files name can not be empty"), c)
 		return
 	}
-
-	err = fileUtils.Copy(body.From, body.To)
+	err = fileUtils.Copy(from, to)
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
@@ -126,16 +70,17 @@ func (inst *Controller) CopyFile(c *gin.Context) {
 }
 
 func (inst *Controller) MoveFile(c *gin.Context) {
-	body, err := getFilesBody(c)
+	from := c.Query("from")
+	to := c.Query("to")
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
 	}
-	if body.From == "" || body.To == "" {
+	if from == "" || to == "" {
 		reposeHandler(nil, errors.New("from and to files name can not be empty"), c)
 		return
 	}
-	err = fileUtils.MoveFile(body.From, body.To)
+	err = fileUtils.MoveFile(from, to)
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
@@ -144,12 +89,8 @@ func (inst *Controller) MoveFile(c *gin.Context) {
 }
 
 func (inst *Controller) DownloadFile(c *gin.Context) {
-	body, err := getFilesBody(c)
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
-	fileInfo, err := os.Stat(body.File)
+	path := c.Query("path_and_file")
+	fileInfo, err := os.Stat(path)
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
@@ -159,12 +100,12 @@ func (inst *Controller) DownloadFile(c *gin.Context) {
 		reposeHandler(dirContent, errors.New("it needs to be a file, found directory"), c)
 		return
 	} else {
-		byteFile, err := ioutil.ReadFile(body.File)
+		byteFile, err := ioutil.ReadFile(path)
 		if err != nil {
 			reposeHandler(nil, err, c)
 			return
 		}
-		fileName, _ := filepath.Abs(body.File)
+		fileName, _ := filepath.Abs(path)
 		outFileName := fmt.Sprintf("attachment; filename=%s", filepath.Base(fileName))
 		c.Header("Content-Disposition", outFileName)
 		c.Data(http.StatusOK, "application/octet-stream", byteFile)
@@ -204,17 +145,16 @@ func (inst *Controller) UploadFile(c *gin.Context) {
 }
 
 func (inst *Controller) DeleteFile(c *gin.Context) {
-	body, err := getFilesBody(c)
+	filePath := c.Query("path")
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
 	}
-
-	if !fileUtils.FileExists(body.File) {
+	if !fileUtils.FileExists(filePath) {
 		reposeHandler(nil, errors.New("file doesn't exist"), c)
 		return
 	}
-	err = fileUtils.Rm(body.File)
+	err = fileUtils.Rm(filePath)
 	reposeHandler(Message{Message: "file has been deleted"}, err, c)
 }
 

@@ -144,3 +144,33 @@ func (inst *Controller) RemoveAppInstall(c *gin.Context) {
 		Message: "deleted app ok",
 	}, nil, c)
 }
+
+// BuildUpload
+// upload the build, or plugin
+func (inst *Controller) BuildUpload(c *gin.Context) {
+	file, err := c.FormFile("file")
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	data, err := inst.Rubix.App.Upload(file)
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	reposeHandler(data, nil, c)
+}
+
+// CompareBuildToArch compare the arch and product to the zip build name
+func (inst *Controller) CompareBuildToArch(c *gin.Context) {
+	zipName := c.Query("build_zip_name")
+	product := c.Query("product")
+	err := inst.Rubix.App.CompareBuildToArch(zipName, product)
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	reposeHandler(Message{
+		Message: "match ok",
+	}, nil, c)
+}
