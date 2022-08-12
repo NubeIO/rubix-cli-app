@@ -1,4 +1,8 @@
 # CHANGELOG
+## [v0.1.2](https://github.com/NubeIO/rubix-edge/tree/v0.1.2) (2022-08-12)
+
+- added api for delete an app
+
 ## [v0.1.1](https://github.com/NubeIO/rubix-edge/tree/v0.1.1) (2022-08-11)
 
 - stop service on install app
