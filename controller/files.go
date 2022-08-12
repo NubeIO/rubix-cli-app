@@ -35,6 +35,7 @@ func (inst *Controller) ListFiles(c *gin.Context) {
 		reposeHandler(dirContent, errors.New("it needs to be a directory, found file"), c)
 		return
 	}
+
 	reposeHandler(dirContent, nil, c)
 }
 
