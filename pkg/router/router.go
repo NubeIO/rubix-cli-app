@@ -114,6 +114,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 		files.POST("/upload", api.UploadFile)
 		files.POST("/download", api.DownloadFile)
 		files.DELETE("/delete", api.DeleteFile)
+		files.DELETE("/delete/all", api.DeleteAllFiles)
 	}
 
 	dirs := apiRoutes.Group("/dirs")

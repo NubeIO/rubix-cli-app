@@ -157,11 +157,25 @@ func (inst *Controller) DeleteFile(c *gin.Context) {
 		return
 	}
 	if !fileUtils.FileExists(filePath) {
-		reposeHandler(nil, errors.New("file doesn't exist"), c)
+		reposeHandler(nil, errors.New(fmt.Sprintf("file doesn't exist: %s", filePath)), c)
 		return
 	}
 	err = fileUtils.Rm(filePath)
-	reposeHandler(Message{Message: "file has been deleted"}, err, c)
+	reposeHandler(Message{Message: fmt.Sprintf("deleted: %s", filePath)}, err, c)
+}
+
+func (inst *Controller) DeleteAllFiles(c *gin.Context) {
+	filePath := c.Query("path")
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	if !fileUtils.DirExists(filePath) {
+		reposeHandler(nil, errors.New(fmt.Sprintf("dir doesn't exist: %s", filePath)), c)
+		return
+	}
+	err = fileUtils.RemoveAllFiles(filePath)
+	reposeHandler(Message{Message: fmt.Sprintf("deleted: %s", filePath)}, err, c)
 }
 
 func TimeTrack(start time.Time) (out string) {

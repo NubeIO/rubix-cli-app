@@ -9,7 +9,7 @@ require (
 	github.com/NubeIO/lib-command v0.0.2
 	github.com/NubeIO/lib-date v0.0.1
 	github.com/NubeIO/lib-dhcpd v0.0.1
-	github.com/NubeIO/lib-dirs v0.0.3
+	github.com/NubeIO/lib-dirs v0.0.5
 	github.com/NubeIO/lib-networking v0.0.5
 	github.com/NubeIO/lib-rubix-installer v0.1.1
 	github.com/NubeIO/lib-schema v0.0.2
