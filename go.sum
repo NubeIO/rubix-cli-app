@@ -67,8 +67,9 @@ github.com/NubeIO/lib-dhcpd v0.0.1 h1:Pou7XgOAfMwwBaKf3sYFLDY3U3/+tIaYjrS7QpNZd6
 github.com/NubeIO/lib-dhcpd v0.0.1/go.mod h1:X+9x4ePY4/Ut20HKnoOjzVru0GbXvFpt6eb2dW+cnZU=
 github.com/NubeIO/lib-dirs v0.0.1/go.mod h1:PCDWQm82Nezp9oyhkpqyfVH6w6+1lzfDwfRdYVF5sPY=
 github.com/NubeIO/lib-dirs v0.0.2/go.mod h1:PCDWQm82Nezp9oyhkpqyfVH6w6+1lzfDwfRdYVF5sPY=
-github.com/NubeIO/lib-dirs v0.0.3 h1:nR83YVnm8YZmoZji2xaTJdt5P9ilMEa9KSlOv7QuFDk=
 github.com/NubeIO/lib-dirs v0.0.3/go.mod h1:ay8NFXTWwtnNdE/JN9ZK5626CVq7UpjEeoQ2Ze6FE3U=
+github.com/NubeIO/lib-dirs v0.0.5 h1:dOnDfJHlpuEc1n+SxGVuYVDhicI9a5ZADo2hA+7o4ow=
+github.com/NubeIO/lib-dirs v0.0.5/go.mod h1:ay8NFXTWwtnNdE/JN9ZK5626CVq7UpjEeoQ2Ze6FE3U=
 github.com/NubeIO/lib-networking v0.0.3/go.mod h1:wO04Ul6Wdr5w/7s8UMZzV1/HMXuVSVFzqq7h5A3Vl6k=
 github.com/NubeIO/lib-networking v0.0.5 h1:JB/YiYI6V2uDINYS789YKy5uLspZwwNTcXwILHRvhq4=
 github.com/NubeIO/lib-networking v0.0.5/go.mod h1:wO04Ul6Wdr5w/7s8UMZzV1/HMXuVSVFzqq7h5A3Vl6k=
