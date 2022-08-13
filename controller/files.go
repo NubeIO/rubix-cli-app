@@ -139,6 +139,7 @@ func (inst *Controller) UploadFile(c *gin.Context) {
 	size, err := fileutils.GetFileSize(toFileLocation)
 	if err != nil {
 		reposeHandler(resp, err, c)
+		return
 	}
 	resp = &UploadResponse{
 		Destination: toFileLocation,
