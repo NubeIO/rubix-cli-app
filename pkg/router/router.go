@@ -106,6 +106,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 
 	files := apiRoutes.Group("/files")
 	{
+		files.GET("/walk", api.WalkFile)
 		files.GET("/list", api.ListFiles) // /api/files/list?file=/data
 		files.POST("/rename", api.RenameFile)
 		files.POST("/copy", api.CopyFile)

@@ -8,9 +8,13 @@ import (
 	"net/http"
 )
 
+const nonRoot = 0700
+const root = 0777
+
+var filePerm = root
+
 type Controller struct {
-	DB *dbase.DB
-	//Installer *installer.Installer
+	DB    *dbase.DB
 	Rubix *apps.EdgeApps
 }
 

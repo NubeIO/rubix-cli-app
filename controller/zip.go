@@ -13,10 +13,15 @@ import (
 func (inst *Controller) Unzip(c *gin.Context) {
 	source := c.Query("source")
 	destination := c.Query("destination")
-	permission, err := strconv.Atoi(c.Query("permission"))
-	if err != nil {
-		reposeHandler(nil, errors.New("failed to get file permissions"), c)
-		return
+	perm := c.Query("permission")
+	var permission int
+	if perm == "" {
+		permission = filePerm
+	} else {
+		permission, err = strconv.Atoi(c.Query("permission"))
+		if err != nil {
+			permission = filePerm
+		}
 	}
 	pathToZip := source
 	if source == "" {

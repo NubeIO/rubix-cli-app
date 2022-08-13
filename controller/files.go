@@ -5,14 +5,31 @@ import (
 	"fmt"
 	fileutils "github.com/NubeIO/lib-dirs/dirs"
 	"github.com/gin-gonic/gin"
+	"io/fs"
 	"io/ioutil"
-	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
 	"runtime"
 	"time"
 )
+
+func (inst *Controller) WalkFile(c *gin.Context) {
+	rootDir := c.Query("path")
+	var files []string
+	err := filepath.WalkDir(rootDir, func(p string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		files = append(files, p)
+		return nil
+	})
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	reposeHandler(files, nil, c)
+}
 
 func (inst *Controller) ListFiles(c *gin.Context) {
 	path := c.Query("path")
@@ -35,13 +52,12 @@ func (inst *Controller) ListFiles(c *gin.Context) {
 		reposeHandler(dirContent, errors.New("it needs to be a directory, found file"), c)
 		return
 	}
-
 	reposeHandler(dirContent, nil, c)
 }
 
 func (inst *Controller) RenameFile(c *gin.Context) {
-	oldName := c.Query("old_name_and_path")
-	newName := c.Query("new_name_and_path")
+	oldName := c.Query("old")
+	newName := c.Query("new")
 	if oldName == "" || newName == "" {
 		reposeHandler(nil, errors.New("directory, from and to files name can not be empty"), c)
 		return
@@ -89,28 +105,13 @@ func (inst *Controller) MoveFile(c *gin.Context) {
 }
 
 func (inst *Controller) DownloadFile(c *gin.Context) {
-	path := c.Query("path_and_file")
-	fileInfo, err := os.Stat(path)
+	path := c.Query("path")
+	fileName := c.Query("file")
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
 	}
-	var dirContent []string
-	if fileInfo.IsDir() {
-		reposeHandler(dirContent, errors.New("it needs to be a file, found directory"), c)
-		return
-	} else {
-		byteFile, err := ioutil.ReadFile(path)
-		if err != nil {
-			reposeHandler(nil, err, c)
-			return
-		}
-		fileName, _ := filepath.Abs(path)
-		outFileName := fmt.Sprintf("attachment; filename=%s", filepath.Base(fileName))
-		c.Header("Content-Disposition", outFileName)
-		c.Data(http.StatusOK, "application/octet-stream", byteFile)
-	}
-	reposeHandler(dirContent, nil, c)
+	c.FileAttachment(fmt.Sprintf("%s/%s", path, fileName), fileName)
 }
 
 /*
@@ -119,14 +120,18 @@ UploadFile
 */
 func (inst *Controller) UploadFile(c *gin.Context) {
 	now := time.Now()
-	to := c.Query("to")
+	path := c.Query("destination")
 	file, err := c.FormFile("file")
 	resp := &UploadResponse{}
 	if err != nil || file == nil {
 		reposeHandler(resp, err, c)
 		return
 	}
-	toFileLocation := fmt.Sprintf("%s/%s", to, filepath.Base(file.Filename))
+	if found := fileutils.New().DirExists(path); !found {
+		reposeHandler(nil, errors.New(fmt.Sprintf("path not found %s", path)), c)
+		return
+	}
+	toFileLocation := fmt.Sprintf("%s/%s", path, filepath.Base(file.Filename))
 	if err := c.SaveUploadedFile(file, toFileLocation); err != nil {
 		reposeHandler(resp, err, c)
 		return
@@ -136,7 +141,7 @@ func (inst *Controller) UploadFile(c *gin.Context) {
 		reposeHandler(resp, err, c)
 	}
 	resp = &UploadResponse{
-		Destination: file.Filename,
+		Destination: toFileLocation,
 		File:        file.Filename,
 		Size:        size.String(),
 		UploadTime:  TimeTrack(now),
