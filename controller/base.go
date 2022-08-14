@@ -11,14 +11,13 @@ import (
 const nonRoot = 0700
 const root = 0777
 
+var fileUtils = fileutils.New()
 var filePerm = root
 
 type Controller struct {
 	DB    *dbase.DB
 	Rubix *apps.EdgeApps
 }
-
-var fileUtils = fileutils.New()
 
 var err error
 

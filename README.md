@@ -19,7 +19,7 @@ https://github.com/NubeIO/lib-command/blob/master/product/product.go#L7
 
 ```
 {
-    "version": "v1.1.1",
+    "image_version": "v1.1.1",
     "arch": "amd64",
     "product": "Server"
 }
