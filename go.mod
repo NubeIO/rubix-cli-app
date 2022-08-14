@@ -13,7 +13,7 @@ require (
 	github.com/NubeIO/lib-networking v0.0.5
 	github.com/NubeIO/lib-rubix-installer v0.1.2
 	github.com/NubeIO/lib-schema v0.0.2
-	github.com/NubeIO/lib-systemctl-go v0.0.9
+	github.com/NubeIO/lib-systemctl-go v0.1.0
 	github.com/NubeIO/nubeio-rubix-lib-helpers-go v0.2.7
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.8.1
