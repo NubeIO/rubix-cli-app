@@ -20,7 +20,7 @@ import (
 
 func NotFound() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		message := fmt.Sprintf("%s %s [%d]: %s", ctx.Request.Method, ctx.Request.URL, 404, "api not found")
+		message := fmt.Sprintf("%s %s [%d]: %s", ctx.Request.Method, ctx.Request.URL, 404, "rubix-edge: api not found")
 		ctx.JSON(http.StatusNotFound, controller.Message{Message: message})
 	}
 }
