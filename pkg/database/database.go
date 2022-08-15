@@ -3,6 +3,7 @@ package database
 import (
 	"errors"
 	"fmt"
+	"github.com/NubeIO/nubeio-rubix-lib-auth-go/user"
 	"github.com/NubeIO/rubix-edge/pkg/config"
 	"github.com/spf13/viper"
 	"gorm.io/driver/sqlite"
@@ -15,6 +16,11 @@ import (
 	"time"
 
 	"github.com/NubeIO/rubix-edge/pkg/model"
+)
+
+const (
+	username = "admin"
+	password = "N00BWires"
 )
 
 var (
@@ -85,6 +91,11 @@ func Setup() error {
 		return err
 	}
 	DB = db
+
+	user_, _ := user.GetUser()
+	if user_ == nil {
+		_, _ = user.CreateUser(&user.User{Username: username, Password: password})
+	}
 	return nil
 }
 

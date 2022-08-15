@@ -53,8 +53,13 @@ func Setup(db *gorm.DB) *gin.Engine {
 	rubixApps, _ := apps.New(&apps.EdgeApps{App: &installer.App{}})
 
 	api := controller.Controller{DB: appDB, Rubix: rubixApps}
+	engine.POST("/api/users/login", api.Login)
 
-	apiRoutes := engine.Group("/api")
+	handleAuth := func(c *gin.Context) { c.Next() }
+	if config.Config.Auth() {
+		handleAuth = api.HandleAuth()
+	}
+	apiRoutes := engine.Group("/api", handleAuth)
 
 	edgeApps := apiRoutes.Group("/apps")
 	{
@@ -128,6 +133,21 @@ func Setup(db *gorm.DB) *gin.Engine {
 	{
 		zip.POST("/unzip", api.Unzip)
 		zip.POST("/zip", api.ZipDir)
+	}
+
+	user := apiRoutes.Group("/users")
+	{
+		user.PUT("", api.UpdateUser)
+		user.GET("", api.GetUser)
+	}
+
+	token := apiRoutes.Group("/tokens")
+	{
+		token.GET("", api.GetTokens)
+		token.POST("/generate", api.GenerateToken)
+		token.PUT("/:uuid/block", api.BlockToken)
+		token.PUT("/:uuid/regenerate", api.RegenerateToken)
+		token.DELETE("/:uuid", api.DeleteToken)
 	}
 
 	return engine
