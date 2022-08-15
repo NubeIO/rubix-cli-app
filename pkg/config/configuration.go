@@ -44,6 +44,10 @@ func (conf *Configuration) Prod() bool {
 	return RootCmd.PersistentFlags().Lookup("prod").Value.String() == "true"
 }
 
+func (conf *Configuration) Auth() bool {
+	return RootCmd.PersistentFlags().Lookup("auth").Value.String() == "true"
+}
+
 func (conf *Configuration) GetPort() string {
 	return RootCmd.PersistentFlags().Lookup("port").Value.String()
 }
