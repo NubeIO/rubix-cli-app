@@ -6,7 +6,8 @@ need to run as sudo to install apps
 
 ```
 go mod tidy
-go build main.go && sudo ./main server
+go build main.go && sudo ./main server --auth=false
+go build main.go && sudo ./main server --auth
 ```
 
 ## product file (this is for hardware identification)
@@ -14,8 +15,6 @@ go build main.go && sudo ./main server
 https://github.com/NubeIO/lib-command/blob/master/product/product.go#L7
 
 `sudo nano /data/product.json`
-
-
 
 ```
 {

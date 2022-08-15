@@ -13,9 +13,17 @@ import (
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
 	"io"
+	"net/http"
 	"os"
 	"time"
 )
+
+func NotFound() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		message := fmt.Sprintf("%s %s [%d]: %s", ctx.Request.Method, ctx.Request.URL, 404, "api not found")
+		ctx.JSON(http.StatusNotFound, controller.Message{Message: message})
+	}
+}
 
 func Setup(db *gorm.DB) *gin.Engine {
 	engine := gin.New()
@@ -31,6 +39,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 		}
 	}
 	gin.SetMode(viper.GetString("gin.log.level"))
+	engine.NoRoute(NotFound())
 	engine.Use(gin.Logger())
 	engine.Use(gin.Recovery())
 	engine.Use(cors.New(cors.Config{
