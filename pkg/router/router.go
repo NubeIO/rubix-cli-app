@@ -27,7 +27,6 @@ func NotFound() gin.HandlerFunc {
 
 func Setup(db *gorm.DB) *gin.Engine {
 	engine := gin.New()
-
 	// Set gin access logs
 	if viper.GetBool("gin.log.store") {
 		fileLocation := fmt.Sprintf("%s/edge.access.log", config.Config.GetAbsDataDir())
@@ -65,10 +64,25 @@ func Setup(db *gorm.DB) *gin.Engine {
 	engine.POST("/api/users/login", api.Login)
 
 	handleAuth := func(c *gin.Context) { c.Next() }
+	apiPublicRoutes := engine.Group("/api", handleAuth)
+
+	public := apiPublicRoutes.Group("/public") // THESE ARE PUBLIC APIs
+	{
+		public.GET("/device", api.GetDeviceProduct)
+		public.GET("/token/flow", api.FlowToken) // WILL REMOVE THIS AFTER TESTING IS DONE
+	}
+
 	if config.Config.Auth() {
 		handleAuth = api.HandleAuth()
 	}
 	apiRoutes := engine.Group("/api", handleAuth)
+
+	deviceInfo := apiRoutes.Group("/device")
+	{
+		deviceInfo.GET("/", api.GetDeviceInfo)
+		deviceInfo.PATCH("/", api.UpdateDeviceInfo)
+		deviceInfo.DELETE("/", api.DropDeviceInfo)
+	}
 
 	edgeApps := apiRoutes.Group("/apps")
 	{

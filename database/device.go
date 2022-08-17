@@ -2,7 +2,9 @@ package dbase
 
 import (
 	"errors"
+	"github.com/NubeIO/lib-uuid/uuid"
 	"github.com/NubeIO/rubix-edge/pkg/model"
+	"time"
 )
 
 const deviceInfo = "device info"
@@ -13,7 +15,28 @@ func (db *DB) GetDeviceInfo() (*model.DeviceInfo, error) {
 		return nil, err
 	}
 	if len(infos) == 0 {
-		return nil, errors.New("device info has not been added yet")
+		dev, err := db.AddDeviceInfo(&model.DeviceInfo{
+			ClientId:    "na",
+			ClientName:  "na",
+			SiteId:      "na",
+			SiteName:    "na",
+			DeviceId:    "na",
+			DeviceName:  "na",
+			SiteAddress: "na",
+			SiteCity:    "na",
+			SiteState:   "na",
+			SiteZip:     "na",
+			SiteCountry: "na",
+			SiteLat:     "",
+			SiteLon:     "",
+			TimeZone:    "",
+			CreatedOn:   time.Now(),
+			UpdatedOn:   time.Now(),
+		})
+		if err != nil {
+			return dev, err
+		}
+		return nil, err
 	}
 	var m *model.DeviceInfo
 	if err := db.DB.Where("uuid = ? ", infos[0].UUID).First(&m).Error; err != nil {
@@ -36,9 +59,10 @@ func (db *DB) AddDeviceInfo(body *model.DeviceInfo) (resp *model.DeviceInfo, err
 	if err != nil {
 		return nil, err
 	}
-	if infos != nil {
+	if len(infos) > 0 {
 		return nil, errors.New("device info can only be added once")
 	}
+	body.UUID = uuid.ShortUUID("eid")
 	if err := db.DB.Create(&body).Error; err != nil {
 		return nil, err
 	} else {
@@ -66,5 +90,13 @@ func (db *DB) UpdateDeviceInfo(app *model.DeviceInfo) (*model.DeviceInfo, error)
 func (db *DB) DeleteDeviceInfo(uuid string) (*DeleteMessage, error) {
 	var m *model.DeviceInfo
 	query := db.DB.Where("uuid = ? ", uuid).Delete(&m)
+	return deleteResponse(query)
+}
+
+// DropDeviceInfo delete all.
+func (db *DB) DropDeviceInfo() (*DeleteMessage, error) {
+	var m *model.DeviceInfo
+	query := db.DB.Where("1 = 1")
+	query.Delete(&m)
 	return deleteResponse(query)
 }
