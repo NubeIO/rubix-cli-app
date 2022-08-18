@@ -1,4 +1,8 @@
 # CHANGELOG
+## [v0.1.4](https://github.com/NubeIO/rubix-edge/tree/v0.1.4) (2022-08-14)
+
+- added auth apis
+
 ## [v0.1.3](https://github.com/NubeIO/rubix-edge/tree/v0.1.3) (2022-08-14)
 
 - added apis for plugins
