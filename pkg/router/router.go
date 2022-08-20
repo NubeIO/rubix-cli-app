@@ -8,6 +8,7 @@ import (
 	"github.com/NubeIO/rubix-edge/pkg/config"
 	"github.com/NubeIO/rubix-edge/pkg/logger"
 	"github.com/NubeIO/rubix-edge/service/apps"
+	"github.com/NubeIO/rubix-edge/service/system"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -57,10 +58,9 @@ func Setup(db *gorm.DB) *gin.Engine {
 	appDB := &dbase.DB{
 		DB: db,
 	}
-
+	edgeSystem := system.New(&system.System{})
 	rubixApps, _ := apps.New(&apps.EdgeApps{App: &installer.App{}})
-
-	api := controller.Controller{DB: appDB, Rubix: rubixApps}
+	api := controller.Controller{DB: appDB, Rubix: rubixApps, System: edgeSystem}
 	engine.POST("/api/users/login", api.Login)
 
 	handleAuth := func(c *gin.Context) { c.Next() }
@@ -73,7 +73,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 	}
 
 	if config.Config.Auth() {
-		//handleAuth = api.HandleAuth() // TODO add back in auth
+		handleAuth = api.HandleAuth() // TODO add back in auth
 	}
 	apiRoutes := engine.Group("/api", handleAuth)
 
@@ -114,12 +114,12 @@ func Setup(db *gorm.DB) *gin.Engine {
 		appBackups.GET("/list/app", api.ListBackupsByApp)
 	}
 
-	system := apiRoutes.Group("/system")
+	systemApi := apiRoutes.Group("/system")
 	{
-		system.GET("/ping", api.Ping)
-		system.GET("/time", api.HostTime)
-		system.GET("/product", api.GetProduct)
-		system.POST("/scanner", api.RunScanner)
+		systemApi.GET("/ping", api.Ping)
+		systemApi.GET("/time", api.HostTime)
+		systemApi.GET("/product", api.GetProduct)
+		systemApi.POST("/scanner", api.RunScanner)
 	}
 
 	networking := apiRoutes.Group("/networking")
@@ -127,9 +127,6 @@ func Setup(db *gorm.DB) *gin.Engine {
 		networking.GET("/networks", api.Networking)
 		networking.GET("/interfaces", api.GetInterfacesNames)
 		networking.GET("/internet", api.InternetIP)
-		networking.GET("/update/schema", api.GetIpSchema)
-		networking.POST("/update/dhcp", api.SetDHCP)
-		networking.POST("/update/static", api.SetStaticIP)
 	}
 
 	files := apiRoutes.Group("/files")
