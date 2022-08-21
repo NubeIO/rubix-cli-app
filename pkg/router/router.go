@@ -162,12 +162,12 @@ func Setup(db *gorm.DB) *gin.Engine {
 	networkFirewall := apiRoutes.Group("/networking/firewall")
 	{
 		networkFirewall.GET("/", api.UWFStatusList)
-		networkFirewall.GET("/status", api.UWFStatus)
-		networkFirewall.GET("/active", api.UWFActive)
-		networkFirewall.GET("/enable", api.UWFEnable)
-		networkFirewall.GET("/disable", api.UWFDisable)
-		networkFirewall.GET("/port/open", api.UWFOpenPort)
-		networkFirewall.GET("/port/close", api.UWFClosePort)
+		networkFirewall.POST("/status", api.UWFStatus)
+		networkFirewall.POST("/active", api.UWFActive)
+		networkFirewall.POST("/enable", api.UWFEnable)
+		networkFirewall.POST("/disable", api.UWFDisable)
+		networkFirewall.POST("/port/open", api.UWFOpenPort)
+		networkFirewall.POST("/port/close", api.UWFClosePort)
 	}
 
 	files := apiRoutes.Group("/files")
