@@ -31,6 +31,9 @@ func (inst *System) UWFOpenPort(body UFWBody) (*ufw.Message, error) {
 }
 
 func (inst *System) UWFClosePort(body UFWBody) (*ufw.Message, error) {
+	if body.Port == 22 {
+		return nil, errors.New("ufw: port 22 is not allowed to be closed")
+	}
 	return inst.ufw.UWFClosePort(body.Port)
 }
 
