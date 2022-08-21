@@ -31,7 +31,7 @@ func (inst *System) UWFOpenPort(body UFWBody) (*ufw.Message, error) {
 }
 
 func (inst *System) UWFClosePort(body UFWBody) (*ufw.Message, error) {
-	return inst.ufw.UWFOpenPort(body.Port)
+	return inst.ufw.UWFClosePort(body.Port)
 }
 
 func (inst *System) ufwEnable(disable bool) (*Message, error) {
