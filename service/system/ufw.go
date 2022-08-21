@@ -45,7 +45,7 @@ func (inst *System) ufwEnable(disable bool) (*Message, error) {
 	if err != nil {
 		return &Message{Message: res}, err
 	}
-	return &Message{Message: res}, nil
+	return &Message{Message: "enabled firewall ok"}, nil
 
 }
 
