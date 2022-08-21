@@ -69,13 +69,15 @@ func Setup(db *gorm.DB) *gin.Engine {
 	public := apiPublicRoutes.Group("/public") // THESE ARE PUBLIC APIs
 	{
 		public.GET("/device", api.GetDeviceProduct)
-		public.GET("/token/flow", api.FlowToken) // WILL REMOVE THIS AFTER TESTING IS DONE
 	}
 
 	if config.Config.Auth() {
 		//handleAuth = api.HandleAuth() // TODO add back in auth
 	}
+
 	apiRoutes := engine.Group("/api", handleAuth)
+	apiProxyRoutes := engine.Group("/ff", handleAuth)
+	apiProxyRoutes.Any("/*proxyPath", api.FFProxy) // FLOW-FRAMEWORK PROXY
 
 	deviceInfo := apiRoutes.Group("/device")
 	{
