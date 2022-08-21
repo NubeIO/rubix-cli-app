@@ -2,16 +2,10 @@ package controller
 
 import (
 	"github.com/NubeIO/lib-networking/networking"
-	"github.com/NubeIO/rubix-edge/service/system"
 	"github.com/gin-gonic/gin"
 )
 
 var nets = networking.New()
-
-func (inst *Controller) GetIpSchema(c *gin.Context) {
-	// data := model.GetIpSchema()
-	// httpresp.ReposeHandler(c, http.StatusOK, httpresp.Success, data)
-}
 
 func (inst *Controller) Networking(c *gin.Context) {
 	data, err := nets.GetNetworks()
@@ -40,27 +34,27 @@ func (inst *Controller) InternetIP(c *gin.Context) {
 	reposeHandler(data, err, c)
 }
 
-func (inst *Controller) SetDHCP(c *gin.Context) {
-	var m *system.IP
-	err = c.ShouldBindJSON(&m)
-	m.DHCP = true
-	ip := system.NewIP(m)
-	data, err := ip.SetDHCP()
-	if err != nil {
-		reposeHandler(data, err, c)
-		return
-	}
-	reposeHandler(data, err, c)
-}
-
-func (inst *Controller) SetStaticIP(c *gin.Context) {
-	var m *system.IP
-	err = c.ShouldBindJSON(&m)
-	ip := system.NewIP(m)
-	data, err := ip.SetStaticIP()
-	if err != nil {
-		reposeHandler(data, err, c)
-		return
-	}
-	reposeHandler(data, err, c)
-}
+//func (inst *Controller) SetDHCP(c *gin.Context) {
+//	var m *system.IP
+//	err = c.ShouldBindJSON(&m)
+//	m.DHCP = true
+//	ip := system.NewIP(m)
+//	data, err := ip.SetDHCP()
+//	if err != nil {
+//		reposeHandler(data, err, c)
+//		return
+//	}
+//	reposeHandler(data, err, c)
+//}
+//
+//func (inst *Controller) SetStaticIP(c *gin.Context) {
+//	var m *system.IP
+//	err = c.ShouldBindJSON(&m)
+//	ip := system.NewIP(m)
+//	data, err := ip.SetStaticIP()
+//	if err != nil {
+//		reposeHandler(data, err, c)
+//		return
+//	}
+//	reposeHandler(data, err, c)
+//}

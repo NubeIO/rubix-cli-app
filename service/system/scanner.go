@@ -1,30 +1,34 @@
 package system
 
 import (
+	"errors"
 	"github.com/NubeIO/lib-networking/scanner"
 )
 
 type Scanner struct {
-	Count int
-	Iface string
-	Ip    string
-	Ports []string
+	Count int      `json:"count"`
+	Iface string   `json:"iface"`
+	Ip    string   `json:"ip"`
+	Ports []string `json:"ports"`
 }
 
-func RunScanner(params *Scanner) (*scanner.Hosts, error) {
-	iface := ""
-	ip := ""
-	count := 254
-	ports := []string{"22", "1414", "1883", "1660", "502", "1313", "1616"}
-	if params != nil {
-		iface = params.Iface
-		ip = params.Ip
-		if params.Count > 0 {
-			count = params.Count
-		}
-		if len(params.Ports) > 0 {
-			ports = params.Ports
-		}
+func (inst *System) RunScanner(body *Scanner) (*scanner.Hosts, error) {
+	if body == nil {
+		return nil, errors.New("scanner body can not be empty")
+	}
+	var count = body.Count
+	var iface = body.Iface
+	var ip = body.Ip
+	var ports = body.Ports
+
+	if count > 254 {
+		count = 254
+	}
+	if count <= 0 {
+		count = 254
+	}
+	if len(ports) == 0 {
+		ports = []string{"22", "1414", "1883", "1615", "1616", "502", "1313", "1660", "1661", "1662"}
 	}
 	scan := scanner.New()
 	address, err := scan.ResoleAddress(ip, count, iface)
