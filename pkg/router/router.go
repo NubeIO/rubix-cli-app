@@ -73,7 +73,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 	}
 
 	if config.Config.Auth() {
-		handleAuth = api.HandleAuth() // TODO add back in auth
+		//handleAuth = api.HandleAuth() // TODO add back in auth
 	}
 	apiRoutes := engine.Group("/api", handleAuth)
 

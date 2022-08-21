@@ -6,10 +6,6 @@ import (
 )
 
 func (inst *Controller) HostTime(c *gin.Context) {
-	data, err := datelib.New(&datelib.Date{}).SystemTime()
-	if err != nil {
-		reposeHandler(data, err, c)
-		return
-	}
+	data := datelib.New(&datelib.Date{}).SystemTime()
 	reposeHandler(data, err, c)
 }
