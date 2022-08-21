@@ -11,6 +11,10 @@ type DateBody struct {
 	TimeZone string `json:"time_zone"`
 }
 
+func (inst *System) SystemTime() *datelib.Time {
+	return datelib.New(&datelib.Date{}).SystemTime()
+}
+
 func (inst *System) GenerateTimeSyncConfig(body *datectl.TimeSyncConfig) string {
 	return inst.datectl.GenerateTimeSyncConfig(body)
 }

@@ -6,8 +6,8 @@ import (
 	"strconv"
 )
 
-func (inst *System) Exists(iFaceName string) (*Message, error) {
-	exists, err := inst.dhcp.Exists(iFaceName)
+func (inst *System) DHCPPortExists(body NetworkingBody) (*Message, error) {
+	exists, err := inst.dhcp.Exists(body.PortName)
 	if err != nil {
 		return nil, err
 	}
@@ -16,21 +16,20 @@ func (inst *System) Exists(iFaceName string) (*Message, error) {
 	}, nil
 }
 
-func (inst *System) SetAsAuto(iFaceName string) (*Message, error) {
-	exists, err := inst.dhcp.SetAsAuto(iFaceName)
+func (inst *System) DHCPSetAsAuto(body NetworkingBody) (*Message, error) {
+	exists, err := inst.dhcp.SetAsAuto(body.PortName)
 	if err != nil {
 		return nil, err
 	}
-	msg := fmt.Sprintf("was not able :%s to auto", iFaceName)
+	msg := fmt.Sprintf("was not able :%s to auto", body.PortName)
 	if exists {
-		msg = fmt.Sprintf("was able to set interface :%s to auto", iFaceName)
+		msg = fmt.Sprintf("was able to set interface :%s to auto", body.PortName)
 	}
 	return &Message{
 		Message: msg,
 	}, nil
 }
 
-//SetStaticIP Set a static IP for the specified network interface
-func (inst *System) SetStaticIP(body *dhcpd.SetStaticIP) (string, error) {
+func (inst *System) DHCPSetStaticIP(body *dhcpd.SetStaticIP) (string, error) {
 	return inst.dhcp.SetStaticIP(body)
 }

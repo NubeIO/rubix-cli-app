@@ -114,19 +114,58 @@ func Setup(db *gorm.DB) *gin.Engine {
 		appBackups.GET("/list/app", api.ListBackupsByApp)
 	}
 
+	systemTime := apiRoutes.Group("/time")
+	{
+		systemTime.GET("/", api.SystemTime)
+		systemTime.POST("/", api.SetSystemTime)
+	}
+
+	systemTimeZone := apiRoutes.Group("/timezone")
+	{
+		systemTimeZone.GET("/", api.GetHardwareTZ)
+		systemTimeZone.POST("/", api.UpdateTimezone)
+		systemTimeZone.GET("/list", api.GetTimeZoneList)
+		systemTimeZone.POST("/config", api.GenerateTimeSyncConfig)
+	}
+
 	systemApi := apiRoutes.Group("/system")
 	{
 		systemApi.GET("/ping", api.Ping)
-		systemApi.GET("/time", api.HostTime)
 		systemApi.GET("/product", api.GetProduct)
 		systemApi.POST("/scanner", api.RunScanner)
 	}
 
 	networking := apiRoutes.Group("/networking")
 	{
-		networking.GET("/networks", api.Networking)
+		networking.GET("/", api.Networking)
 		networking.GET("/interfaces", api.GetInterfacesNames)
 		networking.GET("/internet", api.InternetIP)
+
+	}
+
+	networks := apiRoutes.Group("/networking/networks")
+	{
+		networks.POST("/restart", api.RestartNetworking)
+		networks.POST("/up", api.InterfaceUp)
+		networks.POST("/down", api.InterfaceDown)
+	}
+
+	networkAddress := apiRoutes.Group("/networking/interfaces")
+	{
+		networkAddress.POST("/exists", api.DHCPPortExists)
+		networkAddress.POST("/auto", api.DHCPSetAsAuto)
+		networkAddress.POST("/static", api.DHCPSetStaticIP)
+	}
+
+	networkFirewall := apiRoutes.Group("/networking/firewall")
+	{
+		networkFirewall.GET("/", api.UWFStatusList)
+		networkFirewall.GET("/status", api.UWFStatus)
+		networkFirewall.GET("/active", api.UWFActive)
+		networkFirewall.GET("/enable", api.UWFEnable)
+		networkFirewall.GET("/disable", api.UWFDisable)
+		networkFirewall.GET("/port/open", api.UWFOpenPort)
+		networkFirewall.GET("/port/close", api.UWFClosePort)
 	}
 
 	files := apiRoutes.Group("/files")
