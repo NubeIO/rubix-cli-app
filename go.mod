@@ -7,14 +7,14 @@ go 1.17
 
 require (
 	github.com/NubeIO/lib-command v0.0.2
-	github.com/NubeIO/lib-date v0.0.5
+	github.com/NubeIO/lib-date v0.0.6
 	github.com/NubeIO/lib-dhcpd v0.0.2
 	github.com/NubeIO/lib-dirs v0.0.7
 	github.com/NubeIO/lib-networking v0.0.7
 	github.com/NubeIO/lib-rubix-installer v0.1.4
 	github.com/NubeIO/lib-schema v0.0.2
 	github.com/NubeIO/lib-systemctl-go v0.1.0
-	github.com/NubeIO/lib-ufw v0.0.2
+	github.com/NubeIO/lib-ufw v0.0.3
 	github.com/NubeIO/nubeio-rubix-lib-auth-go v1.0.3
 	github.com/NubeIO/nubeio-rubix-lib-helpers-go v0.2.7
 	github.com/gin-contrib/cors v1.3.1

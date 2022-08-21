@@ -23,6 +23,10 @@ func (inst *System) GetHardwareTZ() (string, error) {
 	return inst.datectl.GetHardwareTZ()
 }
 
+func (inst *System) GetHardwareClock() (*datectl.HardwareClock, error) {
+	return inst.datectl.GetHardwareClock()
+}
+
 func (inst *System) GetTimeZoneList() ([]string, error) {
 	return inst.datectl.GetTimeZoneList()
 }

@@ -61,8 +61,8 @@ github.com/DataDog/datadog-go v3.2.0+incompatible/go.mod h1:LButxg5PwREeZtORoXG3
 github.com/Masterminds/semver/v3 v3.1.1/go.mod h1:VPu/7SZ7ePZ3QOrcuXROw5FAcLl4a0cBrbBpGY/8hQs=
 github.com/NubeIO/lib-command v0.0.2 h1:jTg8YRSffIBsPAbU9X1Dn+L4bQ8e7PY2p7zJEcrTjrY=
 github.com/NubeIO/lib-command v0.0.2/go.mod h1:Qjl490ti7E47AhftOOvUfhAsM6NhZpBAeZlNfmy6Cd0=
-github.com/NubeIO/lib-date v0.0.5 h1:TcMGpu/klxY0kADL1lQwT+zFpJ8tE8W2gYob1yKK4js=
-github.com/NubeIO/lib-date v0.0.5/go.mod h1:VvpSwdwcVCaOgTN+Ad96nHBkFDWTt3VekG933QCtGtc=
+github.com/NubeIO/lib-date v0.0.6 h1:88Ki7UIOvDEKyd3vKJ7r4fiUeX25Q5iyMO5d0125wrA=
+github.com/NubeIO/lib-date v0.0.6/go.mod h1:VvpSwdwcVCaOgTN+Ad96nHBkFDWTt3VekG933QCtGtc=
 github.com/NubeIO/lib-dhcpd v0.0.2 h1:DC2qcVi3tsRkYlmmlTiZTvsHdFI9/HqSohVj131Pl4I=
 github.com/NubeIO/lib-dhcpd v0.0.2/go.mod h1:5cmaDc5cKyuKHCIU0yg+8KrsYWZThId3QpFfddKbZdE=
 github.com/NubeIO/lib-dirs v0.0.1/go.mod h1:PCDWQm82Nezp9oyhkpqyfVH6w6+1lzfDwfRdYVF5sPY=
@@ -79,8 +79,8 @@ github.com/NubeIO/lib-schema v0.0.2/go.mod h1:+XEsOqjtJ/NlVo13p+5nZQK4LDRKkJTB3S
 github.com/NubeIO/lib-systemctl-go v0.0.9/go.mod h1:gpVy2jcgc8AiCBf3k+sSDwDoxYtdNzd3hEeK3ygJz+c=
 github.com/NubeIO/lib-systemctl-go v0.1.0 h1:v+XaQUul18vH14Nw39gZ2weM8diqbGt/JSfOv+wno8E=
 github.com/NubeIO/lib-systemctl-go v0.1.0/go.mod h1:gpVy2jcgc8AiCBf3k+sSDwDoxYtdNzd3hEeK3ygJz+c=
-github.com/NubeIO/lib-ufw v0.0.2 h1:BLQwmocMnBLsgmKTt/LhheRHgJAPuMax+I9V5xP5JBA=
-github.com/NubeIO/lib-ufw v0.0.2/go.mod h1:DC6oevpW1CH8WrJJm0trAKWonGUvV/wKrxAp3Y/peYI=
+github.com/NubeIO/lib-ufw v0.0.3 h1:dHzhUFyG6AJ9g+iQ18cYJNU6qO5Ad6dAaXKIRoGDa28=
+github.com/NubeIO/lib-ufw v0.0.3/go.mod h1:DC6oevpW1CH8WrJJm0trAKWonGUvV/wKrxAp3Y/peYI=
 github.com/NubeIO/lib-uuid v0.0.2 h1:6Ihw3jvg5aEGIXJXFmRozfWK4+Szo96lbdCv6gFIqRs=
 github.com/NubeIO/lib-uuid v0.0.2/go.mod h1:lLx2E+mqNntnVsgnA44rEVQXoXzKTcZDYTQdNacJLDg=
 github.com/NubeIO/nubeio-rubix-lib-auth-go v1.0.3 h1:BG93vRFMgL+b7BDX0IgTot8S9eE9GPbj40nb8qzHy1Y=
