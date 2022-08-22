@@ -7,7 +7,6 @@ import (
 
 type IpSchema struct {
 	Interface schema.Interface `json:"interface"`
-	IPAddress schema.IP        `json:"ip_address"`
 	Netmask   schema.Netmask   `json:"netmask"`
 	Gateway   schema.Gateway   `json:"gateway"`
 }
