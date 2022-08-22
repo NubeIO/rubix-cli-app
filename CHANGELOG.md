@@ -1,7 +1,7 @@
 # CHANGELOG
-## [v0.1.4](https://github.com/NubeIO/rubix-edge/tree/v0.1.4) (2022-08-14)
+## [v0.1.6](https://github.com/NubeIO/rubix-edge/tree/v0.1.6) (2022-08-22)
 
-- added auth apis
+- added all the system api, for eth, date and timezones
 
 ## [v0.1.3](https://github.com/NubeIO/rubix-edge/tree/v0.1.3) (2022-08-14)
 
