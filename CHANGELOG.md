@@ -1,4 +1,9 @@
 # CHANGELOG
+
+## [v0.1.7](https://github.com/NubeIO/rubix-edge/tree/v0.1.7) (2022-08-24)
+
+- Fix install file permission
+
 ## [v0.1.6](https://github.com/NubeIO/rubix-edge/tree/v0.1.6) (2022-08-22)
 
 - added all the system api, for eth, date and timezones
@@ -18,7 +23,6 @@
 ## [v0.1.0](https://github.com/NubeIO/rubix-edge/tree/v0.1.0) (2022-08-11)
 
 - Got install of apps working from assist
-
 
 ## [v0.0.9](https://github.com/NubeIO/rubix-edge/tree/v0.0.9) (2022-08-09)
 
