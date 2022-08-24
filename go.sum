@@ -73,11 +73,10 @@ github.com/NubeIO/lib-dirs v0.0.7/go.mod h1:ay8NFXTWwtnNdE/JN9ZK5626CVq7UpjEeoQ2
 github.com/NubeIO/lib-networking v0.0.6/go.mod h1:wO04Ul6Wdr5w/7s8UMZzV1/HMXuVSVFzqq7h5A3Vl6k=
 github.com/NubeIO/lib-networking v0.0.7 h1:8aN4gLs2SORtFanr0NuQ0n22HEY3KbGiMuAWV4daKr4=
 github.com/NubeIO/lib-networking v0.0.7/go.mod h1:wO04Ul6Wdr5w/7s8UMZzV1/HMXuVSVFzqq7h5A3Vl6k=
-github.com/NubeIO/lib-rubix-installer v0.1.4 h1:+kMNX9TWck0XATACYR42qPuJb7vQ/prWBG1XOwNb+aQ=
-github.com/NubeIO/lib-rubix-installer v0.1.4/go.mod h1:tBZ/IiICEcYmhn5r7kkYw2/ZiFxjnus4CdHjdG1JVJk=
+github.com/NubeIO/lib-rubix-installer v0.1.6 h1:ohFrSvq3NGOOLPp5B9Te+/tGYYNYpLOLwtsdfiib748=
+github.com/NubeIO/lib-rubix-installer v0.1.6/go.mod h1:YQywhfmrG5l6n/t53y7seFJF6LadM2aMWBW42/eXqdU=
 github.com/NubeIO/lib-schema v0.1.4 h1:/jq+cW3ZSIoEF5Ccoi42xoRJMDocJGDyGXCFfs50yGs=
 github.com/NubeIO/lib-schema v0.1.4/go.mod h1:TGKDA6IIWHDwr5Aabawj6FF7NXUWXqu4ozWfph/hIjw=
-github.com/NubeIO/lib-systemctl-go v0.0.9/go.mod h1:gpVy2jcgc8AiCBf3k+sSDwDoxYtdNzd3hEeK3ygJz+c=
 github.com/NubeIO/lib-systemctl-go v0.1.0 h1:v+XaQUul18vH14Nw39gZ2weM8diqbGt/JSfOv+wno8E=
 github.com/NubeIO/lib-systemctl-go v0.1.0/go.mod h1:gpVy2jcgc8AiCBf3k+sSDwDoxYtdNzd3hEeK3ygJz+c=
 github.com/NubeIO/lib-ufw v0.0.3 h1:dHzhUFyG6AJ9g+iQ18cYJNU6qO5Ad6dAaXKIRoGDa28=
