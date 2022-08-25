@@ -19,7 +19,7 @@ type System struct {
 var debug = true
 var nets = networking.New()
 
-const Permission = 0700
+const filePerm = 0755
 
 type Message struct {
 	Message string `json:"message"`

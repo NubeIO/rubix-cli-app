@@ -1,10 +1,12 @@
 package controller
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	fileutils "github.com/NubeIO/lib-dirs/dirs"
 	"github.com/gin-gonic/gin"
+	"gopkg.in/yaml.v3"
 	"io/fs"
 	"io/ioutil"
 	"os"
@@ -13,6 +15,161 @@ import (
 	"runtime"
 	"time"
 )
+
+func (inst *Controller) ReadFile(c *gin.Context) {
+	path := c.Query("path")
+	if path == "" {
+		reposeHandler(nil, errors.New("file path can not be empty"), c)
+		return
+	}
+	found := fileUtils.FileExists(path)
+	if !found {
+		reposeHandler(nil, errors.New(fmt.Sprintf("file not found:%s", path)), c)
+		return
+	}
+	c.File(path)
+}
+
+type WriteFile struct {
+	FilePath     string      `json:"path"`
+	Body         interface{} `json:"body"`
+	BodyAsString string      `json:"body_as_string"`
+	Perm         int         `json:"perm"`
+}
+
+func (inst *Controller) WriteFile(c *gin.Context) {
+	var m *WriteFile
+	err = c.ShouldBindJSON(&m)
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	if m.FilePath == "" {
+		reposeHandler(nil, errors.New("file path can not be empty"), c)
+		return
+	}
+	perm := m.Perm
+	if perm == 0 {
+		perm = filePerm
+	}
+	err := fileUtils.WriteFile(m.FilePath, m.BodyAsString, fs.FileMode(filePerm))
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	reposeHandler(Message{
+		Message: fmt.Sprintf("wrote file:%s ok", m.FilePath),
+	}, nil, c)
+}
+
+func (inst *Controller) WriteFileYml(c *gin.Context) {
+	var m *WriteFile
+	err = c.ShouldBindJSON(&m)
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	if m.FilePath == "" {
+		reposeHandler(nil, errors.New("file path can not be empty"), c)
+		return
+	}
+	perm := m.Perm
+	if perm == 0 {
+		perm = filePerm
+	}
+	data, err := yaml.Marshal(m.Body)
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	err = ioutil.WriteFile(m.FilePath, data, fs.FileMode(filePerm))
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	reposeHandler(Message{
+		Message: fmt.Sprintf("wrote file:%s ok", m.FilePath),
+	}, nil, c)
+}
+
+func (inst *Controller) WriteFileJson(c *gin.Context) {
+	var m *WriteFile
+	err = c.ShouldBindJSON(&m)
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	if m.FilePath == "" {
+		reposeHandler(nil, errors.New("file path can not be empty"), c)
+		return
+	}
+	perm := m.Perm
+	if perm == 0 {
+		perm = filePerm
+	}
+	data, err := json.Marshal(m.Body)
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	err = ioutil.WriteFile(m.FilePath, data, fs.FileMode(filePerm))
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	reposeHandler(Message{
+		Message: fmt.Sprintf("wrote file:%s ok", m.FilePath),
+	}, nil, c)
+}
+
+func (inst *Controller) CreateFile(c *gin.Context) {
+	var m *WriteFile
+	err = c.ShouldBindJSON(&m)
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	if m.FilePath == "" {
+		reposeHandler(nil, errors.New("file path can not be empty"), c)
+		return
+	}
+	perm := m.Perm
+	if perm == 0 {
+		perm = filePerm
+	}
+	_, err := fileUtils.CreateFile(m.FilePath, os.FileMode(m.Perm))
+	if err != nil {
+		reposeHandler(nil, err, c)
+		return
+	}
+	reposeHandler(Message{
+		Message: fmt.Sprintf("created file:%s ok", m.FilePath),
+	}, nil, c)
+}
+
+func (inst *Controller) FileExists(c *gin.Context) {
+	path := c.Query("path")
+	data := fileutils.New().FileExists(path)
+	var found bool
+	if data {
+		found = true
+	}
+	reposeHandler(Message{
+		Message: found,
+	}, nil, c)
+}
+
+func (inst *Controller) DirExists(c *gin.Context) {
+	path := c.Query("path")
+	err := fileutils.New().DirExistsErr(path)
+	var found bool
+	if err == nil {
+		found = true
+	}
+	reposeHandler(Message{
+		Message: found,
+	}, nil, c)
+}
 
 func (inst *Controller) WalkFile(c *gin.Context) {
 	rootDir := c.Query("path")

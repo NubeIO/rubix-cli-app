@@ -171,7 +171,14 @@ func Setup(db *gorm.DB) *gin.Engine {
 	}
 
 	files := apiRoutes.Group("/files")
+
 	{
+		files.POST("/write/string", api.WriteFile)
+		files.POST("/write/yml", api.WriteFileYml)
+		files.POST("/write/json", api.WriteFileJson)
+		files.POST("/create", api.CreateFile)
+		files.GET("/read", api.ReadFile) // path=/data/flow-framework/config/config.yml
+		files.GET("/exists", api.FileExists)
 		files.GET("/walk", api.WalkFile)
 		files.GET("/list", api.ListFiles) // /api/files/list?file=/data
 		files.POST("/rename", api.RenameFile)
@@ -185,6 +192,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 
 	dirs := apiRoutes.Group("/dirs")
 	{
+		dirs.GET("/exists", api.DirExists)
 		dirs.POST("/create", api.CreateDir)
 		dirs.POST("/copy", api.CopyDir)
 		dirs.DELETE("/delete", api.DeleteDir)

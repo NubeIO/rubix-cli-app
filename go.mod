@@ -9,9 +9,9 @@ require (
 	github.com/NubeIO/lib-command v0.0.2
 	github.com/NubeIO/lib-date v0.0.6
 	github.com/NubeIO/lib-dhcpd v0.0.2
-	github.com/NubeIO/lib-dirs v0.0.7
+	github.com/NubeIO/lib-dirs v0.0.8
 	github.com/NubeIO/lib-networking v0.0.7
-	github.com/NubeIO/lib-rubix-installer v0.1.7
+	github.com/NubeIO/lib-rubix-installer v0.1.8
 	github.com/NubeIO/lib-schema v0.1.4
 	github.com/NubeIO/lib-systemctl-go v0.1.0
 	github.com/NubeIO/lib-ufw v0.0.3
@@ -63,5 +63,5 @@ require (
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 )
