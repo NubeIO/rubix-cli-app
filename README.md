@@ -24,6 +24,14 @@ https://github.com/NubeIO/lib-command/blob/master/product/product.go#L7
 }
 ```
 
+```
+{
+    "image_version": "v1.1.1",
+    "arch": "armv7",
+    "product": "RubixComputeIO"
+}
+```
+
 ## command docs
 
 [CLI](docs/api.md)

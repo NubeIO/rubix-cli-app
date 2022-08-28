@@ -68,6 +68,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 
 	public := apiPublicRoutes.Group("/public") // THESE ARE PUBLIC APIs
 	{
+		public.POST("/ping", api.Ping)
 		public.GET("/device", api.GetDeviceProduct)
 	}
 
@@ -132,7 +133,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 
 	systemApi := apiRoutes.Group("/system")
 	{
-		systemApi.GET("/ping", api.Ping)
+		systemApi.GET("/ping", api.SystemPing)
 		systemApi.GET("/product", api.GetProduct)
 		systemApi.POST("/scanner", api.RunScanner)
 	}

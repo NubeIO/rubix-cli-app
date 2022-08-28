@@ -11,7 +11,7 @@ require (
 	github.com/NubeIO/lib-dhcpd v0.0.2
 	github.com/NubeIO/lib-dirs v0.0.8
 	github.com/NubeIO/lib-networking v0.0.7
-	github.com/NubeIO/lib-rubix-installer v0.1.8
+	github.com/NubeIO/lib-rubix-installer v0.1.9
 	github.com/NubeIO/lib-schema v0.1.4
 	github.com/NubeIO/lib-systemctl-go v0.1.0
 	github.com/NubeIO/lib-ufw v0.0.3

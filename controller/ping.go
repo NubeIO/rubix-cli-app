@@ -2,6 +2,6 @@ package controller
 
 import "github.com/gin-gonic/gin"
 
-func (inst *Controller) Ping(c *gin.Context) {
+func (inst *Controller) SystemPing(c *gin.Context) {
 	reposeHandler(Message{Message: "boo-ya"}, err, c)
 }
