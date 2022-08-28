@@ -149,14 +149,8 @@ func (inst *Controller) CreateFile(c *gin.Context) {
 
 func (inst *Controller) FileExists(c *gin.Context) {
 	path := c.Query("path")
-	data := fileutils.New().FileExists(path)
-	var found bool
-	if data {
-		found = true
-	}
-	reposeHandler(Message{
-		Message: found,
-	}, nil, c)
+	found := fileutils.New().FileExists(path)
+	reposeHandler(found, nil, c)
 }
 
 func (inst *Controller) DirExists(c *gin.Context) {
@@ -166,9 +160,7 @@ func (inst *Controller) DirExists(c *gin.Context) {
 	if err == nil {
 		found = true
 	}
-	reposeHandler(Message{
-		Message: found,
-	}, nil, c)
+	reposeHandler(found, nil, c)
 }
 
 func (inst *Controller) WalkFile(c *gin.Context) {
