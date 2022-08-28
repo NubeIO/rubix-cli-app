@@ -4,10 +4,36 @@ import (
 	"errors"
 	"fmt"
 	"github.com/NubeIO/lib-dhcpd/dhcpd"
+	"github.com/NubeIO/lib-networking/networking"
 )
 
-func (inst *System) DHCPPortExists(body NetworkingBody) (bool, error) {
-	return inst.dhcp.Exists(body.PortName)
+type DHCPPortExists struct {
+	IsDHCP          bool   `json:"is_dhcp"`
+	InterfaceExists bool   `json:"interface_exists"`
+	Error           string `json:"error"`
+}
+
+func (inst *System) DHCPPortExists(body NetworkingBody) (*DHCPPortExists, error) {
+	resp := &DHCPPortExists{}
+	var foundPort bool
+	isDHCP, err := inst.dhcp.Exists(body.PortName)
+	if err != nil {
+		resp.Error = err.Error()
+		return nil, err
+	}
+	ifaces, err := networking.New().GetInterfacesNames()
+	if err != nil {
+		resp.Error = err.Error()
+		return nil, err
+	}
+	for _, name := range ifaces.Names {
+		if body.PortName == name {
+			foundPort = true
+		}
+	}
+	resp.IsDHCP = isDHCP
+	resp.InterfaceExists = foundPort
+	return resp, nil
 }
 
 func (inst *System) DHCPSetAsAuto(body NetworkingBody) (*Message, error) {
