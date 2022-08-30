@@ -1,6 +1,6 @@
 module github.com/NubeIO/rubix-edge
 
-//replace github.com/NubeIO/lib-dirs => /home/aidan/code/go/nube/lib/lib-dirs
+//replace github.com/NubeIO/lib-files => /home/aidan/code/go/nube/lib/lib-files
 //replace github.com/NubeIO/lib-rubix-installer => /home/aidan/code/go/nube/lib/lib-rubix-installer
 
 go 1.17
@@ -9,11 +9,11 @@ require (
 	github.com/NubeIO/lib-command v0.0.2
 	github.com/NubeIO/lib-date v0.0.6
 	github.com/NubeIO/lib-dhcpd v0.0.2
-	github.com/NubeIO/lib-dirs v0.0.8
+	github.com/NubeIO/lib-files v0.1.1
 	github.com/NubeIO/lib-networking v0.0.7
-	github.com/NubeIO/lib-rubix-installer v0.2.0
+	github.com/NubeIO/lib-rubix-installer v0.2.2
 	github.com/NubeIO/lib-schema v0.1.4
-	github.com/NubeIO/lib-systemctl-go v0.1.0
+	github.com/NubeIO/lib-systemctl-go v0.1.2
 	github.com/NubeIO/lib-ufw v0.0.3
 	github.com/NubeIO/nubeio-rubix-lib-auth-go v1.0.3
 	github.com/NubeIO/nubeio-rubix-lib-helpers-go v0.2.7
@@ -27,8 +27,10 @@ require (
 	gorm.io/gorm v1.23.5
 )
 
+require github.com/NubeIO/lib-dirs v0.0.1 // indirect
+
 require (
-	github.com/NubeIO/lib-uuid v0.0.2
+	github.com/NubeIO/lib-uuid v0.0.3
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect

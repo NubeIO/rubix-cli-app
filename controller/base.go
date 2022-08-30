@@ -2,7 +2,6 @@ package controller
 
 import (
 	"fmt"
-	fileutils "github.com/NubeIO/lib-dirs/dirs"
 	dbase "github.com/NubeIO/rubix-edge/database"
 	"github.com/NubeIO/rubix-edge/service/apps"
 	"github.com/NubeIO/rubix-edge/service/system"
@@ -12,7 +11,6 @@ import (
 
 const root = 0755
 
-var fileUtils = fileutils.New()
 var filePerm = root
 
 type Controller struct {
