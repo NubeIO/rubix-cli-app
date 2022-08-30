@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	fileutils "github.com/NubeIO/lib-dirs/dirs"
+	"github.com/NubeIO/lib-files/fileutils"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/yaml.v3"
 	"io/fs"
@@ -22,7 +22,7 @@ func (inst *Controller) ReadFile(c *gin.Context) {
 		reposeHandler(nil, errors.New("file path can not be empty"), c)
 		return
 	}
-	found := fileUtils.FileExists(path)
+	found := fileutils.FileExists(path)
 	if !found {
 		reposeHandler(nil, errors.New(fmt.Sprintf("file not found:%s", path)), c)
 		return
@@ -52,7 +52,7 @@ func (inst *Controller) WriteFile(c *gin.Context) {
 	if perm == 0 {
 		perm = filePerm
 	}
-	err := fileUtils.WriteFile(m.FilePath, m.BodyAsString, fs.FileMode(filePerm))
+	err := fileutils.WriteFile(m.FilePath, m.BodyAsString, fs.FileMode(filePerm))
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
@@ -137,7 +137,7 @@ func (inst *Controller) CreateFile(c *gin.Context) {
 	if perm == 0 {
 		perm = filePerm
 	}
-	_, err := fileUtils.CreateFile(m.FilePath, os.FileMode(m.Perm))
+	_, err := fileutils.CreateFile(m.FilePath, os.FileMode(m.Perm))
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
@@ -149,13 +149,13 @@ func (inst *Controller) CreateFile(c *gin.Context) {
 
 func (inst *Controller) FileExists(c *gin.Context) {
 	path := c.Query("path")
-	found := fileutils.New().FileExists(path)
+	found := fileutils.FileExists(path)
 	reposeHandler(found, nil, c)
 }
 
 func (inst *Controller) DirExists(c *gin.Context) {
 	path := c.Query("path")
-	err := fileutils.New().DirExistsErr(path)
+	err := fileutils.DirExistsErr(path)
 	var found bool
 	if err == nil {
 		found = true
@@ -211,7 +211,7 @@ func (inst *Controller) RenameFile(c *gin.Context) {
 		reposeHandler(nil, errors.New("directory, from and to files name can not be empty"), c)
 		return
 	}
-	err = fileUtils.Rename(oldName, newName)
+	err = fileutils.Rename(oldName, newName)
 	reposeHandler(Message{Message: "renaming is successfully done"}, err, c)
 }
 
@@ -226,7 +226,7 @@ func (inst *Controller) CopyFile(c *gin.Context) {
 		reposeHandler(nil, errors.New("from and to files name can not be empty"), c)
 		return
 	}
-	err = fileUtils.Copy(from, to)
+	err = fileutils.Copy(from, to)
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
@@ -245,7 +245,7 @@ func (inst *Controller) MoveFile(c *gin.Context) {
 		reposeHandler(nil, errors.New("from and to files name can not be empty"), c)
 		return
 	}
-	err = fileUtils.MoveFile(from, to)
+	err = fileutils.MoveFile(from, to)
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
@@ -276,7 +276,7 @@ func (inst *Controller) UploadFile(c *gin.Context) {
 		reposeHandler(resp, err, c)
 		return
 	}
-	if found := fileutils.New().DirExists(path); !found {
+	if found := fileutils.DirExists(path); !found {
 		reposeHandler(nil, errors.New(fmt.Sprintf("path not found %s", path)), c)
 		return
 	}
@@ -305,11 +305,11 @@ func (inst *Controller) DeleteFile(c *gin.Context) {
 		reposeHandler(nil, err, c)
 		return
 	}
-	if !fileUtils.FileExists(filePath) {
+	if !fileutils.FileExists(filePath) {
 		reposeHandler(nil, errors.New(fmt.Sprintf("file doesn't exist: %s", filePath)), c)
 		return
 	}
-	err = fileUtils.Rm(filePath)
+	err = fileutils.Rm(filePath)
 	reposeHandler(Message{Message: fmt.Sprintf("deleted: %s", filePath)}, err, c)
 }
 
@@ -319,11 +319,11 @@ func (inst *Controller) DeleteAllFiles(c *gin.Context) {
 		reposeHandler(nil, err, c)
 		return
 	}
-	if !fileUtils.DirExists(filePath) {
+	if !fileutils.DirExists(filePath) {
 		reposeHandler(nil, errors.New(fmt.Sprintf("dir doesn't exist: %s", filePath)), c)
 		return
 	}
-	err = fileUtils.RemoveAllFiles(filePath)
+	err = fileutils.RemoveAllFiles(filePath)
 	reposeHandler(Message{Message: fmt.Sprintf("deleted: %s", filePath)}, err, c)
 }
 

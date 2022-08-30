@@ -9,17 +9,17 @@ type UFWBody struct {
 	Port int `json:"port"`
 }
 
-//UWFActive check status and also if ufw is installed
+// UWFActive check status and also if ufw is installed
 func (inst *System) UWFActive() (bool, error) {
 	return inst.ufw.UWFActive()
 }
 
-//UWFStatus check status and also if ufw is installed
+// UWFStatus check status and also if ufw is installed
 func (inst *System) UWFStatus() (*ufw.Message, error) {
 	return inst.ufw.UWFStatus()
 }
 
-//UWFStatusList check status and also if ufw is installed
+// UWFStatusList check status and also if ufw is installed
 func (inst *System) UWFStatusList() ([]ufw.UFWStatus, error) {
 	return inst.ufw.UWFStatusList()
 }

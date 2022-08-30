@@ -2,7 +2,7 @@ package system
 
 import (
 	"fmt"
-	fileutils "github.com/NubeIO/lib-dirs/dirs"
+	"github.com/NubeIO/lib-files/fileutils"
 )
 
 type FlowToken struct {
@@ -11,10 +11,10 @@ type FlowToken struct {
 
 // GetFlowToken do a system read to get the flow token
 func (inst *System) GetFlowToken() (*FlowToken, error) {
-	///data/rubix-service/data/internal_token.txt
+	// /data/rubix-service/data/internal_token.txt
 	path := "/data/rubix-service/data"
 	fileName := "internal_token.txt"
-	files, err := fileutils.New().ListFiles(path)
+	files, err := fileutils.ListFiles(path)
 	if err != nil {
 		return nil, err
 	}
@@ -22,18 +22,15 @@ func (inst *System) GetFlowToken() (*FlowToken, error) {
 	if len(files) > 0 {
 		for _, file := range files {
 			if file == fileName {
-				readFile, err := fileutils.New().ReadFile(fmt.Sprintf("%s/%s", path, fileName))
+				readFile, err := fileutils.ReadFile(fmt.Sprintf("%s/%s", path, fileName))
 				if err != nil {
 					return nil, err
 				}
 				if len(readFile) > 50 {
 					flowToken.Token = readFile
 				}
-
 			}
-
 		}
 	}
 	return flowToken, err
-
 }

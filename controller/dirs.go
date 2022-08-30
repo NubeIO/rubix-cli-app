@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"github.com/NubeIO/lib-files/fileutils"
 	"github.com/NubeIO/nubeio-rubix-lib-helpers-go/pkg/system/files"
 	"github.com/gin-gonic/gin"
 )
@@ -27,12 +28,12 @@ func (inst *Controller) CopyDir(c *gin.Context) {
 		reposeHandler(nil, errors.New("from and to directories name can not be empty"), c)
 		return
 	}
-	exists := fileUtils.DirExists(from)
+	exists := fileutils.DirExists(from)
 	if !exists {
 		reposeHandler(nil, errors.New("from dir not found"), c)
 		return
 	}
-	err = fileUtils.Copy(from, to)
+	err = fileutils.Copy(from, to)
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
@@ -47,18 +48,18 @@ func (inst *Controller) DeleteDir(c *gin.Context) {
 		reposeHandler(nil, errors.New("path can not be empty"), c)
 		return
 	}
-	if !fileUtils.DirExists(path) {
+	if !fileutils.DirExists(path) {
 		reposeHandler(nil, err, c)
 		return
 	}
 	if recursively {
-		err := fileUtils.RmRF(path)
+		err := fileutils.RmRF(path)
 		if err != nil {
 			reposeHandler(nil, err, c)
 			return
 		}
 	} else {
-		err := fileUtils.Rm(path)
+		err := fileutils.Rm(path)
 		if err != nil {
 			reposeHandler(nil, err, c)
 			return
