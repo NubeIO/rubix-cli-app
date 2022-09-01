@@ -220,5 +220,14 @@ func Setup(db *gorm.DB) *gin.Engine {
 		token.DELETE("/:uuid", api.DeleteToken)
 	}
 
+	streamLog := apiRoutes.Group("/logs")
+	{
+		streamLog.GET("", api.GetStreamLogs)
+		streamLog.GET("/:uuid", api.GetStreamLog)
+		streamLog.POST("", api.CreateStreamLog)
+		streamLog.DELETE("/:uuid", api.DeleteStreamLog)
+		streamLog.DELETE("", api.DeleteStreamLogs)
+	}
+
 	return engine
 }

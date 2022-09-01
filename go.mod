@@ -27,7 +27,10 @@ require (
 	gorm.io/gorm v1.23.5
 )
 
-require github.com/NubeIO/lib-dirs v0.0.1 // indirect
+require (
+	github.com/NubeIO/lib-dirs v0.0.1 // indirect
+	github.com/NubeIO/lib-journalctl v0.0.0-20220830013922-d7ec41cce123 // indirect
+)
 
 require (
 	github.com/NubeIO/lib-uuid v0.0.3
