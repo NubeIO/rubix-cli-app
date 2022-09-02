@@ -57,7 +57,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 
 	edgeSystem := system.New(&system.System{})
 	edgeApp := apps.EdgeApp{App: installer.New(&installer.App{})}
-	api := controller.Controller{EdgeApp: &edgeApp, System: edgeSystem, RubixRegistry: rubixregistry.New()}
+	api := controller.Controller{EdgeApp: &edgeApp, RubixRegistry: rubixregistry.New(), System: edgeSystem, FileMode: 0755}
 	engine.POST("/api/users/login", api.Login)
 	publicSystemApi := engine.Group("/api/system")
 	{

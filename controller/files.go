@@ -34,12 +34,11 @@ type WriteFile struct {
 	FilePath     string      `json:"path"`
 	Body         interface{} `json:"body"`
 	BodyAsString string      `json:"body_as_string"`
-	Perm         int         `json:"perm"`
 }
 
 func (inst *Controller) WriteFile(c *gin.Context) {
 	var m *WriteFile
-	err = c.ShouldBindJSON(&m)
+	err := c.ShouldBindJSON(&m)
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
@@ -48,23 +47,13 @@ func (inst *Controller) WriteFile(c *gin.Context) {
 		reposeHandler(nil, errors.New("file path can not be empty"), c)
 		return
 	}
-	perm := m.Perm
-	if perm == 0 {
-		perm = filePerm
-	}
-	err := fileutils.WriteFile(m.FilePath, m.BodyAsString, fs.FileMode(filePerm))
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
-	reposeHandler(Message{
-		Message: fmt.Sprintf("wrote file:%s ok", m.FilePath),
-	}, nil, c)
+	err = fileutils.WriteFile(m.FilePath, m.BodyAsString, fs.FileMode(inst.FileMode))
+	reposeHandler(Message{Message: fmt.Sprintf("wrote file:%s ok", m.FilePath)}, err, c)
 }
 
 func (inst *Controller) WriteFileYml(c *gin.Context) {
 	var m *WriteFile
-	err = c.ShouldBindJSON(&m)
+	err := c.ShouldBindJSON(&m)
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
@@ -72,29 +61,19 @@ func (inst *Controller) WriteFileYml(c *gin.Context) {
 	if m.FilePath == "" {
 		reposeHandler(nil, errors.New("file path can not be empty"), c)
 		return
-	}
-	perm := m.Perm
-	if perm == 0 {
-		perm = filePerm
 	}
 	data, err := yaml.Marshal(m.Body)
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
 	}
-	err = ioutil.WriteFile(m.FilePath, data, fs.FileMode(filePerm))
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
-	reposeHandler(Message{
-		Message: fmt.Sprintf("wrote file:%s ok", m.FilePath),
-	}, nil, c)
+	err = ioutil.WriteFile(m.FilePath, data, fs.FileMode(inst.FileMode))
+	reposeHandler(Message{Message: fmt.Sprintf("wrote file:%s ok", m.FilePath)}, err, c)
 }
 
 func (inst *Controller) WriteFileJson(c *gin.Context) {
 	var m *WriteFile
-	err = c.ShouldBindJSON(&m)
+	err := c.ShouldBindJSON(&m)
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
@@ -102,29 +81,19 @@ func (inst *Controller) WriteFileJson(c *gin.Context) {
 	if m.FilePath == "" {
 		reposeHandler(nil, errors.New("file path can not be empty"), c)
 		return
-	}
-	perm := m.Perm
-	if perm == 0 {
-		perm = filePerm
 	}
 	data, err := json.Marshal(m.Body)
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
 	}
-	err = ioutil.WriteFile(m.FilePath, data, fs.FileMode(filePerm))
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
-	reposeHandler(Message{
-		Message: fmt.Sprintf("wrote file:%s ok", m.FilePath),
-	}, nil, c)
+	err = ioutil.WriteFile(m.FilePath, data, fs.FileMode(inst.FileMode))
+	reposeHandler(Message{Message: fmt.Sprintf("wrote file:%s ok", m.FilePath)}, err, c)
 }
 
 func (inst *Controller) CreateFile(c *gin.Context) {
 	var m *WriteFile
-	err = c.ShouldBindJSON(&m)
+	err := c.ShouldBindJSON(&m)
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
@@ -133,33 +102,13 @@ func (inst *Controller) CreateFile(c *gin.Context) {
 		reposeHandler(nil, errors.New("file path can not be empty"), c)
 		return
 	}
-	perm := m.Perm
-	if perm == 0 {
-		perm = filePerm
-	}
-	_, err := fileutils.CreateFile(m.FilePath, os.FileMode(m.Perm))
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
-	reposeHandler(Message{
-		Message: fmt.Sprintf("created file:%s ok", m.FilePath),
-	}, nil, c)
+	_, err = fileutils.CreateFile(m.FilePath, os.FileMode(inst.FileMode))
+	reposeHandler(Message{Message: fmt.Sprintf("created file:%s ok", m.FilePath)}, err, c)
 }
 
 func (inst *Controller) FileExists(c *gin.Context) {
 	path := c.Query("path")
 	found := fileutils.FileExists(path)
-	reposeHandler(found, nil, c)
-}
-
-func (inst *Controller) DirExists(c *gin.Context) {
-	path := c.Query("path")
-	err := fileutils.DirExistsErr(path)
-	var found bool
-	if err == nil {
-		found = true
-	}
 	reposeHandler(found, nil, c)
 }
 
@@ -173,11 +122,7 @@ func (inst *Controller) WalkFile(c *gin.Context) {
 		files = append(files, p)
 		return nil
 	})
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
-	reposeHandler(files, nil, c)
+	reposeHandler(files, err, c)
 }
 
 func (inst *Controller) ListFiles(c *gin.Context) {
@@ -211,55 +156,35 @@ func (inst *Controller) RenameFile(c *gin.Context) {
 		reposeHandler(nil, errors.New("directory, from and to files name can not be empty"), c)
 		return
 	}
-	err = fileutils.Rename(oldName, newName)
+	err := fileutils.Rename(oldName, newName)
 	reposeHandler(Message{Message: "renaming is successfully done"}, err, c)
 }
 
 func (inst *Controller) CopyFile(c *gin.Context) {
 	from := c.Query("from")
 	to := c.Query("to")
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
 	if from == "" || to == "" {
 		reposeHandler(nil, errors.New("from and to files name can not be empty"), c)
 		return
 	}
-	err = fileutils.Copy(from, to)
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
+	err := fileutils.Copy(from, to)
 	reposeHandler(Message{Message: "copying is successfully done"}, err, c)
 }
 
 func (inst *Controller) MoveFile(c *gin.Context) {
 	from := c.Query("from")
 	to := c.Query("to")
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
 	if from == "" || to == "" {
 		reposeHandler(nil, errors.New("from and to files name can not be empty"), c)
 		return
 	}
-	err = fileutils.MoveFile(from, to)
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
+	err := fileutils.MoveFile(from, to)
 	reposeHandler(Message{Message: "moving is successfully done"}, err, c)
 }
 
 func (inst *Controller) DownloadFile(c *gin.Context) {
 	path := c.Query("path")
 	fileName := c.Query("file")
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
 	c.FileAttachment(fmt.Sprintf("%s/%s", path, fileName), fileName)
 }
 
@@ -301,29 +226,21 @@ func (inst *Controller) UploadFile(c *gin.Context) {
 
 func (inst *Controller) DeleteFile(c *gin.Context) {
 	filePath := c.Query("path")
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
 	if !fileutils.FileExists(filePath) {
 		reposeHandler(nil, errors.New(fmt.Sprintf("file doesn't exist: %s", filePath)), c)
 		return
 	}
-	err = fileutils.Rm(filePath)
+	err := fileutils.Rm(filePath)
 	reposeHandler(Message{Message: fmt.Sprintf("deleted: %s", filePath)}, err, c)
 }
 
 func (inst *Controller) DeleteAllFiles(c *gin.Context) {
 	filePath := c.Query("path")
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
 	if !fileutils.DirExists(filePath) {
 		reposeHandler(nil, errors.New(fmt.Sprintf("dir doesn't exist: %s", filePath)), c)
 		return
 	}
-	err = fileutils.RemoveAllFiles(filePath)
+	err := fileutils.RemoveAllFiles(filePath)
 	reposeHandler(Message{Message: fmt.Sprintf("deleted: %s", filePath)}, err, c)
 }
 

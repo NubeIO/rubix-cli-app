@@ -9,14 +9,11 @@ import (
 	"net/http"
 )
 
-const root = 0755
-
-var filePerm = root
-
 type Controller struct {
 	EdgeApp       *apps.EdgeApp
 	RubixRegistry *rubixregistry.RubixRegistry
 	System        *system.System
+	FileMode      int
 }
 
 type Response struct {
