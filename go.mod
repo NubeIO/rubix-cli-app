@@ -1,7 +1,9 @@
 module github.com/NubeIO/rubix-edge
 
 //replace github.com/NubeIO/lib-files => /home/aidan/code/go/nube/lib/lib-files
-//replace github.com/NubeIO/lib-rubix-installer => /home/aidan/code/go/nube/lib/lib-rubix-installer
+replace github.com/NubeIO/lib-rubix-installer => /Users/raibnod/Enviro/lib-rubix-installer
+
+replace github.com/NubeIO/lib-systemctl-go => /Users/raibnod/Enviro/lib-systemctl-go
 
 go 1.17
 
@@ -10,6 +12,7 @@ require (
 	github.com/NubeIO/lib-date v0.0.6
 	github.com/NubeIO/lib-dhcpd v0.0.2
 	github.com/NubeIO/lib-files v0.1.1
+	github.com/NubeIO/lib-journalctl v0.0.0-20220830013922-d7ec41cce123
 	github.com/NubeIO/lib-networking v0.0.7
 	github.com/NubeIO/lib-rubix-installer v0.2.2
 	github.com/NubeIO/lib-schema v0.1.4
@@ -27,10 +30,7 @@ require (
 	gorm.io/gorm v1.23.5
 )
 
-require (
-	github.com/NubeIO/lib-dirs v0.0.1 // indirect
-	github.com/NubeIO/lib-journalctl v0.0.0-20220830013922-d7ec41cce123 // indirect
-)
+require github.com/NubeIO/lib-dirs v0.0.1 // indirect
 
 require (
 	github.com/NubeIO/lib-uuid v0.0.3

@@ -74,12 +74,8 @@ github.com/NubeIO/lib-journalctl v0.0.0-20220830013922-d7ec41cce123/go.mod h1:sh
 github.com/NubeIO/lib-networking v0.0.6/go.mod h1:wO04Ul6Wdr5w/7s8UMZzV1/HMXuVSVFzqq7h5A3Vl6k=
 github.com/NubeIO/lib-networking v0.0.7 h1:8aN4gLs2SORtFanr0NuQ0n22HEY3KbGiMuAWV4daKr4=
 github.com/NubeIO/lib-networking v0.0.7/go.mod h1:wO04Ul6Wdr5w/7s8UMZzV1/HMXuVSVFzqq7h5A3Vl6k=
-github.com/NubeIO/lib-rubix-installer v0.2.2 h1:ex+PHubSmyxbp9PPiR4ygn9JqzKEbhCTDWeBUUwZ7IA=
-github.com/NubeIO/lib-rubix-installer v0.2.2/go.mod h1:dAhJ99dbXwDNXF4AAvIcbeDCJNir4JhJHa31lvFdPTY=
 github.com/NubeIO/lib-schema v0.1.4 h1:/jq+cW3ZSIoEF5Ccoi42xoRJMDocJGDyGXCFfs50yGs=
 github.com/NubeIO/lib-schema v0.1.4/go.mod h1:TGKDA6IIWHDwr5Aabawj6FF7NXUWXqu4ozWfph/hIjw=
-github.com/NubeIO/lib-systemctl-go v0.1.2 h1:EcupXYDiuYBQF+byl8iAh1e0q38lCXm3U8zpsmMbf4E=
-github.com/NubeIO/lib-systemctl-go v0.1.2/go.mod h1:P/Ij5pgTtjNnp/TQhsvwipk8sv+5cbZdtuvHiPAYXCE=
 github.com/NubeIO/lib-ufw v0.0.3 h1:dHzhUFyG6AJ9g+iQ18cYJNU6qO5Ad6dAaXKIRoGDa28=
 github.com/NubeIO/lib-ufw v0.0.3/go.mod h1:DC6oevpW1CH8WrJJm0trAKWonGUvV/wKrxAp3Y/peYI=
 github.com/NubeIO/lib-uuid v0.0.3 h1:OkjJWXLOLmEZozBYESsqXZUy9JJ3YKAfxpb2v9rDg6k=

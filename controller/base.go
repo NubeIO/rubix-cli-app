@@ -19,8 +19,6 @@ type Controller struct {
 	System *system.System
 }
 
-var err error
-
 type Response struct {
 	StatusCode   int         `json:"status_code"`
 	ErrorMessage string      `json:"error_message"`
