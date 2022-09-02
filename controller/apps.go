@@ -11,7 +11,7 @@ import (
 // ListApps apps by listed in the installation (/data/rubix-service/apps/install)
 func (inst *Controller) ListApps(c *gin.Context) {
 	data, err := inst.EdgeApp.App.ListApps()
-	reposeHandler(data, err, c)
+	responseHandler(data, err, c)
 }
 
 // ListAppsStatus get all the apps by listed in the installation (/data/rubix-service/apps/install) dir and then check the service
@@ -19,18 +19,18 @@ func (inst *Controller) ListAppsStatus(c *gin.Context) {
 	appServiceMapping := models.AppServiceMapping{}
 	err := c.ShouldBindJSON(&appServiceMapping)
 	if err != nil {
-		reposeHandler(nil, err, c)
+		responseHandler(nil, err, c)
 		return
 	}
 	data, err := inst.EdgeApp.App.ListAppsStatus(appServiceMapping.AppServiceMapping)
-	reposeHandler(data, err, c)
+	responseHandler(data, err, c)
 }
 
 // UploadApp uploads the build
 func (inst *Controller) UploadApp(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
-		reposeHandler(nil, err, c)
+		responseHandler(nil, err, c)
 		return
 	}
 	m := &installer.Upload{
@@ -42,16 +42,16 @@ func (inst *Controller) UploadApp(c *gin.Context) {
 	}
 	data, err := inst.EdgeApp.App.UploadEdgeApp(m)
 	if err != nil {
-		reposeHandler(nil, err, c)
+		responseHandler(nil, err, c)
 		return
 	}
-	reposeHandler(data, nil, c)
+	responseHandler(data, nil, c)
 }
 
 func (inst *Controller) UploadServiceFile(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
-		reposeHandler(nil, err, c)
+		responseHandler(nil, err, c)
 		return
 	}
 	m := &installer.Upload{
@@ -60,18 +60,18 @@ func (inst *Controller) UploadServiceFile(c *gin.Context) {
 		File:    file,
 	}
 	data, err := inst.EdgeApp.App.UploadServiceFile(m)
-	reposeHandler(data, err, c)
+	responseHandler(data, err, c)
 }
 
 func (inst *Controller) InstallService(c *gin.Context) {
 	var m *installer.Install
 	err := c.ShouldBindJSON(&m)
 	if err != nil {
-		reposeHandler(nil, err, c)
+		responseHandler(nil, err, c)
 		return
 	}
 	data, err := inst.EdgeApp.App.InstallService(m)
-	reposeHandler(data, err, c)
+	responseHandler(data, err, c)
 }
 
 func (inst *Controller) UninstallApp(c *gin.Context) {
@@ -79,13 +79,13 @@ func (inst *Controller) UninstallApp(c *gin.Context) {
 	name := c.Query("name")
 	serviceName := c.Query("service_name")
 	if name != "" {
-		reposeHandler(nil, errors.New("name can not be empty"), c)
+		responseHandler(nil, errors.New("name can not be empty"), c)
 		return
 	}
 	if serviceName != "" {
-		reposeHandler(nil, errors.New("service_name can not be empty"), c)
+		responseHandler(nil, errors.New("service_name can not be empty"), c)
 		return
 	}
 	data, err := inst.EdgeApp.App.UninstallApp(name, serviceName, deleteApp)
-	reposeHandler(data, err, c)
+	responseHandler(data, err, c)
 }

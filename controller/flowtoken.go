@@ -9,8 +9,8 @@ func (inst *Controller) FlowToken(c *gin.Context) {
 	sys := system.New(&system.System{})
 	data, err := sys.GetFlowToken()
 	if err != nil {
-		reposeHandler(data, err, c)
+		responseHandler(data, err, c)
 		return
 	}
-	reposeHandler(data, err, c)
+	responseHandler(data, err, c)
 }

@@ -29,18 +29,18 @@ func setInternalToken(token string) string {
 func (inst *Controller) FFProxy(c *gin.Context) {
 	remote, err := Builder("0.0.0.0", 1660)
 	if err != nil {
-		reposeHandler(nil, err, c)
+		responseHandler(nil, err, c)
 		return
 	}
 	sys := system.New(&system.System{})
 	data, err := sys.GetFlowToken()
 	if err != nil {
-		reposeHandler(nil, err, c)
+		responseHandler(nil, err, c)
 		return
 	}
 	token := data.Token
 	if token == "" {
-		reposeHandler(nil, errors.New("flow-framework token is empty"), c)
+		responseHandler(nil, errors.New("flow-framework token is empty"), c)
 		return
 	}
 	proxy := httputil.NewSingleHostReverseProxy(remote)

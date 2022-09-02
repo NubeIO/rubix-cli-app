@@ -32,9 +32,9 @@ func (inst *Controller) Ping(c *gin.Context) {
 	var body *PingBody
 	err := c.ShouldBindJSON(&body)
 	if body != nil || err != nil {
-		reposeHandler(nil, errors.New("ping body can not be empty"), c)
+		responseHandler(nil, errors.New("ping body can not be empty"), c)
 		return
 	}
 	ping := Ping(body.Ip, body.Port, body.TimeOut)
-	reposeHandler(ping, nil, c)
+	responseHandler(ping, nil, c)
 }

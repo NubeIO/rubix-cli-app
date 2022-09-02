@@ -10,31 +10,31 @@ func (inst *Controller) DHCPPortExists(c *gin.Context) {
 	var m system.NetworkingBody
 	err := c.ShouldBindJSON(&m)
 	if err != nil {
-		reposeHandler(nil, err, c)
+		responseHandler(nil, err, c)
 		return
 	}
 	data, err := inst.System.DHCPPortExists(m)
-	reposeHandler(data, err, c)
+	responseHandler(data, err, c)
 }
 
 func (inst *Controller) DHCPSetAsAuto(c *gin.Context) {
 	var m system.NetworkingBody
 	err := c.ShouldBindJSON(&m)
 	if err != nil {
-		reposeHandler(nil, err, c)
+		responseHandler(nil, err, c)
 		return
 	}
 	data, err := inst.System.DHCPSetAsAuto(m)
-	reposeHandler(data, err, c)
+	responseHandler(data, err, c)
 }
 
 func (inst *Controller) DHCPSetStaticIP(c *gin.Context) {
 	var m *dhcpd.SetStaticIP
 	err := c.ShouldBindJSON(&m)
 	if err != nil {
-		reposeHandler(nil, err, c)
+		responseHandler(nil, err, c)
 		return
 	}
 	data, err := inst.System.DHCPSetStaticIP(m)
-	reposeHandler(data, err, c)
+	responseHandler(data, err, c)
 }

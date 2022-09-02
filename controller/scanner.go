@@ -9,5 +9,5 @@ func (inst *Controller) RunScanner(c *gin.Context) {
 	var m *system.Scanner
 	err := c.ShouldBindJSON(&m)
 	data, err := inst.System.RunScanner(m)
-	reposeHandler(data, err, c)
+	responseHandler(data, err, c)
 }
