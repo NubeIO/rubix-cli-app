@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"github.com/NubeIO/lib-rubix-installer/installer"
 	"github.com/NubeIO/rubix-edge/controller"
-	dbase "github.com/NubeIO/rubix-edge/database"
 	"github.com/NubeIO/rubix-edge/pkg/config"
 	"github.com/NubeIO/rubix-edge/pkg/logger"
 	"github.com/NubeIO/rubix-edge/service/apps"
 	"github.com/NubeIO/rubix-edge/service/system"
+	"github.com/NubeIO/rubix-registry-go/rubixregistry"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -55,23 +55,19 @@ func Setup(db *gorm.DB) *gin.Engine {
 		MaxAge:                 12 * time.Hour,
 	}))
 
-	appDB := &dbase.DB{
-		DB: db,
-	}
 	edgeSystem := system.New(&system.System{})
 	edgeApp := apps.EdgeApp{App: installer.New(&installer.App{})}
-	api := controller.Controller{DB: appDB, EdgeApp: &edgeApp, System: edgeSystem}
+	api := controller.Controller{EdgeApp: &edgeApp, System: edgeSystem, RubixRegistry: rubixregistry.New()}
 	engine.POST("/api/users/login", api.Login)
-
-	handleAuth := func(c *gin.Context) { c.Next() }
-	apiPublicRoutes := engine.Group("/api", handleAuth)
-
-	public := apiPublicRoutes.Group("/public") // THESE ARE PUBLIC APIs
+	publicSystemApi := engine.Group("/api/system")
 	{
-		public.POST("/ping", api.Ping)
-		public.GET("/device", api.GetDeviceProduct)
+		publicSystemApi.GET("/ping", api.Ping)
+		publicSystemApi.GET("/device", api.GetDeviceInfo)
+		publicSystemApi.GET("/product", api.GetProduct)
+		publicSystemApi.GET("/network_interfaces", api.GetNetworkInterfaces)
 	}
 
+	handleAuth := func(c *gin.Context) { c.Next() }
 	if config.Config.Auth() {
 		// handleAuth = api.HandleAuth() // TODO add back in auth
 	}
@@ -79,13 +75,6 @@ func Setup(db *gorm.DB) *gin.Engine {
 	apiRoutes := engine.Group("/api", handleAuth)
 	apiProxyRoutes := engine.Group("/ff", handleAuth)
 	apiProxyRoutes.Any("/*proxyPath", api.FFProxy) // FLOW-FRAMEWORK PROXY
-
-	deviceInfo := apiRoutes.Group("/device")
-	{
-		deviceInfo.GET("/", api.GetDeviceInfo)
-		deviceInfo.PATCH("/", api.UpdateDeviceInfo)
-		deviceInfo.DELETE("/", api.DropDeviceInfo)
-	}
 
 	edgeApps := apiRoutes.Group("/apps")
 	{
@@ -132,8 +121,6 @@ func Setup(db *gorm.DB) *gin.Engine {
 
 	systemApi := apiRoutes.Group("/system")
 	{
-		systemApi.GET("/ping", api.SystemPing)
-		systemApi.GET("/product", api.GetProduct)
 		systemApi.POST("/scanner", api.RunScanner)
 	}
 

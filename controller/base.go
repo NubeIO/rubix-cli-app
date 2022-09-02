@@ -2,9 +2,9 @@ package controller
 
 import (
 	"fmt"
-	dbase "github.com/NubeIO/rubix-edge/database"
 	"github.com/NubeIO/rubix-edge/service/apps"
 	"github.com/NubeIO/rubix-edge/service/system"
+	"github.com/NubeIO/rubix-registry-go/rubixregistry"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -14,9 +14,9 @@ const root = 0755
 var filePerm = root
 
 type Controller struct {
-	DB      *dbase.DB
-	EdgeApp *apps.EdgeApp
-	System  *system.System
+	EdgeApp       *apps.EdgeApp
+	RubixRegistry *rubixregistry.RubixRegistry
+	System        *system.System
 }
 
 type Response struct {

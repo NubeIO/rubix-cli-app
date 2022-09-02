@@ -2,12 +2,14 @@ module github.com/NubeIO/rubix-edge
 
 //replace github.com/NubeIO/lib-files => /home/aidan/code/go/nube/lib/lib-files
 replace github.com/NubeIO/lib-rubix-installer => /Users/raibnod/Enviro/lib-rubix-installer
-
 replace github.com/NubeIO/lib-systemctl-go => /Users/raibnod/Enviro/lib-systemctl-go
+replace github.com/NubeIO/rubix-registry-go => /Users/raibnod/Enviro/rubix-registry-go
+
 
 go 1.17
 
 require (
+	github.com/NubeIO/rubix-registry-go v0.0.1
 	github.com/NubeIO/lib-command v0.0.2
 	github.com/NubeIO/lib-date v0.0.6
 	github.com/NubeIO/lib-dhcpd v0.0.2
