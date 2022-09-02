@@ -12,7 +12,6 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
-	"gorm.io/gorm"
 	"io"
 	"net/http"
 	"os"
@@ -26,7 +25,7 @@ func NotFound() gin.HandlerFunc {
 	}
 }
 
-func Setup(db *gorm.DB) *gin.Engine {
+func Setup() *gin.Engine {
 	engine := gin.New()
 	// Set gin access logs
 	if viper.GetBool("gin.log.store") {
