@@ -59,8 +59,8 @@ func Setup(db *gorm.DB) *gin.Engine {
 		DB: db,
 	}
 	edgeSystem := system.New(&system.System{})
-	rubixApps, _ := apps.New(&apps.EdgeApps{App: &installer.App{}})
-	api := controller.Controller{DB: appDB, Rubix: rubixApps, System: edgeSystem}
+	edgeApp := apps.EdgeApp{App: installer.New(&installer.App{})}
+	api := controller.Controller{DB: appDB, EdgeApp: &edgeApp, System: edgeSystem}
 	engine.POST("/api/users/login", api.Login)
 
 	handleAuth := func(c *gin.Context) { c.Next() }
@@ -99,10 +99,10 @@ func Setup(db *gorm.DB) *gin.Engine {
 
 	appControl := apiRoutes.Group("/apps/control")
 	{
-		appControl.POST("/action", api.CtlAction)              // start, stop
-		appControl.POST("/action/mass", api.ServiceMassAction) // mass operation start, stop
-		appControl.POST("/status", api.CtlStatus)              // isRunning, isInstalled and so on
-		appControl.POST("/status/mass", api.ServiceMassStatus) // mass isRunning, isInstalled and so on
+		appControl.POST("/action", api.SystemCtlAction)
+		appControl.POST("/action/mass", api.ServiceMassAction)
+		appControl.POST("/status", api.SystemCtlStatus)
+		appControl.POST("/status/mass", api.ServiceMassStatus)
 	}
 
 	appBackups := apiRoutes.Group("/backup")
@@ -142,7 +142,6 @@ func Setup(db *gorm.DB) *gin.Engine {
 		networking.GET("/", api.Networking)
 		networking.GET("/interfaces", api.GetInterfacesNames)
 		networking.GET("/internet", api.InternetIP)
-
 	}
 
 	networks := apiRoutes.Group("/networking/networks")
@@ -171,7 +170,6 @@ func Setup(db *gorm.DB) *gin.Engine {
 	}
 
 	files := apiRoutes.Group("/files")
-
 	{
 		files.POST("/write/string", api.WriteFile)
 		files.POST("/write/yml", api.WriteFileYml)

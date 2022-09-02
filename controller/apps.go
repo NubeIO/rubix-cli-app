@@ -10,7 +10,7 @@ import (
 
 // ListApps apps by listed in the installation (/data/rubix-service/apps/install)
 func (inst *Controller) ListApps(c *gin.Context) {
-	data, err := inst.Rubix.App.ListApps()
+	data, err := inst.EdgeApp.App.ListApps()
 	reposeHandler(data, err, c)
 }
 
@@ -22,7 +22,7 @@ func (inst *Controller) ListAppsStatus(c *gin.Context) {
 		reposeHandler(nil, err, c)
 		return
 	}
-	data, err := inst.Rubix.App.ListAppsStatus(appServiceMapping.AppServiceMapping)
+	data, err := inst.EdgeApp.App.ListAppsStatus(appServiceMapping.AppServiceMapping)
 	reposeHandler(data, err, c)
 }
 
@@ -40,7 +40,7 @@ func (inst *Controller) UploadApp(c *gin.Context) {
 		Arch:    c.Query("arch"),
 		File:    file,
 	}
-	data, err := inst.Rubix.App.UploadEdgeApp(m)
+	data, err := inst.EdgeApp.App.UploadEdgeApp(m)
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
@@ -59,7 +59,7 @@ func (inst *Controller) UploadServiceFile(c *gin.Context) {
 		Version: c.Query("version"),
 		File:    file,
 	}
-	data, err := inst.Rubix.App.UploadServiceFile(m)
+	data, err := inst.EdgeApp.App.UploadServiceFile(m)
 	reposeHandler(data, err, c)
 }
 
@@ -70,7 +70,7 @@ func (inst *Controller) InstallService(c *gin.Context) {
 		reposeHandler(nil, err, c)
 		return
 	}
-	data, err := inst.Rubix.App.InstallService(m)
+	data, err := inst.EdgeApp.App.InstallService(m)
 	reposeHandler(data, err, c)
 }
 
@@ -86,6 +86,6 @@ func (inst *Controller) UninstallApp(c *gin.Context) {
 		reposeHandler(nil, errors.New("service_name can not be empty"), c)
 		return
 	}
-	data, err := inst.Rubix.App.UninstallApp(name, serviceName, deleteApp)
+	data, err := inst.EdgeApp.App.UninstallApp(name, serviceName, deleteApp)
 	reposeHandler(data, err, c)
 }

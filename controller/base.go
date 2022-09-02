@@ -14,9 +14,9 @@ const root = 0755
 var filePerm = root
 
 type Controller struct {
-	DB     *dbase.DB
-	Rubix  *apps.EdgeApps
-	System *system.System
+	DB      *dbase.DB
+	EdgeApp *apps.EdgeApp
+	System  *system.System
 }
 
 type Response struct {

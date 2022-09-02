@@ -54,7 +54,7 @@ func (inst *Controller) GetDeviceProduct(c *gin.Context) {
 		reposeHandler(nil, err, c)
 		return
 	}
-	product, err := inst.Rubix.App.GetProduct() // https://github.com/NubeIO/lib-command/blob/master/product/product.go#L7
+	product, err := inst.EdgeApp.App.GetProduct() // https://github.com/NubeIO/lib-command/blob/master/product/product.go#L7
 	if err != nil {
 		reposeHandler(nil, err, c)
 		return
