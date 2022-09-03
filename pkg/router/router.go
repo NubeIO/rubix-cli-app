@@ -120,6 +120,7 @@ func Setup() *gin.Engine {
 
 	systemApi := apiRoutes.Group("/system")
 	{
+		systemApi.PATCH("/device", api.UpdateDeviceInfo)
 		systemApi.POST("/scanner", api.RunScanner)
 	}
 
