@@ -3,16 +3,11 @@ package controller
 import (
 	"errors"
 	"fmt"
+	"github.com/NubeIO/rubix-edge/models"
 	"github.com/gin-gonic/gin"
 	"net"
 	"time"
 )
-
-type PingBody struct {
-	Ip      string        `json:"ip"`
-	Port    int           `json:"port"`
-	TimeOut time.Duration `json:"time_out"`
-}
 
 // Ping ping from the edge device
 func Ping(ip string, port int, timeOut time.Duration) bool {
@@ -29,12 +24,13 @@ func Ping(ip string, port int, timeOut time.Duration) bool {
 }
 
 func (inst *Controller) Ping(c *gin.Context) {
-	var body *PingBody
+	var body *models.PingBody
 	err := c.ShouldBindJSON(&body)
 	if body != nil || err != nil {
 		responseHandler(nil, errors.New("ping body can not be empty"), c)
 		return
 	}
 	ping := Ping(body.Ip, body.Port, body.TimeOut)
-	responseHandler(ping, nil, c)
+	output := models.PingStatus{Status: ping}
+	responseHandler(output, nil, c)
 }

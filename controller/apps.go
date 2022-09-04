@@ -34,18 +34,16 @@ func (inst *Controller) UploadApp(c *gin.Context) {
 		return
 	}
 	m := &installer.Upload{
-		Name:    c.Query("name"),
-		Version: c.Query("version"),
-		Product: c.Query("product"),
-		Arch:    c.Query("arch"),
-		File:    file,
+		Name:              c.Query("name"),
+		ServiceName:       c.Query("service_name"),
+		Version:           c.Query("version"),
+		Product:           c.Query("product"),
+		Arch:              c.Query("arch"),
+		DoNotValidateArch: c.Query("do_not_validate_arch") == "true",
+		File:              file,
 	}
 	data, err := inst.EdgeApp.App.UploadEdgeApp(m)
-	if err != nil {
-		responseHandler(nil, err, c)
-		return
-	}
-	responseHandler(data, nil, c)
+	responseHandler(data, err, c)
 }
 
 func (inst *Controller) UploadServiceFile(c *gin.Context) {

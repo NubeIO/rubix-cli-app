@@ -47,5 +47,4 @@ func responseHandler(body interface{}, err error, c *gin.Context, statusCode ...
 
 type Message struct {
 	Message interface{} `json:"message,omitempty"`
-	Data    interface{} `json:"data,omitempty"`
 }

@@ -88,8 +88,8 @@ func Setup() *gin.Engine {
 	appControl := apiRoutes.Group("/apps/control")
 	{
 		appControl.POST("/action", api.SystemCtlAction)
-		appControl.POST("/action/mass", api.ServiceMassAction)
 		appControl.POST("/status", api.SystemCtlStatus)
+		appControl.POST("/action/mass", api.ServiceMassAction)
 		appControl.POST("/status/mass", api.ServiceMassStatus)
 	}
 
@@ -158,14 +158,14 @@ func Setup() *gin.Engine {
 
 	files := apiRoutes.Group("/files")
 	{
-		files.POST("/write/string", api.WriteFile)
-		files.POST("/write/yml", api.WriteFileYml)
-		files.POST("/write/json", api.WriteFileJson)
-		files.POST("/create", api.CreateFile)
-		files.GET("/read", api.ReadFile) // path=/data/flow-framework/config/config.yml
 		files.GET("/exists", api.FileExists)
-		files.GET("/walk", api.WalkFile)
 		files.GET("/list", api.ListFiles) // /api/files/list?file=/data
+		files.GET("/walk", api.WalkFile)
+		files.GET("/read", api.ReadFile) // path=/data/flow-framework/config/config.yml
+		files.POST("/create", api.CreateFile)
+		files.POST("/write/string", api.WriteFile)
+		files.POST("/write/json", api.WriteFileJson)
+		files.POST("/write/yml", api.WriteFileYml)
 		files.POST("/rename", api.RenameFile)
 		files.POST("/copy", api.CopyFile)
 		files.POST("/move", api.MoveFile)
