@@ -3,7 +3,6 @@ package controller
 import (
 	"errors"
 	"github.com/NubeIO/lib-rubix-installer/installer"
-	"github.com/NubeIO/rubix-edge/models"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -16,13 +15,7 @@ func (inst *Controller) ListApps(c *gin.Context) {
 
 // ListAppsStatus get all the apps by listed in the installation (/data/rubix-service/apps/install) dir and then check the service
 func (inst *Controller) ListAppsStatus(c *gin.Context) {
-	appServiceMapping := models.AppServiceMapping{}
-	err := c.ShouldBindJSON(&appServiceMapping)
-	if err != nil {
-		responseHandler(nil, err, c)
-		return
-	}
-	data, err := inst.EdgeApp.App.ListAppsStatus(appServiceMapping.AppServiceMapping)
+	data, err := inst.EdgeApp.App.ListAppsStatus()
 	responseHandler(data, err, c)
 }
 
@@ -35,7 +28,6 @@ func (inst *Controller) UploadApp(c *gin.Context) {
 	}
 	m := &installer.Upload{
 		Name:              c.Query("name"),
-		ServiceName:       c.Query("service_name"),
 		Version:           c.Query("version"),
 		Product:           c.Query("product"),
 		Arch:              c.Query("arch"),
@@ -84,6 +76,6 @@ func (inst *Controller) UninstallApp(c *gin.Context) {
 		responseHandler(nil, errors.New("service_name can not be empty"), c)
 		return
 	}
-	data, err := inst.EdgeApp.App.UninstallApp(name, serviceName, deleteApp)
+	data, err := inst.EdgeApp.App.UninstallApp(name, deleteApp)
 	responseHandler(data, err, c)
 }

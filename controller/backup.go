@@ -48,13 +48,13 @@ RUN A BACK-UP
 */
 
 func (inst *Controller) FullBackUp(c *gin.Context) {
-	data, err := inst.EdgeApp.FullBackUp()
+	data, err := inst.EdgeApp.FullBackUp(nil)
 	responseHandler(data, err, c)
 }
 
 func (inst *Controller) BackupApp(c *gin.Context) {
 	appName := c.Query("app_name")
-	data, err := inst.EdgeApp.BackupApp(appName)
+	data, err := inst.EdgeApp.BackupApp(appName, nil)
 	responseHandler(data, err, c)
 }
 
@@ -67,14 +67,14 @@ func (inst *Controller) ListFullBackups(c *gin.Context) {
 	responseHandler(data, err, c)
 }
 
-func (inst *Controller) ListAppBackupsDirs(c *gin.Context) {
-	data, err := inst.EdgeApp.ListAppBackupsDirs()
+func (inst *Controller) ListAppsBackups(c *gin.Context) {
+	data, err := inst.EdgeApp.ListAppsBackups()
 	responseHandler(data, err, c)
 }
 
-func (inst *Controller) ListBackupsByApp(c *gin.Context) {
+func (inst *Controller) ListAppBackups(c *gin.Context) {
 	appName := c.Query("app_name")
-	data, err := inst.EdgeApp.ListBackupsByApp(appName)
+	data, err := inst.EdgeApp.ListAppBackups(appName)
 	responseHandler(data, err, c)
 }
 
@@ -92,20 +92,20 @@ func (inst *Controller) DeleteAllFullBackups(c *gin.Context) {
 	responseHandler(data, err, c)
 }
 
+func (inst *Controller) DeleteAppsBackups(c *gin.Context) {
+	data, err := inst.EdgeApp.DeleteAllAppsBackups()
+	responseHandler(data, err, c)
+}
+
 func (inst *Controller) DeleteAllAppBackups(c *gin.Context) {
-	data, err := inst.EdgeApp.DeleteAllAppBackups()
+	appName := c.Query("name")
+	data, err := inst.EdgeApp.DeleteAllAppBackups(appName)
 	responseHandler(data, err, c)
 }
 
-func (inst *Controller) DeleteAppAllBackUpByName(c *gin.Context) {
+func (inst *Controller) DeleteOneAppBackup(c *gin.Context) {
 	appName := c.Query("name")
-	data, err := inst.EdgeApp.DeleteAppAllBackUpByName(appName)
-	responseHandler(data, err, c)
-}
-
-func (inst *Controller) DeleteAppOneBackUpByName(c *gin.Context) {
-	appName := c.Query("name")
-	folder := c.Query("folder")
-	data, err := inst.EdgeApp.DeleteAppOneBackUpByName(appName, folder)
+	zipFile := c.Query("zip_file")
+	data, err := inst.EdgeApp.DeleteOneAppBackup(appName, zipFile)
 	responseHandler(data, err, c)
 }

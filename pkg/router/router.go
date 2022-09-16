@@ -100,8 +100,8 @@ func Setup() *gin.Engine {
 		appBackups.POST("/run/full", api.FullBackUp)
 		appBackups.POST("/run/app", api.BackupApp)
 		appBackups.GET("/list/full", api.ListFullBackups)
-		appBackups.GET("/list/apps", api.ListAppBackupsDirs)
-		appBackups.GET("/list/app", api.ListBackupsByApp)
+		appBackups.GET("/list/apps", api.ListAppsBackups)
+		appBackups.GET("/list/app", api.ListAppBackups)
 	}
 
 	systemTime := apiRoutes.Group("/time")

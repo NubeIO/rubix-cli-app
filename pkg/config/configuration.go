@@ -10,12 +10,7 @@ import (
 var Config *Configuration
 var RootCmd *cobra.Command
 
-type Configuration struct {
-	Server   ServerConfiguration
-	Gin      GinConfiguration
-	Database DatabaseConfiguration
-	Path     PathConfiguration
-}
+type Configuration struct{}
 
 func Setup(rootCmd_ *cobra.Command) error {
 	RootCmd = rootCmd_

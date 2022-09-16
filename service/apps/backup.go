@@ -56,42 +56,42 @@ func (inst *EdgeApp) RestoreAppBackup(back *installer.RestoreBackup) (*installer
 	return restoreResp, nil
 }
 
-func (inst *EdgeApp) FullBackUp(deiceName ...string) (*BackupResp, error) {
-	path, err := inst.App.FullBackUp(deiceName...)
+func (inst *EdgeApp) FullBackUp(deiceName *string) (*BackupResp, error) {
+	path, err := inst.App.FullBackUp(deiceName)
 	return &BackupResp{BackupPath: path}, err
 }
 
-func (inst *EdgeApp) BackupApp(appName string, deiceName ...string) (*BackupResp, error) {
-	path, err := inst.App.BackupApp(appName, deiceName...)
+func (inst *EdgeApp) BackupApp(appName string, deiceName *string) (*BackupResp, error) {
+	path, err := inst.App.BackupApp(appName, deiceName)
 	return &BackupResp{BackupPath: path}, err
 }
 
-func (inst *EdgeApp) ListFullBackups() ([]installer.ListBackups, error) {
+func (inst *EdgeApp) ListFullBackups() ([]string, error) {
 	return inst.App.ListFullBackups()
 }
 
-func (inst *EdgeApp) ListAppBackupsDirs() ([]string, error) {
-	return inst.App.ListAppBackupsDirs()
+func (inst *EdgeApp) ListAppsBackups() ([]string, error) {
+	return inst.App.ListAppsBackups()
 }
 
-func (inst *EdgeApp) ListBackupsByApp(appName string) ([]installer.ListBackups, error) {
-	return inst.App.ListBackupsByApp(appName)
+func (inst *EdgeApp) ListAppBackups(appName string) ([]string, error) {
+	return inst.App.ListAppBackups(appName)
 }
 
 func (inst *EdgeApp) DeleteAllFullBackups() (*installer.MessageResponse, error) {
 	return inst.App.DeleteAllFullBackups()
 }
 
-func (inst *EdgeApp) DeleteAllAppBackups() (*installer.MessageResponse, error) {
-	return inst.App.DeleteAllAppBackups()
+func (inst *EdgeApp) DeleteAllAppsBackups() (*installer.MessageResponse, error) {
+	return inst.App.DeleteAllAppsBackups()
 }
 
-func (inst *EdgeApp) DeleteAppAllBackUpByName(appName string) (*installer.MessageResponse, error) {
-	return inst.App.DeleteAppAllBackUpByName(appName)
+func (inst *EdgeApp) DeleteAllAppBackups(appName string) (*installer.MessageResponse, error) {
+	return inst.App.DeleteAllAppBackups(appName)
 }
 
-func (inst *EdgeApp) DeleteAppOneBackUpByName(appName, backupFolder string) (*installer.MessageResponse, error) {
-	return inst.App.DeleteAppOneBackUpByName(appName, backupFolder)
+func (inst *EdgeApp) DeleteOneAppBackup(appName, zipFile string) (*installer.MessageResponse, error) {
+	return inst.App.DeleteOneAppBackup(appName, zipFile)
 }
 
 func (inst *EdgeApp) WipeBackups() (*installer.MessageResponse, error) {
