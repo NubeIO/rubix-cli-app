@@ -78,7 +78,7 @@ func Setup() *gin.Engine {
 	edgeApps := apiRoutes.Group("/apps")
 	{
 		edgeApps.GET("/", api.ListApps)
-		edgeApps.POST("/status", api.ListAppsStatus)
+		edgeApps.GET("/status", api.ListAppsStatus)
 		edgeApps.POST("/upload", api.UploadApp)
 		edgeApps.POST("/service/upload", api.UploadServiceFile)
 		edgeApps.POST("/service/install", api.InstallService)

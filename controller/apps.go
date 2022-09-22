@@ -27,12 +27,14 @@ func (inst *Controller) UploadApp(c *gin.Context) {
 		return
 	}
 	m := &installer.Upload{
-		Name:              c.Query("name"),
-		Version:           c.Query("version"),
-		Product:           c.Query("product"),
-		Arch:              c.Query("arch"),
-		DoNotValidateArch: c.Query("do_not_validate_arch") == "true",
-		File:              file,
+		Name:                            c.Query("name"),
+		Version:                         c.Query("version"),
+		Product:                         c.Query("product"),
+		Arch:                            c.Query("arch"),
+		DoNotValidateArch:               c.Query("do_not_validate_arch") == "true",
+		MoveExtractedFileToNameApp:      c.Query("move_extracted_file_to_name_app") == "true",
+		MoveOneLevelInsideFileToOutside: c.Query("move_one_level_inside_file_to_outside") == "true",
+		File:                            file,
 	}
 	data, err := inst.EdgeApp.App.UploadEdgeApp(m)
 	responseHandler(data, err, c)
@@ -67,13 +69,8 @@ func (inst *Controller) InstallService(c *gin.Context) {
 func (inst *Controller) UninstallApp(c *gin.Context) {
 	deleteApp, _ := strconv.ParseBool(c.Query("delete"))
 	name := c.Query("name")
-	serviceName := c.Query("service_name")
-	if name != "" {
-		responseHandler(nil, errors.New("name can not be empty"), c)
-		return
-	}
-	if serviceName != "" {
-		responseHandler(nil, errors.New("service_name can not be empty"), c)
+	if name == "" {
+		responseHandler(nil, errors.New("app_name can not be empty"), c)
 		return
 	}
 	data, err := inst.EdgeApp.App.UninstallApp(name, deleteApp)
