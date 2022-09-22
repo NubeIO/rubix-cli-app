@@ -4,15 +4,14 @@ import (
 	"fmt"
 	"github.com/NubeIO/lib-rubix-installer/installer"
 	"github.com/NubeIO/rubix-edge/controller"
-	dbase "github.com/NubeIO/rubix-edge/database"
 	"github.com/NubeIO/rubix-edge/pkg/config"
 	"github.com/NubeIO/rubix-edge/pkg/logger"
 	"github.com/NubeIO/rubix-edge/service/apps"
 	"github.com/NubeIO/rubix-edge/service/system"
+	"github.com/NubeIO/rubix-registry-go/rubixregistry"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
-	"gorm.io/gorm"
 	"io"
 	"net/http"
 	"os"
@@ -26,7 +25,7 @@ func NotFound() gin.HandlerFunc {
 	}
 }
 
-func Setup(db *gorm.DB) *gin.Engine {
+func Setup() *gin.Engine {
 	engine := gin.New()
 	// Set gin access logs
 	if viper.GetBool("gin.log.store") {
@@ -55,23 +54,19 @@ func Setup(db *gorm.DB) *gin.Engine {
 		MaxAge:                 12 * time.Hour,
 	}))
 
-	appDB := &dbase.DB{
-		DB: db,
-	}
 	edgeSystem := system.New(&system.System{})
-	rubixApps, _ := apps.New(&apps.EdgeApps{App: &installer.App{}})
-	api := controller.Controller{DB: appDB, Rubix: rubixApps, System: edgeSystem}
+	edgeApp := apps.EdgeApp{App: installer.New(&installer.App{})}
+	api := controller.Controller{EdgeApp: &edgeApp, RubixRegistry: rubixregistry.New(), System: edgeSystem, FileMode: 0755}
 	engine.POST("/api/users/login", api.Login)
+	publicSystemApi := engine.Group("/api/system")
+	{
+		publicSystemApi.GET("/ping", api.Ping)
+		publicSystemApi.GET("/device", api.GetDeviceInfo)
+		publicSystemApi.GET("/product", api.GetProduct)
+		publicSystemApi.GET("/network_interfaces", api.GetNetworkInterfaces)
+	}
 
 	handleAuth := func(c *gin.Context) { c.Next() }
-	apiPublicRoutes := engine.Group("/api", handleAuth)
-
-	public := apiPublicRoutes.Group("/public") // THESE ARE PUBLIC APIs
-	{
-		public.POST("/ping", api.Ping)
-		public.GET("/device", api.GetDeviceProduct)
-	}
-
 	if config.Config.Auth() {
 		// handleAuth = api.HandleAuth() // TODO add back in auth
 	}
@@ -80,30 +75,22 @@ func Setup(db *gorm.DB) *gin.Engine {
 	apiProxyRoutes := engine.Group("/ff", handleAuth)
 	apiProxyRoutes.Any("/*proxyPath", api.FFProxy) // FLOW-FRAMEWORK PROXY
 
-	deviceInfo := apiRoutes.Group("/device")
-	{
-		deviceInfo.GET("/", api.GetDeviceInfo)
-		deviceInfo.PATCH("/", api.UpdateDeviceInfo)
-		deviceInfo.DELETE("/", api.DropDeviceInfo)
-	}
-
 	edgeApps := apiRoutes.Group("/apps")
 	{
 		edgeApps.GET("/", api.ListApps)
-		edgeApps.GET("/services", api.ListAppsAndService)
-		edgeApps.GET("/services/nube", api.ListNubeServices)
-		edgeApps.POST("/add", api.AddUploadApp)
-		edgeApps.POST("/service/upload", api.UploadService)
+		edgeApps.GET("/status", api.ListAppsStatus)
+		edgeApps.POST("/upload", api.UploadApp)
+		edgeApps.POST("/service/upload", api.UploadServiceFile)
 		edgeApps.POST("/service/install", api.InstallService)
-		edgeApps.DELETE("/", api.UninstallApp) // uninstall an app
+		edgeApps.DELETE("/", api.UninstallApp)
 	}
 
 	appControl := apiRoutes.Group("/apps/control")
 	{
-		appControl.POST("/action", api.CtlAction)              // start, stop
-		appControl.POST("/action/mass", api.ServiceMassAction) // mass operation start, stop
-		appControl.POST("/status", api.CtlStatus)              // isRunning, isInstalled and so on
-		appControl.POST("/status/mass", api.ServiceMassStatus) // mass isRunning, isInstalled and so on
+		appControl.POST("/action", api.SystemCtlAction)
+		appControl.POST("/status", api.SystemCtlStatus)
+		appControl.POST("/action/mass", api.ServiceMassAction)
+		appControl.POST("/status/mass", api.ServiceMassStatus)
 	}
 
 	appBackups := apiRoutes.Group("/backup")
@@ -113,8 +100,8 @@ func Setup(db *gorm.DB) *gin.Engine {
 		appBackups.POST("/run/full", api.FullBackUp)
 		appBackups.POST("/run/app", api.BackupApp)
 		appBackups.GET("/list/full", api.ListFullBackups)
-		appBackups.GET("/list/apps", api.ListAppBackupsDirs)
-		appBackups.GET("/list/app", api.ListBackupsByApp)
+		appBackups.GET("/list/apps", api.ListAppsBackups)
+		appBackups.GET("/list/app", api.ListAppBackups)
 	}
 
 	systemTime := apiRoutes.Group("/time")
@@ -133,8 +120,7 @@ func Setup(db *gorm.DB) *gin.Engine {
 
 	systemApi := apiRoutes.Group("/system")
 	{
-		systemApi.GET("/ping", api.SystemPing)
-		systemApi.GET("/product", api.GetProduct)
+		systemApi.PATCH("/device", api.UpdateDeviceInfo)
 		systemApi.POST("/scanner", api.RunScanner)
 	}
 
@@ -143,7 +129,6 @@ func Setup(db *gorm.DB) *gin.Engine {
 		networking.GET("/", api.Networking)
 		networking.GET("/interfaces", api.GetInterfacesNames)
 		networking.GET("/internet", api.InternetIP)
-
 	}
 
 	networks := apiRoutes.Group("/networking/networks")
@@ -172,16 +157,15 @@ func Setup(db *gorm.DB) *gin.Engine {
 	}
 
 	files := apiRoutes.Group("/files")
-
 	{
-		files.POST("/write/string", api.WriteFile)
-		files.POST("/write/yml", api.WriteFileYml)
-		files.POST("/write/json", api.WriteFileJson)
-		files.POST("/create", api.CreateFile)
-		files.GET("/read", api.ReadFile) // path=/data/flow-framework/config/config.yml
 		files.GET("/exists", api.FileExists)
-		files.GET("/walk", api.WalkFile)
 		files.GET("/list", api.ListFiles) // /api/files/list?file=/data
+		files.GET("/walk", api.WalkFile)
+		files.GET("/read", api.ReadFile) // path=/data/flow-framework/config/config.yml
+		files.POST("/create", api.CreateFile)
+		files.POST("/write/string", api.WriteFile)
+		files.POST("/write/json", api.WriteFileJson)
+		files.POST("/write/yml", api.WriteFileYml)
 		files.POST("/rename", api.RenameFile)
 		files.POST("/copy", api.CopyFile)
 		files.POST("/move", api.MoveFile)

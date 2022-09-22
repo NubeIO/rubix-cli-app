@@ -1,39 +1,22 @@
 package controller
 
 import (
-	"github.com/NubeIO/rubix-edge/pkg/model"
+	"github.com/NubeIO/rubix-registry-go/rubixregistry"
 	"github.com/gin-gonic/gin"
 )
 
 func (inst *Controller) GetDeviceInfo(c *gin.Context) {
-	data, err := inst.DB.GetDeviceInfo()
-	if err != nil {
-		reposeHandler(data, err, c)
-		return
-	}
-	reposeHandler(data, err, c)
+	deviceInfo, err := inst.RubixRegistry.GetDeviceInfo()
+	responseHandler(deviceInfo, err, c)
 }
 
 func (inst *Controller) UpdateDeviceInfo(c *gin.Context) {
-	var m *model.DeviceInfo
-	err = c.ShouldBindJSON(&m)
+	var deviceInfo *rubixregistry.DeviceInfo
+	err := c.ShouldBindJSON(&deviceInfo)
 	if err != nil {
-		reposeHandler(nil, err, c)
+		responseHandler(nil, err, c)
 		return
 	}
-	data, err := inst.DB.UpdateDeviceInfo(m)
-	if err != nil {
-		reposeHandler(data, err, c)
-		return
-	}
-	reposeHandler(data, err, c)
-}
-
-func (inst *Controller) DropDeviceInfo(c *gin.Context) {
-	host, err := inst.DB.DropDeviceInfo()
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
-	reposeHandler(host, err, c)
+	response, err := inst.RubixRegistry.UpdateDeviceInfo(*deviceInfo)
+	responseHandler(response, err, c)
 }

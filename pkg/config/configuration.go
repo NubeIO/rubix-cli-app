@@ -10,12 +10,7 @@ import (
 var Config *Configuration
 var RootCmd *cobra.Command
 
-type Configuration struct {
-	Server   ServerConfiguration
-	Gin      GinConfiguration
-	Database DatabaseConfiguration
-	Path     PathConfiguration
-}
+type Configuration struct{}
 
 func Setup(rootCmd_ *cobra.Command) error {
 	RootCmd = rootCmd_
@@ -32,9 +27,6 @@ func Setup(rootCmd_ *cobra.Command) error {
 	if err != nil {
 		fmt.Println(err)
 	}
-	viper.SetDefault("database.driver", "sqlite")
-	viper.SetDefault("database.name", "data.db")
-	viper.SetDefault("database.log.store", false)
 	viper.SetDefault("server.log.store", false)
 	viper.SetDefault("gin.log.store", false)
 	Config = configuration

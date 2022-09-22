@@ -1,10 +1,8 @@
 package controller
 
 import (
-	"errors"
 	"fmt"
-	"github.com/NubeIO/rubix-edge/service/system"
-
+	"github.com/NubeIO/nubeio-rubix-lib-auth-go/internaltoken"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"net/http/httputil"
@@ -22,27 +20,14 @@ func CheckHTTP(address string) string {
 	}
 	return address
 }
-func setInternalToken(token string) string {
-	return fmt.Sprintf("Internal %s", token)
-}
 
 func (inst *Controller) FFProxy(c *gin.Context) {
 	remote, err := Builder("0.0.0.0", 1660)
 	if err != nil {
-		reposeHandler(nil, err, c)
+		responseHandler(nil, err, c)
 		return
 	}
-	sys := system.New(&system.System{})
-	data, err := sys.GetFlowToken()
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
-	token := data.Token
-	if token == "" {
-		reposeHandler(nil, errors.New("flow-framework token is empty"), c)
-		return
-	}
+	internalToken := internaltoken.GetInternalToken(true)
 	proxy := httputil.NewSingleHostReverseProxy(remote)
 	proxy.Director = func(req *http.Request) {
 		req.Header = c.Request.Header
@@ -50,8 +35,7 @@ func (inst *Controller) FFProxy(c *gin.Context) {
 		req.URL.Scheme = remote.Scheme
 		req.URL.Host = remote.Host
 		req.URL.Path = c.Param("proxyPath")
-		req.Header.Set("Authorization", setInternalToken(token))
-
+		req.Header.Set("Authorization", internalToken)
 	}
 	proxy.ServeHTTP(c.Writer, c.Request)
 }

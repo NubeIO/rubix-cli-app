@@ -2,24 +2,19 @@ package controller
 
 import (
 	"fmt"
-	dbase "github.com/NubeIO/rubix-edge/database"
 	"github.com/NubeIO/rubix-edge/service/apps"
 	"github.com/NubeIO/rubix-edge/service/system"
+	"github.com/NubeIO/rubix-registry-go/rubixregistry"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-const root = 0755
-
-var filePerm = root
-
 type Controller struct {
-	DB     *dbase.DB
-	Rubix  *apps.EdgeApps
-	System *system.System
+	EdgeApp       *apps.EdgeApp
+	RubixRegistry *rubixregistry.RubixRegistry
+	System        *system.System
+	FileMode      int
 }
-
-var err error
 
 type Response struct {
 	StatusCode   int         `json:"status_code"`
@@ -28,7 +23,7 @@ type Response struct {
 	Data         interface{} `json:"data"`
 }
 
-func reposeHandler(body interface{}, err error, c *gin.Context, statusCode ...int) {
+func responseHandler(body interface{}, err error, c *gin.Context, statusCode ...int) {
 	var code int
 	if err != nil {
 		if len(statusCode) > 0 {
@@ -52,5 +47,4 @@ func reposeHandler(body interface{}, err error, c *gin.Context, statusCode ...in
 
 type Message struct {
 	Message interface{} `json:"message,omitempty"`
-	Data    interface{} `json:"data,omitempty"`
 }

@@ -13,7 +13,7 @@ RESTORE A BACK-UP
 func (inst *Controller) RestoreBackup(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
-		reposeHandler(nil, err, c)
+		responseHandler(nil, err, c)
 		return
 	}
 	takeBackup := c.Query("take_backup")
@@ -22,22 +22,14 @@ func (inst *Controller) RestoreBackup(c *gin.Context) {
 		TakeBackup: _takeBackup,
 		File:       file,
 	}
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
-	data, err := inst.Rubix.RestoreBackup(m)
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
-	reposeHandler(data, nil, c)
+	data, err := inst.EdgeApp.RestoreBackup(m)
+	responseHandler(data, err, c)
 }
 
 func (inst *Controller) RestoreAppBackup(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
-		reposeHandler(nil, err, c)
+		responseHandler(nil, err, c)
 		return
 	}
 	takeBackup := c.Query("take_backup")
@@ -47,16 +39,8 @@ func (inst *Controller) RestoreAppBackup(c *gin.Context) {
 		TakeBackup: _takeBackup,
 		File:       file,
 	}
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
-	data, err := inst.Rubix.RestoreAppBackup(m)
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
-	reposeHandler(data, nil, c)
+	data, err := inst.EdgeApp.RestoreAppBackup(m)
+	responseHandler(data, err, c)
 }
 
 /*
@@ -64,22 +48,14 @@ RUN A BACK-UP
 */
 
 func (inst *Controller) FullBackUp(c *gin.Context) {
-	data, err := inst.Rubix.FullBackUp()
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
-	reposeHandler(data, nil, c)
+	data, err := inst.EdgeApp.FullBackUp(nil)
+	responseHandler(data, err, c)
 }
 
 func (inst *Controller) BackupApp(c *gin.Context) {
 	appName := c.Query("app_name")
-	data, err := inst.Rubix.BackupApp(appName)
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
-	reposeHandler(data, nil, c)
+	data, err := inst.EdgeApp.BackupApp(appName, nil)
+	responseHandler(data, err, c)
 }
 
 /*
@@ -87,31 +63,19 @@ LIST BACK-UPS
 */
 
 func (inst *Controller) ListFullBackups(c *gin.Context) {
-	data, err := inst.Rubix.ListFullBackups()
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
-	reposeHandler(data, nil, c)
+	data, err := inst.EdgeApp.ListFullBackups()
+	responseHandler(data, err, c)
 }
 
-func (inst *Controller) ListAppBackupsDirs(c *gin.Context) {
-	data, err := inst.Rubix.ListAppBackupsDirs()
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
-	reposeHandler(data, nil, c)
+func (inst *Controller) ListAppsBackups(c *gin.Context) {
+	data, err := inst.EdgeApp.ListAppsBackups()
+	responseHandler(data, err, c)
 }
 
-func (inst *Controller) ListBackupsByApp(c *gin.Context) {
+func (inst *Controller) ListAppBackups(c *gin.Context) {
 	appName := c.Query("app_name")
-	data, err := inst.Rubix.ListBackupsByApp(appName)
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
-	reposeHandler(data, nil, c)
+	data, err := inst.EdgeApp.ListAppBackups(appName)
+	responseHandler(data, err, c)
 }
 
 /*
@@ -119,49 +83,29 @@ DELETE BACK-UPS
 */
 
 func (inst *Controller) WipeBackups(c *gin.Context) {
-	data, err := inst.Rubix.WipeBackups()
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
-	reposeHandler(data, nil, c)
+	data, err := inst.EdgeApp.WipeBackups()
+	responseHandler(data, err, c)
 }
 
 func (inst *Controller) DeleteAllFullBackups(c *gin.Context) {
-	data, err := inst.Rubix.DeleteAllFullBackups()
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
-	reposeHandler(data, nil, c)
+	data, err := inst.EdgeApp.DeleteAllFullBackups()
+	responseHandler(data, err, c)
+}
+
+func (inst *Controller) DeleteAppsBackups(c *gin.Context) {
+	data, err := inst.EdgeApp.DeleteAllAppsBackups()
+	responseHandler(data, err, c)
 }
 
 func (inst *Controller) DeleteAllAppBackups(c *gin.Context) {
-	data, err := inst.Rubix.DeleteAllAppBackups()
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
-	reposeHandler(data, nil, c)
+	appName := c.Query("name")
+	data, err := inst.EdgeApp.DeleteAllAppBackups(appName)
+	responseHandler(data, err, c)
 }
 
-func (inst *Controller) DeleteAppAllBackUpByName(c *gin.Context) {
+func (inst *Controller) DeleteOneAppBackup(c *gin.Context) {
 	appName := c.Query("name")
-	data, err := inst.Rubix.DeleteAppAllBackUpByName(appName)
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
-	reposeHandler(data, nil, c)
-}
-
-func (inst *Controller) DeleteAppOneBackUpByName(c *gin.Context) {
-	appName := c.Query("name")
-	folder := c.Query("folder")
-	data, err := inst.Rubix.DeleteAppOneBackUpByName(appName, folder)
-	if err != nil {
-		reposeHandler(nil, err, c)
-		return
-	}
-	reposeHandler(data, nil, c)
+	zipFile := c.Query("zip_file")
+	data, err := inst.EdgeApp.DeleteOneAppBackup(appName, zipFile)
+	responseHandler(data, err, c)
 }
