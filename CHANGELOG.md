@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [v0.3.0](https://github.com/NubeIO/rubix-edge/tree/v0.3.0) (2022-09-22)
+
+- Lots of improvements
+
 ## [v0.2.0](https://github.com/NubeIO/rubix-edge/tree/v0.2.0) (2022-08-29)
 
 - Added networking apis
