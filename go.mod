@@ -12,7 +12,7 @@ require (
 	github.com/NubeIO/lib-files v0.1.1
 	github.com/NubeIO/lib-journalctl v0.0.0-20220830013922-d7ec41cce123
 	github.com/NubeIO/lib-networking v0.0.7
-	github.com/NubeIO/lib-rubix-installer v0.3.0
+	github.com/NubeIO/lib-rubix-installer v0.3.1
 	github.com/NubeIO/lib-ufw v0.0.3
 	github.com/NubeIO/nubeio-rubix-lib-auth-go v1.0.3
 	github.com/NubeIO/nubeio-rubix-lib-helpers-go v0.2.7

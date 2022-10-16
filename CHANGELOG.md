@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [v0.3.1](https://github.com/NubeIO/rubix-edge/tree/v0.3.1) (2022-10-16)
+
+- Upgrade lib-rubix-installer to version v0.3.1 to fix wires installation
+
 ## [v0.3.0](https://github.com/NubeIO/rubix-edge/tree/v0.3.0) (2022-09-22)
 
 - Lots of improvements
