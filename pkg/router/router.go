@@ -74,6 +74,8 @@ func Setup() *gin.Engine {
 	apiRoutes := engine.Group("/api", handleAuth)
 	apiProxyRoutes := engine.Group("/ff", handleAuth)
 	apiProxyRoutes.Any("/*proxyPath", api.FFProxy) // FLOW-FRAMEWORK PROXY
+	apiProxyWiresRoutes := engine.Group("/wires", handleAuth)
+	apiProxyWiresRoutes.Any("/*proxyPath", api.WiresProxy) // EDGE-WIRES PROXY
 
 	edgeApps := apiRoutes.Group("/apps")
 	{
