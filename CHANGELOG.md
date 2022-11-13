@@ -1,7 +1,11 @@
 # CHANGELOG
 ## [v0.3.1](https://github.com/NubeIO/rubix-edge/tree/v0.3.2) (2022-10-26)
 
-- added edge-proxy
+- Add auth handler back
+
+## [v0.3.2](https://github.com/NubeIO/rubix-edge/tree/v0.3.2) (2022-10-26)
+
+- Added edge-proxy
 
 ## [v0.3.1](https://github.com/NubeIO/rubix-edge/tree/v0.3.1) (2022-10-16)
 
