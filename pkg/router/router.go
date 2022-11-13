@@ -68,7 +68,7 @@ func Setup() *gin.Engine {
 
 	handleAuth := func(c *gin.Context) { c.Next() }
 	if config.Config.Auth() {
-		// handleAuth = api.HandleAuth() // TODO add back in auth
+		handleAuth = api.HandleAuth()
 	}
 
 	apiRoutes := engine.Group("/api", handleAuth)
