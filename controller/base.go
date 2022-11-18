@@ -2,6 +2,8 @@ package controller
 
 import (
 	"fmt"
+	"github.com/NubeIO/lib-systemctl-go/systemctl"
+	"github.com/NubeIO/rubix-edge/model"
 	"github.com/NubeIO/rubix-edge/service/apps"
 	"github.com/NubeIO/rubix-edge/service/system"
 	"github.com/NubeIO/rubix-registry-go/rubixregistry"
@@ -10,6 +12,7 @@ import (
 )
 
 type Controller struct {
+	SystemCtl     *systemctl.SystemCtl
 	EdgeApp       *apps.EdgeApp
 	RubixRegistry *rubixregistry.RubixRegistry
 	System        *system.System
@@ -31,7 +34,7 @@ func responseHandler(body interface{}, err error, c *gin.Context, statusCode ...
 		} else {
 			code = http.StatusNotFound
 		}
-		msg := Message{
+		msg := model.Message{
 			Message: fmt.Sprintf("rubix-edge: %s", err.Error()),
 		}
 		c.JSON(code, msg)
@@ -43,8 +46,4 @@ func responseHandler(body interface{}, err error, c *gin.Context, statusCode ...
 		}
 		c.JSON(code, body)
 	}
-}
-
-type Message struct {
-	Message interface{} `json:"message,omitempty"`
 }

@@ -63,8 +63,9 @@ github.com/NubeIO/lib-date v0.0.6 h1:88Ki7UIOvDEKyd3vKJ7r4fiUeX25Q5iyMO5d0125wrA
 github.com/NubeIO/lib-date v0.0.6/go.mod h1:VvpSwdwcVCaOgTN+Ad96nHBkFDWTt3VekG933QCtGtc=
 github.com/NubeIO/lib-dhcpd v0.0.2 h1:DC2qcVi3tsRkYlmmlTiZTvsHdFI9/HqSohVj131Pl4I=
 github.com/NubeIO/lib-dhcpd v0.0.2/go.mod h1:5cmaDc5cKyuKHCIU0yg+8KrsYWZThId3QpFfddKbZdE=
-github.com/NubeIO/lib-files v0.1.1 h1:sgqQ78VpFhbagawKCQglw0Y9o2Vww/c8nFPefDPFYfA=
 github.com/NubeIO/lib-files v0.1.1/go.mod h1:xi4mqMscDl6319i10LFowq5QvwChJLjqHCIJGkGa4RI=
+github.com/NubeIO/lib-files v0.2.0 h1:5i2S6fgF8idUcHY65KcLsPaxSBQOj6SuKKnxKktwl9c=
+github.com/NubeIO/lib-files v0.2.0/go.mod h1:xi4mqMscDl6319i10LFowq5QvwChJLjqHCIJGkGa4RI=
 github.com/NubeIO/lib-journalctl v0.0.0-20220830013922-d7ec41cce123 h1:s4SKXT2ID6HsHxHE3ODC7PLJkSjViZNpLhINSfsnGsU=
 github.com/NubeIO/lib-journalctl v0.0.0-20220830013922-d7ec41cce123/go.mod h1:sh1uH1qyEB5lwIg1ZvrcQ9bZzK3/EAaKs059jDA5RnU=
 github.com/NubeIO/lib-networking v0.0.7 h1:8aN4gLs2SORtFanr0NuQ0n22HEY3KbGiMuAWV4daKr4=

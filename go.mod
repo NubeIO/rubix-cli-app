@@ -9,7 +9,7 @@ go 1.17
 require (
 	github.com/NubeIO/lib-date v0.0.6
 	github.com/NubeIO/lib-dhcpd v0.0.2
-	github.com/NubeIO/lib-files v0.1.1
+	github.com/NubeIO/lib-files v0.2.0
 	github.com/NubeIO/lib-journalctl v0.0.0-20220830013922-d7ec41cce123
 	github.com/NubeIO/lib-networking v0.0.7
 	github.com/NubeIO/lib-rubix-installer v0.3.1
@@ -60,5 +60,5 @@ require (
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
