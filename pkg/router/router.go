@@ -110,16 +110,6 @@ func Setup() *gin.Engine {
 		syscallControl.POST("/link", api.SyscallLink)
 	}
 
-	edgeApps := apiRoutes.Group("/apps")
-	{
-		edgeApps.GET("/", api.ListApps)
-		edgeApps.GET("/status", api.ListAppsStatus)
-		edgeApps.POST("/upload", api.UploadApp)
-		edgeApps.POST("/service/upload", api.UploadServiceFile)
-		edgeApps.POST("/service/install", api.InstallService)
-		edgeApps.DELETE("/", api.UninstallApp)
-	}
-
 	appBackups := apiRoutes.Group("/backup")
 	{
 		appBackups.POST("/restore/full", api.RestoreBackup)
