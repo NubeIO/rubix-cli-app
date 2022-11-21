@@ -1,11 +1,13 @@
 package controller
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/NubeIO/lib-files/fileutils"
 	"github.com/NubeIO/rubix-edge/model"
 	"github.com/gin-gonic/gin"
+	"gopkg.in/yaml.v3"
 	"io/fs"
 	"io/ioutil"
 	"os"
@@ -51,11 +53,11 @@ func (inst *Controller) WalkFile(c *gin.Context) {
 func (inst *Controller) ListFiles(c *gin.Context) {
 	path_ := c.Query("path")
 	fileInfo, err := os.Stat(path_)
+	dirContent := make([]fileutils.FileDetails, 0)
 	if err != nil {
-		responseHandler(nil, err, c)
+		responseHandler(dirContent, nil, c)
 		return
 	}
-	dirContent := make([]string, 0)
 	if fileInfo.IsDir() {
 		files, err := ioutil.ReadDir(path_)
 		if err != nil {
@@ -63,7 +65,7 @@ func (inst *Controller) ListFiles(c *gin.Context) {
 			return
 		}
 		for _, file := range files {
-			dirContent = append(dirContent, file.Name())
+			dirContent = append(dirContent, fileutils.FileDetails{Name: file.Name(), IsDir: file.IsDir()})
 		}
 	} else {
 		responseHandler(dirContent, errors.New("it needs to be a directory, found a file"), c)
@@ -115,7 +117,7 @@ func (inst *Controller) MoveFile(c *gin.Context) {
 		responseHandler(nil, errors.New("from and to names are same"), c)
 		return
 	}
-	err := fileutils.MoveFile(from, to)
+	err := os.Rename(from, to)
 	responseHandler(model.Message{Message: "moved successfully"}, err, c)
 }
 
@@ -181,6 +183,12 @@ type WriteFile struct {
 	Data string `json:"data"`
 }
 
+type WriteFormatFile struct {
+	FilePath     string      `json:"path"`
+	Body         interface{} `json:"body"`
+	BodyAsString string      `json:"body_as_string"`
+}
+
 func (inst *Controller) WriteFile(c *gin.Context) {
 	file := c.Query("file")
 	if file == "" {
@@ -228,4 +236,59 @@ func TimeTrack(start time.Time) (out string) {
 	name := runtimeFunc.ReplaceAllString(funcObj.Name(), "$1")
 	out = fmt.Sprintf("%s took %s", name, elapsed)
 	return out
+}
+
+func (inst *Controller) WriteStringFile(c *gin.Context) {
+	var m *WriteFormatFile
+	err := c.ShouldBindJSON(&m)
+	if err != nil {
+		responseHandler(nil, err, c)
+		return
+	}
+	if m.FilePath == "" {
+		responseHandler(nil, errors.New("file path can not be empty"), c)
+		return
+	}
+	err = fileutils.WriteFile(m.FilePath, m.BodyAsString, fs.FileMode(inst.FileMode))
+	responseHandler(model.Message{Message: fmt.Sprintf("wrote the file: %s", m.FilePath)}, err, c)
+}
+
+func (inst *Controller) WriteFileYml(c *gin.Context) {
+	var m *WriteFormatFile
+	err := c.ShouldBindJSON(&m)
+	if err != nil {
+		responseHandler(nil, err, c)
+		return
+	}
+	if m.FilePath == "" {
+		responseHandler(nil, errors.New("file path can not be empty"), c)
+		return
+	}
+	data, err := yaml.Marshal(m.Body)
+	if err != nil {
+		responseHandler(nil, err, c)
+		return
+	}
+	err = ioutil.WriteFile(m.FilePath, data, fs.FileMode(inst.FileMode))
+	responseHandler(model.Message{Message: fmt.Sprintf("wrote file: %s ok", m.FilePath)}, err, c)
+}
+
+func (inst *Controller) WriteFileJson(c *gin.Context) {
+	var m *WriteFormatFile
+	err := c.ShouldBindJSON(&m)
+	if err != nil {
+		responseHandler(nil, err, c)
+		return
+	}
+	if m.FilePath == "" {
+		responseHandler(nil, errors.New("file path can not be empty"), c)
+		return
+	}
+	data, err := json.Marshal(m.Body)
+	if err != nil {
+		responseHandler(nil, err, c)
+		return
+	}
+	err = ioutil.WriteFile(m.FilePath, data, fs.FileMode(inst.FileMode))
+	responseHandler(model.Message{Message: fmt.Sprintf("wrote file:%s ok", m.FilePath)}, err, c)
 }

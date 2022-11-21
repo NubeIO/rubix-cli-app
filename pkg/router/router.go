@@ -191,13 +191,16 @@ func Setup() *gin.Engine {
 		files.POST("/create", api.CreateFile)           // create file only
 		files.POST("/copy", api.CopyFile)               // copy either file or folder
 		files.POST("/rename", api.RenameFile)           // rename either file or folder
-		files.POST("/move", api.MoveFile)               // move file only
+		files.POST("/move", api.MoveFile)               // move files or folders
 		files.POST("/upload", api.UploadFile)           // upload single file
 		files.POST("/download", api.DownloadFile)       // download single file
 		files.GET("/read", api.ReadFile)                // read single file
 		files.PUT("/write", api.WriteFile)              // write single file
 		files.DELETE("/delete", api.DeleteFile)         // delete single file
 		files.DELETE("/delete-all", api.DeleteAllFiles) // deletes file or folder
+		files.POST("/write/string", api.WriteStringFile)
+		files.POST("/write/json", api.WriteFileJson)
+		files.POST("/write/yml", api.WriteFileYml)
 	}
 
 	dirs := apiRoutes.Group("/dirs")
