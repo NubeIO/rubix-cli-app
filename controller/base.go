@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/NubeIO/lib-systemctl-go/systemctl"
 	"github.com/NubeIO/rubix-edge/model"
-	"github.com/NubeIO/rubix-edge/service/apps"
 	"github.com/NubeIO/rubix-edge/service/system"
 	"github.com/NubeIO/rubix-registry-go/rubixregistry"
 	"github.com/gin-gonic/gin"
@@ -13,7 +12,6 @@ import (
 
 type Controller struct {
 	SystemCtl     *systemctl.SystemCtl
-	EdgeApp       *apps.EdgeApp
 	RubixRegistry *rubixregistry.RubixRegistry
 	System        *system.System
 	FileMode      int

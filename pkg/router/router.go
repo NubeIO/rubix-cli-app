@@ -2,13 +2,11 @@ package router
 
 import (
 	"fmt"
-	"github.com/NubeIO/lib-rubix-installer/installer"
 	"github.com/NubeIO/lib-systemctl-go/systemctl"
 	"github.com/NubeIO/rubix-edge/controller"
 	"github.com/NubeIO/rubix-edge/model"
 	"github.com/NubeIO/rubix-edge/pkg/config"
 	"github.com/NubeIO/rubix-edge/pkg/logger"
-	"github.com/NubeIO/rubix-edge/service/apps"
 	"github.com/NubeIO/rubix-edge/service/system"
 	"github.com/NubeIO/rubix-registry-go/rubixregistry"
 	"github.com/gin-contrib/cors"
@@ -58,7 +56,6 @@ func Setup() *gin.Engine {
 
 	api := controller.Controller{
 		SystemCtl:     systemctl.New(false, 30),
-		EdgeApp:       &apps.EdgeApp{App: installer.New(&installer.App{})},
 		RubixRegistry: rubixregistry.New(),
 		System:        system.New(&system.System{}),
 		FileMode:      0755,
@@ -68,7 +65,6 @@ func Setup() *gin.Engine {
 	{
 		publicSystemApi.GET("/ping", api.Ping)
 		publicSystemApi.GET("/device", api.GetDeviceInfo)
-		publicSystemApi.GET("/product", api.GetProduct)
 		publicSystemApi.GET("/network_interfaces", api.GetNetworkInterfaces)
 	}
 
@@ -108,17 +104,6 @@ func Setup() *gin.Engine {
 	{
 		syscallControl.POST("/unlink", api.SyscallUnlink)
 		syscallControl.POST("/link", api.SyscallLink)
-	}
-
-	appBackups := apiRoutes.Group("/backup")
-	{
-		appBackups.POST("/restore/full", api.RestoreBackup)
-		appBackups.POST("/restore/app", api.RestoreAppBackup)
-		appBackups.POST("/run/full", api.FullBackUp)
-		appBackups.POST("/run/app", api.BackupApp)
-		appBackups.GET("/list/full", api.ListFullBackups)
-		appBackups.GET("/list/apps", api.ListAppsBackups)
-		appBackups.GET("/list/app", api.ListAppBackups)
 	}
 
 	systemTime := apiRoutes.Group("/time")
