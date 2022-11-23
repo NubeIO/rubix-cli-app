@@ -14,7 +14,7 @@ require (
 	github.com/NubeIO/lib-ufw v0.0.3
 	github.com/NubeIO/nubeio-rubix-lib-auth-go v1.0.3
 	github.com/NubeIO/nubeio-rubix-lib-helpers-go v0.2.7
-	github.com/NubeIO/rubix-registry-go v0.0.1
+	github.com/NubeIO/rubix-registry-go v1.0.0
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.8.1
 	github.com/google/uuid v1.1.2
