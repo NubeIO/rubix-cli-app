@@ -1,7 +1,6 @@
 module github.com/NubeIO/rubix-edge
 
-//replace github.com/NubeIO/lib-files => /home/aidan/code/go/nube/lib/lib-files
-//replace github.com/NubeIO/lib-rubix-installer => /Users/raibnod/Enviro/lib-rubix-installer
+//replace github.com/NubeIO/lib-files => /Users/raibnod/Enviro/lib-files
 //replace github.com/NubeIO/lib-systemctl-go => /Users/raibnod/Enviro/lib-systemctl-go
 
 go 1.17
@@ -9,14 +8,13 @@ go 1.17
 require (
 	github.com/NubeIO/lib-date v0.0.6
 	github.com/NubeIO/lib-dhcpd v0.0.2
-	github.com/NubeIO/lib-files v0.1.1
+	github.com/NubeIO/lib-files v1.0.0
 	github.com/NubeIO/lib-journalctl v0.0.0-20220830013922-d7ec41cce123
 	github.com/NubeIO/lib-networking v0.0.7
-	github.com/NubeIO/lib-rubix-installer v0.3.1
 	github.com/NubeIO/lib-ufw v0.0.3
 	github.com/NubeIO/nubeio-rubix-lib-auth-go v1.0.3
 	github.com/NubeIO/nubeio-rubix-lib-helpers-go v0.2.7
-	github.com/NubeIO/rubix-registry-go v0.0.1
+	github.com/NubeIO/rubix-registry-go v1.0.0
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.8.1
 	github.com/google/uuid v1.1.2
@@ -25,10 +23,12 @@ require (
 	github.com/spf13/viper v1.11.0
 )
 
-require github.com/NubeIO/lib-systemctl-go v0.2.0 // indirect
+require (
+	github.com/NubeIO/lib-systemctl-go v0.2.0
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
+)
 
 require (
-	github.com/NubeIO/lib-uuid v0.0.3 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
@@ -60,5 +60,4 @@ require (
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 )

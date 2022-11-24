@@ -4,10 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"github.com/NubeIO/lib-files/fileutils"
-	"github.com/NubeIO/nubeio-rubix-lib-helpers-go/pkg/system/files"
+	"github.com/NubeIO/rubix-edge/model"
 	"github.com/gin-gonic/gin"
 	"os"
-	"path"
+	"path/filepath"
 )
 
 func (inst *Controller) Unzip(c *gin.Context) {
@@ -22,12 +22,12 @@ func (inst *Controller) Unzip(c *gin.Context) {
 		responseHandler(nil, errors.New("zip destination can not be empty, try /data/unzip-test"), c)
 		return
 	}
-	zip, err := fileutils.UnZip(pathToZip, destination, os.FileMode(inst.FileMode))
+	zip, err := fileutils.Unzip(pathToZip, destination, os.FileMode(inst.FileMode))
 	if err != nil {
 		responseHandler(nil, err, c)
 		return
 	}
-	responseHandler(Message{Message: fmt.Sprintf("unzipped successfully, files count: %d", len(zip))}, err, c)
+	responseHandler(zip, err, c)
 }
 
 func (inst *Controller) ZipDir(c *gin.Context) {
@@ -39,16 +39,15 @@ func (inst *Controller) ZipDir(c *gin.Context) {
 		return
 	}
 	if destination == "" {
-		responseHandler(nil, errors.New("zip destination can not be empty, try /home/test/flow-framework.zip"), c)
+		responseHandler(nil, errors.New("zip destination can not be empty, try /data/test/flow-framework.zip"), c)
 		return
 	}
-
 	exists := fileutils.DirExists(pathToZip)
 	if !exists {
-		responseHandler(nil, errors.New("dir to zip not found"), c)
+		responseHandler(nil, errors.New("zip source is not found"), c)
 		return
 	}
-	err := files.MakeDirectoryIfNotExists(path.Dir(destination))
+	err := os.MkdirAll(filepath.Dir(destination), os.FileMode(inst.FileMode))
 	if err != nil {
 		responseHandler(nil, err, c)
 		return
@@ -58,5 +57,5 @@ func (inst *Controller) ZipDir(c *gin.Context) {
 		responseHandler(nil, err, c)
 		return
 	}
-	responseHandler(Message{Message: fmt.Sprintf("zip file is created on: %s", destination)}, nil, c)
+	responseHandler(model.Message{Message: fmt.Sprintf("zip file is created on: %s", destination)}, nil, c)
 }

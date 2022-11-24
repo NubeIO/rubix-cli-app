@@ -2,11 +2,11 @@ package router
 
 import (
 	"fmt"
-	"github.com/NubeIO/lib-rubix-installer/installer"
+	"github.com/NubeIO/lib-systemctl-go/systemctl"
 	"github.com/NubeIO/rubix-edge/controller"
+	"github.com/NubeIO/rubix-edge/model"
 	"github.com/NubeIO/rubix-edge/pkg/config"
 	"github.com/NubeIO/rubix-edge/pkg/logger"
-	"github.com/NubeIO/rubix-edge/service/apps"
 	"github.com/NubeIO/rubix-edge/service/system"
 	"github.com/NubeIO/rubix-registry-go/rubixregistry"
 	"github.com/gin-contrib/cors"
@@ -21,7 +21,7 @@ import (
 func NotFound() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		message := fmt.Sprintf("%s %s [%d]: %s", ctx.Request.Method, ctx.Request.URL, 404, "rubix-edge: api not found")
-		ctx.JSON(http.StatusNotFound, controller.Message{Message: message})
+		ctx.JSON(http.StatusNotFound, model.Message{Message: message})
 	}
 }
 
@@ -54,15 +54,17 @@ func Setup() *gin.Engine {
 		MaxAge:                 12 * time.Hour,
 	}))
 
-	edgeSystem := system.New(&system.System{})
-	edgeApp := apps.EdgeApp{App: installer.New(&installer.App{})}
-	api := controller.Controller{EdgeApp: &edgeApp, RubixRegistry: rubixregistry.New(), System: edgeSystem, FileMode: 0755}
+	api := controller.Controller{
+		SystemCtl:     systemctl.New(false, 30),
+		RubixRegistry: rubixregistry.New(),
+		System:        system.New(&system.System{}),
+		FileMode:      0755,
+	}
 	engine.POST("/api/users/login", api.Login)
 	publicSystemApi := engine.Group("/api/system")
 	{
 		publicSystemApi.GET("/ping", api.Ping)
 		publicSystemApi.GET("/device", api.GetDeviceInfo)
-		publicSystemApi.GET("/product", api.GetProduct)
 		publicSystemApi.GET("/network_interfaces", api.GetNetworkInterfaces)
 	}
 
@@ -77,33 +79,31 @@ func Setup() *gin.Engine {
 	apiProxyWiresRoutes := engine.Group("/wires", handleAuth)
 	apiProxyWiresRoutes.Any("/*proxyPath", api.WiresProxy) // EDGE-WIRES PROXY
 
-	edgeApps := apiRoutes.Group("/apps")
+	appControl := apiRoutes.Group("/systemctl")
 	{
-		edgeApps.GET("/", api.ListApps)
-		edgeApps.GET("/status", api.ListAppsStatus)
-		edgeApps.POST("/upload", api.UploadApp)
-		edgeApps.POST("/service/upload", api.UploadServiceFile)
-		edgeApps.POST("/service/install", api.InstallService)
-		edgeApps.DELETE("/", api.UninstallApp)
+		appControl.POST("/enable", api.SystemCtlEnable)
+		appControl.POST("/disable", api.SystemCtlDisable)
+		appControl.GET("/show", api.SystemCtlShow)
+		appControl.POST("/start", api.SystemCtlStart)
+		appControl.GET("/status", api.SystemCtlStatus)
+		appControl.POST("/stop", api.SystemCtlStop)
+		appControl.POST("/reset-failed", api.SystemCtlResetFailed)
+		appControl.POST("/daemon-reload", api.SystemCtlDaemonReload)
+		appControl.POST("/restart", api.SystemCtlRestart)
+		appControl.POST("/mask", api.SystemCtlMask)
+		appControl.POST("/unmask", api.SystemCtlUnmask)
+		appControl.GET("/state", api.SystemCtlState)
+		appControl.GET("/is-enabled", api.SystemCtlIsEnabled)
+		appControl.GET("/is-active", api.SystemCtlIsActive)
+		appControl.GET("/is-running", api.SystemCtlIsRunning)
+		appControl.GET("/is-failed", api.SystemCtlIsFailed)
+		appControl.GET("/is-installed", api.SystemCtlIsInstalled)
 	}
 
-	appControl := apiRoutes.Group("/apps/control")
+	syscallControl := apiRoutes.Group("/syscall")
 	{
-		appControl.POST("/action", api.SystemCtlAction)
-		appControl.POST("/status", api.SystemCtlStatus)
-		appControl.POST("/action/mass", api.ServiceMassAction)
-		appControl.POST("/status/mass", api.ServiceMassStatus)
-	}
-
-	appBackups := apiRoutes.Group("/backup")
-	{
-		appBackups.POST("/restore/full", api.RestoreBackup)
-		appBackups.POST("/restore/app", api.RestoreAppBackup)
-		appBackups.POST("/run/full", api.FullBackUp)
-		appBackups.POST("/run/app", api.BackupApp)
-		appBackups.GET("/list/full", api.ListFullBackups)
-		appBackups.GET("/list/apps", api.ListAppsBackups)
-		appBackups.GET("/list/app", api.ListAppBackups)
+		syscallControl.POST("/unlink", api.SyscallUnlink)
+		syscallControl.POST("/link", api.SyscallLink)
 	}
 
 	systemTime := apiRoutes.Group("/time")
@@ -160,29 +160,28 @@ func Setup() *gin.Engine {
 
 	files := apiRoutes.Group("/files")
 	{
-		files.GET("/exists", api.FileExists)
-		files.GET("/list", api.ListFiles) // /api/files/list?file=/data
-		files.GET("/walk", api.WalkFile)
-		files.GET("/read", api.ReadFile) // path=/data/flow-framework/config/config.yml
-		files.POST("/create", api.CreateFile)
-		files.POST("/write/string", api.WriteFile)
+		files.GET("/exists", api.FileExists)            // needs to be a file
+		files.GET("/walk", api.WalkFile)                // similar as find in linux command
+		files.GET("/list", api.ListFiles)               // list all files and folders
+		files.POST("/create", api.CreateFile)           // create file only
+		files.POST("/copy", api.CopyFile)               // copy either file or folder
+		files.POST("/rename", api.RenameFile)           // rename either file or folder
+		files.POST("/move", api.MoveFile)               // move files or folders
+		files.POST("/upload", api.UploadFile)           // upload single file
+		files.POST("/download", api.DownloadFile)       // download single file
+		files.GET("/read", api.ReadFile)                // read single file
+		files.PUT("/write", api.WriteFile)              // write single file
+		files.DELETE("/delete", api.DeleteFile)         // delete single file
+		files.DELETE("/delete-all", api.DeleteAllFiles) // deletes file or folder
+		files.POST("/write/string", api.WriteStringFile)
 		files.POST("/write/json", api.WriteFileJson)
 		files.POST("/write/yml", api.WriteFileYml)
-		files.POST("/rename", api.RenameFile)
-		files.POST("/copy", api.CopyFile)
-		files.POST("/move", api.MoveFile)
-		files.POST("/upload", api.UploadFile)
-		files.POST("/download", api.DownloadFile)
-		files.DELETE("/delete", api.DeleteFile)
-		files.DELETE("/delete/all", api.DeleteAllFiles)
 	}
 
 	dirs := apiRoutes.Group("/dirs")
 	{
-		dirs.GET("/exists", api.DirExists)
-		dirs.POST("/create", api.CreateDir)
-		dirs.POST("/copy", api.CopyDir)
-		dirs.DELETE("/delete", api.DeleteDir)
+		dirs.GET("/exists", api.DirExists)  // needs to be a folder
+		dirs.POST("/create", api.CreateDir) // create folder
 	}
 
 	zip := apiRoutes.Group("/zip")
