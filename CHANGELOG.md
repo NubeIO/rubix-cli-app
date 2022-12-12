@@ -1,4 +1,9 @@
 # CHANGELOG
+## [v0.5.1](https://github.com/NubeIO/rubix-edge/tree/v0.5.1) (2022-12-12)
+
+- Remove suffix slash (/) from APIs for to support reverse proxy
+- Set ubuntu-18.04 as the runner OS & update packages
+
 ## [v0.5.0](https://github.com/NubeIO/rubix-edge/tree/v0.5.0) (2022-11-24)
 
 - Upgrade files, dirs, zip, systemctl, syscall APIs
