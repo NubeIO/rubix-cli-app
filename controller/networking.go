@@ -10,10 +10,6 @@ var nets = networking.New()
 
 func (inst *Controller) Networking(c *gin.Context) {
 	data, err := nets.GetNetworks()
-	if err != nil {
-		responseHandler(data, err, c)
-		return
-	}
 	responseHandler(data, err, c)
 }
 
