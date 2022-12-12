@@ -108,14 +108,14 @@ func Setup() *gin.Engine {
 
 	systemTime := apiRoutes.Group("/time")
 	{
-		systemTime.GET("/", api.SystemTime)
-		systemTime.POST("/", api.SetSystemTime)
+		systemTime.GET("", api.SystemTime)
+		systemTime.POST("", api.SetSystemTime)
 	}
 
 	systemTimeZone := apiRoutes.Group("/timezone")
 	{
-		systemTimeZone.GET("/", api.GetHardwareTZ)
-		systemTimeZone.POST("/", api.UpdateTimezone)
+		systemTimeZone.GET("", api.GetHardwareTZ)
+		systemTimeZone.POST("", api.UpdateTimezone)
 		systemTimeZone.GET("/list", api.GetTimeZoneList)
 		systemTimeZone.POST("/config", api.GenerateTimeSyncConfig)
 	}
@@ -128,7 +128,7 @@ func Setup() *gin.Engine {
 
 	networking := apiRoutes.Group("/networking")
 	{
-		networking.GET("/", api.Networking)
+		networking.GET("", api.Networking)
 		networking.GET("/interfaces", api.GetInterfacesNames)
 		networking.GET("/internet", api.InternetIP)
 	}
@@ -149,7 +149,7 @@ func Setup() *gin.Engine {
 
 	networkFirewall := apiRoutes.Group("/networking/firewall")
 	{
-		networkFirewall.GET("/", api.UWFStatusList)
+		networkFirewall.GET("", api.UWFStatusList)
 		networkFirewall.POST("/status", api.UWFStatus)
 		networkFirewall.POST("/active", api.UWFActive)
 		networkFirewall.POST("/enable", api.UWFEnable)
