@@ -137,8 +137,6 @@ func Setup() *gin.Engine {
 	networks := apiRoutes.Group("/networking/networks")
 	{
 		networks.POST("/restart", api.RestartNetworking)
-		networks.POST("/up", api.InterfaceUp)
-		networks.POST("/down", api.InterfaceDown)
 	}
 
 	networkAddress := apiRoutes.Group("/networking/interfaces")
@@ -146,6 +144,9 @@ func Setup() *gin.Engine {
 		networkAddress.POST("/exists", api.DHCPPortExists)
 		networkAddress.POST("/auto", api.DHCPSetAsAuto)
 		networkAddress.POST("/static", api.DHCPSetStaticIP)
+		networkAddress.POST("/reset", api.InterfaceUpDown) //
+		networkAddress.POST("/pp", api.InterfaceUp)
+		networkAddress.POST("/down", api.InterfaceDown)
 	}
 
 	networkFirewall := apiRoutes.Group("/networking/firewall")

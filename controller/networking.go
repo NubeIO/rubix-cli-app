@@ -28,6 +28,17 @@ func (inst *Controller) RestartNetworking(c *gin.Context) {
 	responseHandler(data, err, c)
 }
 
+func (inst *Controller) InterfaceUpDown(c *gin.Context) {
+	var m system.NetworkingBody
+	err := c.ShouldBindJSON(&m)
+	if err != nil {
+		responseHandler(nil, err, c)
+		return
+	}
+	data, err := inst.System.InterfaceUpDown(m)
+	responseHandler(data, err, c)
+}
+
 func (inst *Controller) InterfaceUp(c *gin.Context) {
 	var m system.NetworkingBody
 	err := c.ShouldBindJSON(&m)

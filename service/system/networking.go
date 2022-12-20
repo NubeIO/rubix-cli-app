@@ -22,6 +22,19 @@ func (inst *System) RestartNetworking() (*Message, error) {
 	}, err
 }
 
+func (inst *System) InterfaceUpDown(port NetworkingBody) (*Message, error) {
+	_, err := inst.interfaceUpDown(port.PortName, false) // set down
+	if err != nil {
+		return nil, err
+	}
+	_, err = inst.interfaceUpDown(port.PortName, true) // set up
+	if err != nil {
+		return nil, err
+	}
+	return &Message{fmt.Sprintf("restart network: %s", port.PortName)}, nil
+
+}
+
 func (inst *System) InterfaceUp(port NetworkingBody) (*Message, error) {
 	return inst.interfaceUpDown(port.PortName, true)
 }
