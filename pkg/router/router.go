@@ -66,7 +66,7 @@ func Setup() *gin.Engine {
 		publicSystemApi.GET("/ping", api.Ping)
 		publicSystemApi.GET("/device", api.GetDeviceInfo)
 		publicSystemApi.GET("/network_interfaces", api.GetNetworkInterfaces)
-		publicSystemApi.GET("/reboot", api.RebootHost)
+		publicSystemApi.POST("/reboot", api.RebootHost)
 	}
 
 	handleAuth := func(c *gin.Context) { c.Next() }
