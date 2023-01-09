@@ -1,4 +1,10 @@
 # CHANGELOG
+
+## [v0.5.2](https://github.com/NubeIO/rubix-edge/tree/v0.5.2) (2022-01-10)
+
+- Update to networking
+
+
 ## [v0.5.1](https://github.com/NubeIO/rubix-edge/tree/v0.5.1) (2022-12-12)
 
 - Remove suffix slash (/) from APIs for to support reverse proxy
