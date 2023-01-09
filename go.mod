@@ -10,7 +10,7 @@ require (
 	github.com/NubeIO/lib-dhcpd v0.0.2
 	github.com/NubeIO/lib-files v1.0.0
 	github.com/NubeIO/lib-journalctl v0.0.0-20220830013922-d7ec41cce123
-	github.com/NubeIO/lib-networking v0.0.7
+	github.com/NubeIO/lib-networking v0.0.8
 	github.com/NubeIO/lib-ufw v0.0.3
 	github.com/NubeIO/nubeio-rubix-lib-auth-go v1.0.3
 	github.com/NubeIO/nubeio-rubix-lib-helpers-go v0.2.7
@@ -38,6 +38,7 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
+	github.com/jackpal/gateway v1.0.7 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
