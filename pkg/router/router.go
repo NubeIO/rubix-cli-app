@@ -111,6 +111,8 @@ func Setup() *gin.Engine {
 	{
 		systemTime.GET("", api.SystemTime)
 		systemTime.POST("", api.SetSystemTime)
+		systemTime.POST("ntp/enable", api.NTPEnable)
+		systemTime.POST("ntp/disable", api.NTPDisable)
 	}
 
 	systemTimeZone := apiRoutes.Group("/timezone")

@@ -62,11 +62,22 @@ func (inst *System) SetSystemTime(dateTime DateBody) (*datelib.Time, error) {
 	return datelib.New(&datelib.Date{}).SystemTime(), nil
 }
 
-//
-//func (inst *System) SetSystemTime(body DateBody) (*datelib.Time, error) {
-//	err := inst.datectl.SetSystemTime(body.DateTime)
-//	if err != nil {
-//		return nil, err
-//	}
-//	return datelib.New(&datelib.Date{}).SystemTime(), nil
-//}
+func (inst *System) NTPEnable() (*Message, error) {
+	msg, err := inst.datectl.NTPEnable()
+	if err != nil {
+		return nil, err
+	}
+	return &Message{
+		Message: msg.Message,
+	}, nil
+}
+
+func (inst *System) NTPDisable() (*Message, error) {
+	msg, err := inst.datectl.NTPDisable()
+	if err != nil {
+		return nil, err
+	}
+	return &Message{
+		Message: msg.Message,
+	}, nil
+}

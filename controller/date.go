@@ -53,3 +53,13 @@ func (inst *Controller) SetSystemTime(c *gin.Context) {
 	data, err := inst.System.SetSystemTime(m)
 	responseHandler(data, err, c)
 }
+
+func (inst *Controller) NTPEnable(c *gin.Context) {
+	data, err := inst.System.NTPEnable()
+	responseHandler(data, err, c)
+}
+
+func (inst *Controller) NTPDisable(c *gin.Context) {
+	data, err := inst.System.NTPDisable()
+	responseHandler(data, err, c)
+}
