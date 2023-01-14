@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [v0.5.4](https://github.com/NubeIO/rubix-edge/tree/v0.5.4) (2022-01-14)
+
+- Fix: sudo: executable file not found in $PATH
+
 ## [v0.5.3](https://github.com/NubeIO/rubix-edge/tree/v0.5.3) (2022-01-11)
 
 - added enable/disable npt
@@ -7,7 +11,6 @@
 ## [v0.5.2](https://github.com/NubeIO/rubix-edge/tree/v0.5.2) (2022-01-10)
 
 - Update to networking
-
 
 ## [v0.5.1](https://github.com/NubeIO/rubix-edge/tree/v0.5.1) (2022-12-12)
 
