@@ -40,9 +40,9 @@ func cleanCommand(resp string, cmd *exec.Cmd, err error, debug ...bool) string {
 			log.Infof("cmd %s", cmd.String())
 			log.Infof("path %s", cmd.Path)
 			if err != nil {
-				log.Errorf("err:%s", err.Error())
+				log.Errorf("err: %s", err.Error())
 			} else {
-				log.Infof("resp:%s", outAsString)
+				log.Infof("resp: %s", outAsString)
 			}
 		}
 	}

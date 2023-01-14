@@ -53,7 +53,7 @@ func (inst *System) SetSystemTime(dateTime DateBody) (*datelib.Time, error) {
 	}
 	log.Infof("set time to %s", t.String())
 	timeString := fmt.Sprintf("%s", dateTime.DateTime)
-	cmd := exec.Command("sudo", "date", "-s", timeString)
+	cmd := exec.Command("date", "-s", timeString)
 	output, err := cmd.Output()
 	cleanCommand(string(output), cmd, err, debug)
 	if err != nil {

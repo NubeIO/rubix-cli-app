@@ -11,7 +11,7 @@ type NetworkingBody struct {
 }
 
 func (inst *System) RestartNetworking() (*Message, error) {
-	cmd := exec.Command("sudo", "systemctl", "restart", "networking.service")
+	cmd := exec.Command("systemctl", "restart", "networking.service")
 	output, err := cmd.Output()
 	cleanCommand(string(output), cmd, err, debug)
 	if err != nil {
@@ -43,7 +43,7 @@ func (inst *System) InterfaceDown(port NetworkingBody) (*Message, error) {
 	return inst.interfaceUpDown(port.PortName, false)
 }
 
-// interfaceUpDown sudo ifconfig enp4s0 up
+// interfaceUpDown ifconfig enp4s0 up
 func (inst *System) interfaceUpDown(port string, up bool) (*Message, error) {
 	names, err := nets.GetInterfacesNames()
 	if err != nil {
@@ -58,11 +58,11 @@ func (inst *System) interfaceUpDown(port string, up bool) (*Message, error) {
 	if !found {
 		return nil, errors.New(fmt.Sprintf("port %s was not found", port))
 	}
-	cmd := exec.Command("sudo", "ifconfig", port, "down")
+	cmd := exec.Command("ifconfig", port, "down")
 	msg := "disbaled"
 	if up {
 		msg = "enabled"
-		cmd = exec.Command("sudo", "ifconfig", port, "up")
+		cmd = exec.Command("ifconfig", port, "up")
 	}
 	output, err := cmd.Output()
 	cleanCommand(string(output), cmd, err, debug)
