@@ -32,7 +32,11 @@ func (inst *Controller) CreateStreamLog(c *gin.Context) {
 		responseHandler(nil, err, c)
 		return
 	}
-	uuid := streamlog.CreateStreamLog(body)
+	uuid, err := streamlog.CreateStreamLog(body)
+	if err != nil {
+		responseHandler(nil, err, c)
+		return
+	}
 	responseHandler(map[string]interface{}{"UUID": uuid}, err, c)
 }
 

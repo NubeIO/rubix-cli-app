@@ -1,8 +1,10 @@
 package streamlog
 
 import (
+	"errors"
 	"fmt"
 	"github.com/NubeIO/lib-journalctl/journalctl"
+	"github.com/NubeIO/lib-systemctl-go/systemctl"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"time"
@@ -33,11 +35,16 @@ func GetStreamLog(uuid string) *Log {
 	return nil
 }
 
-func CreateStreamLog(body *Log) string {
+func CreateStreamLog(body *Log) (string, error) {
 	body.UUID = fmt.Sprintf("log_%s", uuid.New().String())
 	body.Message = []string{}
+	s := systemctl.New(false, 30)
+	isRunning, status, err := s.IsRunning(body.Service)
+	if !isRunning || err != nil {
+		return status, errors.New(fmt.Sprintf("service not running %s", body.Service))
+	}
 	go createLogStream(body)
-	return body.UUID
+	return body.UUID, nil
 }
 
 func DeleteStreamLog(uuid string) bool {
