@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/NubeIO/lib-journalctl/journalctl"
 	"github.com/google/uuid"
+	log "github.com/sirupsen/logrus"
 	"time"
 )
 
@@ -56,7 +57,7 @@ func DeleteStreamLogs() {
 }
 
 func createLogStream(body *Log) {
-	time.Sleep(time.Duration(body.Duration) * time.Second)
+	log.Infof("start log stream for service: %s for time: %d secounds", body.Service, body.Duration)
 	entries, err := journalctl.NewJournalCTL().EntriesAfter(body.Service, "", "")
 	for _, entry := range entries {
 		body.Message = append(body.Message, entry.Message)
@@ -64,4 +65,6 @@ func createLogStream(body *Log) {
 	if err == nil {
 		Logs = append(Logs, body)
 	}
+	time.Sleep(time.Duration(body.Duration) * time.Second)
+	log.Infof("finshed log stream for service: %s for time: %d secounds", body.Service, body.Duration)
 }
