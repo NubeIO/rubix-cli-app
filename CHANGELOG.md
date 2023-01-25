@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## [v0.5.5](https://github.com/NubeIO/rubix-edge/tree/v0.5.5) (2022-01-25)
+
+- Protect `/api/system/device` API by Auth
+    - we use this API to ping and render the device status
+- Fix: logs APIs
+
 ## [v0.5.4](https://github.com/NubeIO/rubix-edge/tree/v0.5.4) (2022-01-14)
 
 - Fix: sudo: executable file not found in $PATH
