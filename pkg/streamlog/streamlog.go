@@ -1,8 +1,10 @@
 package streamlog
 
 import (
+	"errors"
 	"fmt"
 	"github.com/NubeIO/lib-journalctl/journalctl"
+	"github.com/NubeIO/lib-systemctl-go/systemctl"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"time"
@@ -25,19 +27,24 @@ func GetStreamsLogs() []*Log {
 }
 
 func GetStreamLog(uuid string) *Log {
-	for _, log := range Logs {
-		if log.UUID == uuid {
-			return log
+	for _, _log := range Logs {
+		if _log.UUID == uuid {
+			return _log
 		}
 	}
 	return nil
 }
 
-func CreateStreamLog(body *Log) string {
+func CreateStreamLog(body *Log) (string, error) {
 	body.UUID = fmt.Sprintf("log_%s", uuid.New().String())
 	body.Message = []string{}
+	s := systemctl.New(false, 30)
+	isRunning, status, err := s.IsRunning(body.Service)
+	if !isRunning || err != nil {
+		return status, errors.New(fmt.Sprintf("service not running %s", body.Service))
+	}
 	go createLogStream(body)
-	return body.UUID
+	return body.UUID, nil
 }
 
 func DeleteStreamLog(uuid string) bool {
@@ -57,7 +64,7 @@ func DeleteStreamLogs() {
 }
 
 func createLogStream(body *Log) {
-	log.Infof("start log stream for service: %s for time: %d secounds", body.Service, body.Duration)
+	log.Infof("starting log stream for service: %s for time: %d secounds", body.Service, body.Duration)
 	entries, err := journalctl.NewJournalCTL().EntriesAfter(body.Service, "", "")
 	for _, entry := range entries {
 		body.Message = append(body.Message, entry.Message)
@@ -66,5 +73,5 @@ func createLogStream(body *Log) {
 		Logs = append(Logs, body)
 	}
 	time.Sleep(time.Duration(body.Duration) * time.Second)
-	log.Infof("finshed log stream for service: %s for time: %d secounds", body.Service, body.Duration)
+	log.Infof("finished log stream for service: %s for time: %d secounds", body.Service, body.Duration)
 }
