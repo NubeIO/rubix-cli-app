@@ -27,9 +27,9 @@ func GetStreamsLogs() []*Log {
 }
 
 func GetStreamLog(uuid string) *Log {
-	for _, log := range Logs {
-		if log.UUID == uuid {
-			return log
+	for _, _log := range Logs {
+		if _log.UUID == uuid {
+			return _log
 		}
 	}
 	return nil
@@ -64,7 +64,7 @@ func DeleteStreamLogs() {
 }
 
 func createLogStream(body *Log) {
-	log.Infof("start log stream for service: %s for time: %d secounds", body.Service, body.Duration)
+	log.Infof("starting log stream for service: %s for time: %d secounds", body.Service, body.Duration)
 	entries, err := journalctl.NewJournalCTL().EntriesAfter(body.Service, "", "")
 	for _, entry := range entries {
 		body.Message = append(body.Message, entry.Message)
@@ -73,5 +73,5 @@ func createLogStream(body *Log) {
 		Logs = append(Logs, body)
 	}
 	time.Sleep(time.Duration(body.Duration) * time.Second)
-	log.Infof("finshed log stream for service: %s for time: %d secounds", body.Service, body.Duration)
+	log.Infof("finished log stream for service: %s for time: %d secounds", body.Service, body.Duration)
 }
