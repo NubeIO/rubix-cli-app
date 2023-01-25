@@ -64,7 +64,6 @@ func Setup() *gin.Engine {
 	publicSystemApi := engine.Group("/api/system")
 	{
 		publicSystemApi.GET("/ping", api.Ping)
-		publicSystemApi.GET("/device", api.GetDeviceInfo)
 		publicSystemApi.GET("/network_interfaces", api.GetNetworkInterfaces)
 		publicSystemApi.POST("/reboot", api.RebootHost)
 	}
@@ -125,6 +124,7 @@ func Setup() *gin.Engine {
 
 	systemApi := apiRoutes.Group("/system")
 	{
+		systemApi.GET("/device", api.GetDeviceInfo)
 		systemApi.PATCH("/device", api.UpdateDeviceInfo)
 		systemApi.POST("/scanner", api.RunScanner)
 	}
