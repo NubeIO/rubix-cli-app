@@ -1,4 +1,8 @@
 # CHANGELOG
+## [v0.5.6](https://github.com/NubeIO/rubix-edge/tree/v0.5.6) (2022-01-27)
+
+- updates to get stream logs
+
 
 ## [v0.5.5](https://github.com/NubeIO/rubix-edge/tree/v0.5.5) (2022-01-25)
 
