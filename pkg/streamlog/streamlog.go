@@ -7,16 +7,20 @@ import (
 	"github.com/NubeIO/lib-systemctl-go/systemctl"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
+	"strings"
 	"time"
 )
 
 var Logs []*Log
 
+type LogType string
+
 type Log struct {
-	UUID     string   `json:"uuid"`
-	Service  string   `json:"service" binding:"required"`
-	Duration int      `json:"duration" binding:"required"`
-	Message  []string `json:"message"`
+	UUID           string   `json:"uuid"`
+	Service        string   `json:"service" binding:"required"`
+	Duration       int      `json:"duration" binding:"required"`
+	KeyWordsFilter []string `json:"key_words_filter"` // example: mqtt, connected
+	Message        []string `json:"message"`
 }
 
 func GetStreamsLogs() []*Log {
@@ -63,11 +67,32 @@ func DeleteStreamLogs() {
 	Logs = []*Log{}
 }
 
+func checkSubstrings(str string, subs ...string) (bool, int) {
+	matches := 0
+	isCompleteMatch := true
+	for _, sub := range subs {
+		if strings.Contains(str, sub) {
+			matches += 1
+		} else {
+			isCompleteMatch = false
+		}
+	}
+	return isCompleteMatch, matches
+}
+
 func createLogStream(body *Log) {
 	log.Infof("starting log stream for service: %s for time: %d secounds", body.Service, body.Duration)
 	entries, err := journalctl.NewJournalCTL().EntriesAfter(body.Service, "", "")
 	for _, entry := range entries {
-		body.Message = append(body.Message, entry.Message)
+		lenKeyWordsFilter := len(body.KeyWordsFilter)
+		if lenKeyWordsFilter > 0 {
+			_, matches := checkSubstrings(entry.Message, body.KeyWordsFilter...)
+			if matches == lenKeyWordsFilter {
+				body.Message = append(body.Message, entry.Message)
+			}
+		} else {
+			body.Message = append(body.Message, entry.Message)
+		}
 	}
 	if err == nil {
 		Logs = append(Logs, body)
