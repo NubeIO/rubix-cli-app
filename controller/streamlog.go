@@ -40,8 +40,23 @@ func (inst *Controller) CreateStreamLog(c *gin.Context) {
 	responseHandler(map[string]interface{}{"UUID": uuid}, err, c)
 }
 
+func (inst *Controller) CreateLogAndReturn(c *gin.Context) {
+	body, err := getBodyLogStreamCreate(c)
+	if err != nil {
+		responseHandler(nil, err, c)
+		return
+	}
+	logStream, err := streamlog.CreateLogAndReturn(body)
+	if err != nil {
+		responseHandler(nil, err, c)
+		return
+	}
+	responseHandler(logStream, nil, c)
+}
+
 func (inst *Controller) DeleteStreamLog(c *gin.Context) {
 	u := c.Param("uuid")
+
 	deleted := streamlog.DeleteStreamLog(u)
 	if !deleted {
 		responseHandler(nil, errors.New("log not found"), c)

@@ -214,6 +214,7 @@ func Setup() *gin.Engine {
 		streamLog.GET("", api.GetStreamLogs)
 		streamLog.GET("/:uuid", api.GetStreamLog)
 		streamLog.POST("", api.CreateStreamLog)
+		streamLog.POST("/create", api.CreateLogAndReturn)
 		streamLog.DELETE("/:uuid", api.DeleteStreamLog)
 		streamLog.DELETE("", api.DeleteStreamLogs)
 	}

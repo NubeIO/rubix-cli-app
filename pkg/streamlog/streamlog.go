@@ -23,6 +23,18 @@ type Log struct {
 	Message        []string `json:"message"`
 }
 
+func CreateLogAndReturn(body *Log) (*Log, error) {
+	streamLog, err := CreateStreamLog(body) // add a log
+	if err != nil {
+		return nil, err
+	}
+	timeDuration := body.Duration + 1
+	time.Sleep(time.Duration(timeDuration) * time.Second)
+	streamLogData := GetStreamLog(streamLog) // get add
+	DeleteStreamLog(streamLog)               // delete the log
+	return streamLogData, nil                // return the data
+}
+
 func GetStreamsLogs() []*Log {
 	if Logs == nil {
 		Logs = []*Log{}
