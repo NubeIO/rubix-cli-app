@@ -78,6 +78,8 @@ func Setup() *gin.Engine {
 	apiProxyRoutes.Any("/*proxyPath", api.FFProxy) // FLOW-FRAMEWORK PROXY
 	apiProxyWiresRoutes := engine.Group("/wires", handleAuth)
 	apiProxyWiresRoutes.Any("/*proxyPath", api.WiresProxy) // EDGE-WIRES PROXY
+	apiProxyChirpRoutes := engine.Group("/chirp", handleAuth)
+	apiProxyChirpRoutes.Any("/*proxyPath", api.ChirpProxy) // CHIRP-STACK PROXY
 
 	appControl := apiRoutes.Group("/systemctl")
 	{
