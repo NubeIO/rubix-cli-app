@@ -6,6 +6,8 @@ import (
 	"net/http/httputil"
 )
 
+// https://www.chirpstack.io/
+
 func (inst *Controller) ChirpProxy(c *gin.Context) { // eg http://0.0.0.0:8080/chrip/api/organizations?limit=10
 	remote, err := Builder("0.0.0.0", 8080)
 	if err != nil {
