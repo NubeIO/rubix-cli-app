@@ -23,6 +23,9 @@ func runServer(cmd *cobra.Command, args []string) {
 	if err := os.MkdirAll(config.Config.GetAbsDataDir(), 0755); err != nil {
 		panic(err)
 	}
+	if err := os.MkdirAll(config.Config.GetAbsTempDir(), 0755); err != nil {
+		panic(err)
+	}
 	logger.Init()
 	logger.Logger.Infoln("starting edge...")
 

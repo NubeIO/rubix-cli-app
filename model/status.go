@@ -16,3 +16,8 @@ type SystemCtlStateStatus struct {
 	State  bool   `json:"state"`
 	Status string `json:"status"`
 }
+
+type SnapshotStatus struct {
+	Create  string `json:"create"`
+	Restore string `json:"restore"`
+}
