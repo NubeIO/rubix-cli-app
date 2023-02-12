@@ -1,4 +1,8 @@
 # CHANGELOG
+## [v0.5.7](https://github.com/NubeIO/rubix-edge/tree/v0.5.7) (2022-02-13)
+
+- added chirpstack proxy
+
 ## [v0.5.6](https://github.com/NubeIO/rubix-edge/tree/v0.5.6) (2022-01-27)
 
 - updates to get stream logs
