@@ -1,4 +1,4 @@
-package controller
+package utils
 
 import (
 	"errors"
@@ -12,11 +12,7 @@ import (
 	"sync"
 )
 
-func fileNameWithoutExtension(fileName string) string {
-	return strings.TrimSuffix(fileName, filepath.Ext(fileName))
-}
-
-func toBool(value string) (bool, error) {
+func ToBool(value string) (bool, error) {
 	if value == "" {
 		return false, nil
 	} else {
@@ -25,21 +21,11 @@ func toBool(value string) (bool, error) {
 	}
 }
 
-func resolve(name string) string {
-	if filepath.Separator != '/' && strings.ContainsRune(name, filepath.Separator) ||
-		strings.Contains(name, "\x00") {
-		return ""
-	}
-	return filepath.FromSlash(fileutils.SlashClean(name))
+func FileNameWithoutExtension(fileName string) string {
+	return strings.TrimSuffix(fileName, filepath.Ext(fileName))
 }
 
-func copyFolder(source string, dest string) error {
-	if source = resolve(source); source == "" {
-		return os.ErrNotExist
-	}
-	if dest = resolve(dest); dest == "" {
-		return os.ErrNotExist
-	}
+func CopyDir(source string, dest string) error {
 	srcinfo, err := os.Stat(source)
 	if err != nil {
 		return err
@@ -65,7 +51,7 @@ func copyFolder(source string, dest string) error {
 
 			if obj.IsDir() {
 				if obj.Name() != "rubix-edge" {
-					err = copyFolder(fsource, fdest)
+					err = CopyDir(fsource, fdest)
 					if err != nil {
 						errs = append(errs, err)
 					}
@@ -89,7 +75,7 @@ func copyFolder(source string, dest string) error {
 	return nil
 }
 
-func copyFiles(srcFiles []string, dest string) {
+func CopyFiles(srcFiles []string, dest string) {
 	var wg sync.WaitGroup
 	for _, srcFile := range srcFiles {
 		wg.Add(1)
@@ -107,13 +93,18 @@ func copyFiles(srcFiles []string, dest string) {
 	wg.Wait()
 }
 
-func checkSnapshotSize(path string) error {
-	info, err := os.Stat(path)
-	if err != nil {
-		return err
+func DeleteFiles(srcFiles []string, dest string) {
+	var wg sync.WaitGroup
+	for _, srcFile := range srcFiles {
+		wg.Add(1)
+		srcFile := srcFile
+		go func() {
+			defer wg.Done()
+			err := os.RemoveAll(path.Join(dest, filepath.Base(srcFile)))
+			if err != nil {
+				log.Errorf("err: %s", err.Error())
+			}
+		}()
 	}
-	if info.Size()/1024/1024/1024 > 1 {
-		return errors.New("maximum response size reached")
-	}
-	return nil
+	wg.Wait()
 }

@@ -17,7 +17,25 @@ type SystemCtlStateStatus struct {
 	Status string `json:"status"`
 }
 
+type CreateStatus string
+
+const (
+	CreateNotAvailable CreateStatus = "N/A"
+	Creating           CreateStatus = "Creating"
+	Created            CreateStatus = "Created"
+	CreateFailed       CreateStatus = "Failed"
+)
+
+type RestoreStatus string
+
+const (
+	RestoreNotAvailable RestoreStatus = "N/A"
+	Restoring           RestoreStatus = "Restoring"
+	Restored            RestoreStatus = "Restored"
+	RestoreFailed       RestoreStatus = "Failed"
+)
+
 type SnapshotStatus struct {
-	Create  string `json:"create"`
-	Restore string `json:"restore"`
+	CreateStatus  CreateStatus  `json:"create_status"`
+	RestoreStatus RestoreStatus `json:"restore_status"`
 }

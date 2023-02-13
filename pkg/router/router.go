@@ -221,9 +221,9 @@ func Setup() *gin.Engine {
 
 	device := apiRoutes.Group("/snapshots")
 	{
-		device.POST("create", api.Create)
-		device.POST("restore", api.Restore)
-		device.GET("status", api.Status)
+		device.POST("create", api.CreateSnapshot)
+		device.POST("restore", api.RestoreSnapshot)
+		device.GET("status", api.SnapshotStatus)
 	}
 
 	return engine

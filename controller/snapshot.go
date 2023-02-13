@@ -7,6 +7,7 @@ import (
 	"github.com/NubeIO/lib-files/fileutils"
 	"github.com/NubeIO/rubix-edge/model"
 	"github.com/NubeIO/rubix-edge/pkg/config"
+	"github.com/NubeIO/rubix-edge/utils"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"os"
@@ -20,97 +21,110 @@ import (
 var systemPath = "/lib/systemd/system"
 var dataFolder = "data"
 var systemFolder = "system"
-var createStatus = "N/A"
-var restoreStatus = "N/A"
 
-func (inst *Controller) Create(c *gin.Context) {
-	if createStatus == "Running" {
-		responseHandler(nil, errors.New("create snapshot is running"), c)
+var createStatus = model.CreateNotAvailable
+var restoreStatus = model.RestoreNotAvailable
+
+func (inst *Controller) CreateSnapshot(c *gin.Context) {
+	if createStatus == model.Creating {
+		responseHandler(nil, errors.New("creating snapshot"), c)
 		return
 	}
-	createStatus = "Running"
+	createStatus = model.Creating
 	deviceInfo, err := inst.RubixRegistry.GetDeviceInfo()
 	if err != nil {
-		createStatus = "Failed"
+		createStatus = model.CreateFailed
 		responseHandler(nil, err, c)
 		return
 	}
-	destinationPath := fmt.Sprintf("%s/%s-%s-%s_%s", config.Config.GetAbsTempDir(), deviceInfo.ClientName,
-		deviceInfo.SiteName, deviceInfo.DeviceName, time.Now().UTC().Format("20060102T150405"))
-	_ = copyFolder(config.Config.GetAbsDataDir(), path.Join(destinationPath, dataFolder))
+	filePrefix := fmt.Sprintf("%s-%s-%s", deviceInfo.ClientName, deviceInfo.SiteName, deviceInfo.DeviceName)
+	previousFiles, _ := filepath.Glob(path.Join(config.Config.GetAbsTempDir(), fmt.Sprintf("%s*", filePrefix)))
+	utils.DeleteFiles(previousFiles, config.Config.GetAbsTempDir())
+
+	destinationPath := fmt.Sprintf("%s/%s_%s", config.Config.GetAbsTempDir(), filePrefix,
+		time.Now().UTC().Format("20060102T150405"))
+	_ = utils.CopyDir(config.Config.GetAbsDataDir(), path.Join(destinationPath, dataFolder))
 
 	systemFiles, err := filepath.Glob(path.Join(systemPath, "nubeio-*"))
 	if err != nil {
-		createStatus = "Failed"
+		createStatus = model.CreateFailed
 		responseHandler(nil, err, c)
 		return
 	}
-	copyFiles(systemFiles, path.Join(destinationPath, systemFolder))
+	utils.CopyFiles(systemFiles, path.Join(destinationPath, systemFolder))
 
 	zipDestinationPath := destinationPath + ".zip"
 	err = fileutils.RecursiveZip(destinationPath, zipDestinationPath)
 	if err != nil {
-		createStatus = "Failed"
+		createStatus = model.CreateFailed
 		responseHandler(nil, err, c)
 		return
 	}
-	err = checkSnapshotSize(zipDestinationPath)
-	if err != nil {
-		createStatus = "Failed"
-		responseHandler(nil, err, c)
-		return
-	}
-	createStatus = "Created"
+	_ = os.RemoveAll(destinationPath)
+	createStatus = model.Created
 	c.FileAttachment(zipDestinationPath, filepath.Base(zipDestinationPath))
 }
 
-func (inst *Controller) Restore(c *gin.Context) {
-	if restoreStatus == "Running" {
-		responseHandler(nil, errors.New("restore snapshot is running"), c)
+func (inst *Controller) RestoreSnapshot(c *gin.Context) {
+	if restoreStatus == model.Restoring {
+		responseHandler(nil, errors.New("restoring snapshot"), c)
 		return
 	}
-	restoreStatus = "Running"
-	useGlobalUUID, _ := toBool(c.Query("use_global_uuid"))
-	file, _ := c.FormFile("file")
-	destinationFilePath := path.Join(config.Config.GetAbsTempDir(), file.Filename)
-	err := c.SaveUploadedFile(file, destinationFilePath)
+	restoreStatus = model.Restoring
+	useGlobalUUID, err := utils.ToBool(c.Query("use_global_uuid"))
 	if err != nil {
-		restoreStatus = err.Error()
+		restoreStatus = model.RestoreFailed
+		responseHandler(nil, err, c)
+		return
+	}
+	file, err := c.FormFile("file")
+	if err != nil {
+		restoreStatus = model.RestoreFailed
+		responseHandler(nil, err, c)
+		return
+	}
+	destinationFilePath := path.Join(config.Config.GetAbsTempDir(), file.Filename)
+	err = c.SaveUploadedFile(file, destinationFilePath)
+	if err != nil {
+		restoreStatus = model.RestoreFailed
 		responseHandler(nil, err, c)
 		return
 	}
 	_, err = fileutils.Unzip(destinationFilePath, path.Join(config.Config.GetAbsTempDir(), ""), os.FileMode(inst.FileMode))
 	if err != nil {
-		restoreStatus = err.Error()
+		restoreStatus = model.RestoreFailed
 		responseHandler(nil, err, c)
 		return
 	}
-	unzippedFolderPath := path.Join(config.Config.GetAbsTempDir(), fileNameWithoutExtension(file.Filename))
+	_ = os.RemoveAll(destinationFilePath)
+
+	unzippedFolderPath := path.Join(config.Config.GetAbsTempDir(), utils.FileNameWithoutExtension(file.Filename))
 	services, _ := fileutils.ListFiles(path.Join(unzippedFolderPath, systemFolder))
 	inst.stopServices(services)
-	err = copyFolder(path.Join(unzippedFolderPath, systemFolder), systemPath)
+	err = utils.CopyDir(path.Join(unzippedFolderPath, systemFolder), systemPath)
 	if err != nil {
-		restoreStatus = err.Error()
+		restoreStatus = model.RestoreFailed
 		responseHandler(nil, err, c)
 		return
 	}
-	err = copyFolder(path.Join(unzippedFolderPath, dataFolder), config.Config.GetAbsDataDir())
+	err = utils.CopyDir(path.Join(unzippedFolderPath, dataFolder), config.Config.GetAbsDataDir())
 	if err != nil {
-		restoreStatus = err.Error()
+		restoreStatus = model.RestoreFailed
 		responseHandler(nil, err, c)
 		return
 	}
+	_ = os.RemoveAll(unzippedFolderPath)
 	if !useGlobalUUID {
 		inst.updateDeviceInfo()
 	}
 	inst.enableAndRestartServices(services)
 	message := model.Message{Message: "snapshot restored successfully"}
-	restoreStatus = "Restored"
+	restoreStatus = model.Restored
 	responseHandler(message, err, c)
 }
 
-func (inst *Controller) Status(c *gin.Context) {
-	responseHandler(model.SnapshotStatus{Create: createStatus, Restore: restoreStatus}, nil, c)
+func (inst *Controller) SnapshotStatus(c *gin.Context) {
+	responseHandler(model.SnapshotStatus{CreateStatus: createStatus, RestoreStatus: restoreStatus}, nil, c)
 }
 
 func (inst *Controller) stopServices(services []string) {
