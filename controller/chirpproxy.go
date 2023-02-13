@@ -10,7 +10,7 @@ import (
 // https://www.chirpstack.io/
 
 func (inst *Controller) ChirpProxy(c *gin.Context) { // eg http://0.0.0.0:8080/chrip/api/organizations?limit=10
-	remote, err := Builder("123.209.73.116", 8080)
+	remote, err := Builder("0.0.0.0", 8080)
 	if err != nil {
 		responseHandler(nil, err, c)
 		return
