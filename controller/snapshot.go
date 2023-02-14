@@ -27,7 +27,7 @@ var restoreStatus = model.RestoreNotAvailable
 
 func (inst *Controller) CreateSnapshot(c *gin.Context) {
 	if createStatus == model.Creating {
-		responseHandler(nil, errors.New("creating snapshot"), c)
+		responseHandler(nil, errors.New("snapshot creation process is in progress"), c)
 		return
 	}
 	createStatus = model.Creating
@@ -43,7 +43,7 @@ func (inst *Controller) CreateSnapshot(c *gin.Context) {
 
 	destinationPath := fmt.Sprintf("%s/%s_%s", config.Config.GetAbsTempDir(), filePrefix,
 		time.Now().UTC().Format("20060102T150405"))
-	_ = utils.CopyDir(config.Config.GetAbsDataDir(), path.Join(destinationPath, dataFolder))
+	_ = utils.CopyDir(config.Config.GetSnapshotDir(), path.Join(destinationPath, dataFolder))
 
 	systemFiles, err := filepath.Glob(path.Join(systemPath, "nubeio-*"))
 	if err != nil {
@@ -67,7 +67,7 @@ func (inst *Controller) CreateSnapshot(c *gin.Context) {
 
 func (inst *Controller) RestoreSnapshot(c *gin.Context) {
 	if restoreStatus == model.Restoring {
-		responseHandler(nil, errors.New("restoring snapshot"), c)
+		responseHandler(nil, errors.New("snapshot restoring process is in progress"), c)
 		return
 	}
 	restoreStatus = model.Restoring
@@ -107,7 +107,7 @@ func (inst *Controller) RestoreSnapshot(c *gin.Context) {
 		responseHandler(nil, err, c)
 		return
 	}
-	err = utils.CopyDir(path.Join(unzippedFolderPath, dataFolder), config.Config.GetAbsDataDir())
+	err = utils.CopyDir(path.Join(unzippedFolderPath, dataFolder), config.Config.GetSnapshotDir())
 	if err != nil {
 		restoreStatus = model.RestoreFailed
 		responseHandler(nil, err, c)
@@ -118,7 +118,7 @@ func (inst *Controller) RestoreSnapshot(c *gin.Context) {
 		inst.updateDeviceInfo()
 	}
 	inst.enableAndRestartServices(services)
-	message := model.Message{Message: "snapshot restored successfully"}
+	message := model.Message{Message: "snapshot is restored successfully"}
 	restoreStatus = model.Restored
 	responseHandler(message, err, c)
 }
@@ -177,8 +177,7 @@ func (inst *Controller) updateDeviceInfo() {
 		if err != nil {
 			log.Errorf("err: %s", err.Error())
 		}
-		err = os.WriteFile(path.Join("/", config.Config.GetAbsDataDir(), "rubix-registry/device_info.json"),
-			deviceInfoDefaultRaw, os.FileMode(inst.FileMode))
+		err = os.WriteFile(inst.RubixRegistry.RubixRegistryDeviceInfoFile, deviceInfoDefaultRaw, os.FileMode(inst.FileMode))
 		if err != nil {
 			log.Errorf("err: %s", err.Error())
 		}
