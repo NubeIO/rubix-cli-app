@@ -1,4 +1,8 @@
 # CHANGELOG
+## [v0.5.9](https://github.com/NubeIO/rubix-edge/tree/v0.5.9) (2022-02-14)
+
+- Create public device-info getter API
+
 ## [v0.5.8](https://github.com/NubeIO/rubix-edge/tree/v0.5.8) (2022-02-13)
 
 - delete auth headers in chirpstack proxy
@@ -10,7 +14,6 @@
 ## [v0.5.6](https://github.com/NubeIO/rubix-edge/tree/v0.5.6) (2022-01-27)
 
 - updates to get stream logs
-
 
 ## [v0.5.5](https://github.com/NubeIO/rubix-edge/tree/v0.5.5) (2022-01-25)
 
