@@ -43,7 +43,14 @@ func (inst *Controller) CreateSnapshot(c *gin.Context) {
 
 	destinationPath := fmt.Sprintf("%s/%s_%s", config.Config.GetAbsTempDir(), filePrefix,
 		time.Now().UTC().Format("20060102T150405"))
-	_ = utils.CopyDir(config.Config.GetSnapshotDir(), path.Join(destinationPath, dataFolder))
+	absDataFolder := path.Join(destinationPath, dataFolder)
+	err = os.MkdirAll(absDataFolder, os.FileMode(inst.FileMode)) // create empty folder even we don't have content
+	if err != nil {
+		createStatus = model.CreateFailed
+		responseHandler(nil, err, c)
+		return
+	}
+	_ = utils.CopyDir(config.Config.GetSnapshotDir(), absDataFolder)
 
 	systemFiles, err := filepath.Glob(path.Join(systemPath, "nubeio-*"))
 	if err != nil {
@@ -51,7 +58,14 @@ func (inst *Controller) CreateSnapshot(c *gin.Context) {
 		responseHandler(nil, err, c)
 		return
 	}
-	utils.CopyFiles(systemFiles, path.Join(destinationPath, systemFolder))
+	absSystemFolder := path.Join(destinationPath, systemFolder)
+	err = os.MkdirAll(absSystemFolder, os.FileMode(inst.FileMode)) // create empty folder even we don't have content
+	if err != nil {
+		createStatus = model.CreateFailed
+		responseHandler(nil, err, c)
+		return
+	}
+	utils.CopyFiles(systemFiles, absSystemFolder)
 
 	zipDestinationPath := destinationPath + ".zip"
 	err = fileutils.RecursiveZip(destinationPath, zipDestinationPath)
@@ -90,7 +104,7 @@ func (inst *Controller) RestoreSnapshot(c *gin.Context) {
 		responseHandler(nil, err, c)
 		return
 	}
-	_, err = fileutils.Unzip(destinationFilePath, path.Join(config.Config.GetAbsTempDir(), ""), os.FileMode(inst.FileMode))
+	_, err = fileutils.Unzip(destinationFilePath, config.Config.GetAbsTempDir(), os.FileMode(inst.FileMode))
 	if err != nil {
 		restoreStatus = model.RestoreFailed
 		responseHandler(nil, err, c)
@@ -99,13 +113,21 @@ func (inst *Controller) RestoreSnapshot(c *gin.Context) {
 	_ = os.RemoveAll(destinationFilePath)
 
 	unzippedFolderPath := path.Join(config.Config.GetAbsTempDir(), utils.FileNameWithoutExtension(file.Filename))
-	services, _ := fileutils.ListFiles(path.Join(unzippedFolderPath, systemFolder))
-	inst.stopServices(services)
-	err = utils.CopyDir(path.Join(unzippedFolderPath, systemFolder), systemPath)
-	if err != nil {
-		restoreStatus = model.RestoreFailed
-		responseHandler(nil, err, c)
-		return
+
+	copySystemFiles := true // for example in macOS, we don't have systemd file & so to prevent that failure
+	services := make([]string, 0)
+	if _, err := os.Stat(systemPath); errors.Is(err, os.ErrNotExist) {
+		copySystemFiles = false
+	}
+	if copySystemFiles {
+		services, _ = fileutils.ListFiles(path.Join(unzippedFolderPath, systemFolder))
+		inst.stopServices(services)
+		err = utils.CopyDir(path.Join(unzippedFolderPath, systemFolder), systemPath)
+		if err != nil {
+			restoreStatus = model.RestoreFailed
+			responseHandler(nil, err, c)
+			return
+		}
 	}
 	err = utils.CopyDir(path.Join(unzippedFolderPath, dataFolder), config.Config.GetSnapshotDir())
 	if err != nil {
@@ -117,7 +139,9 @@ func (inst *Controller) RestoreSnapshot(c *gin.Context) {
 	if !useGlobalUUID {
 		inst.updateDeviceInfo()
 	}
-	inst.enableAndRestartServices(services)
+	if copySystemFiles {
+		inst.enableAndRestartServices(services)
+	}
 	message := model.Message{Message: "snapshot is restored successfully"}
 	restoreStatus = model.Restored
 	responseHandler(message, err, c)
