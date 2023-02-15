@@ -140,6 +140,12 @@ func (inst *Controller) RestoreSnapshot(c *gin.Context) {
 		inst.updateDeviceInfo()
 	}
 	if copySystemFiles {
+		err = inst.SystemCtl.DaemonReload()
+		if err != nil {
+			restoreStatus = model.RestoreFailed
+			responseHandler(nil, err, c)
+			return
+		}
 		inst.enableAndRestartServices(services)
 	}
 	message := model.Message{Message: "snapshot is restored successfully"}
