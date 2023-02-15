@@ -13,7 +13,6 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"strings"
 	"sync"
 	"time"
 )
@@ -161,16 +160,15 @@ func (inst *Controller) stopServices(services []string) {
 	var wg sync.WaitGroup
 	for _, service := range services {
 		wg.Add(1)
-		service := service
-		go func() {
+		go func(service string) {
 			defer wg.Done()
-			if !strings.Contains(service, "rubix-edge") {
+			if service != "nubeio-rubix-edge.service" {
 				err := inst.SystemCtl.Stop(service)
 				if err != nil {
 					log.Errorf("err: %s", err.Error())
 				}
 			}
-		}()
+		}(service)
 	}
 	wg.Wait()
 }
@@ -179,10 +177,9 @@ func (inst *Controller) enableAndRestartServices(services []string) {
 	var wg sync.WaitGroup
 	for _, service := range services {
 		wg.Add(1)
-		service := service
-		go func() {
+		go func(service string) {
 			defer wg.Done()
-			if !strings.Contains(service, "rubix-edge") {
+			if service != "nubeio-rubix-edge.service" {
 				err := inst.SystemCtl.Enable(service)
 				if err != nil {
 					log.Errorf("err: %s", err.Error())
@@ -192,7 +189,7 @@ func (inst *Controller) enableAndRestartServices(services []string) {
 					log.Errorf("err: %s", err.Error())
 				}
 			}
-		}()
+		}(service)
 	}
 	wg.Wait()
 }
