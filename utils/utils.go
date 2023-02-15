@@ -26,11 +26,11 @@ func FileNameWithoutExtension(fileName string) string {
 }
 
 func CopyDir(source string, dest string) error {
-	srcinfo, err := os.Stat(source)
+	srcInfo, err := os.Stat(source)
 	if err != nil {
 		return err
 	}
-	err = os.MkdirAll(dest, srcinfo.Mode())
+	err = os.MkdirAll(dest, srcInfo.Mode())
 	if err != nil {
 		return err
 	}
@@ -46,18 +46,17 @@ func CopyDir(source string, dest string) error {
 		obj := obj
 		go func() {
 			defer wg.Done()
-			fsource := source + "/" + obj.Name()
-			fdest := dest + "/" + obj.Name()
-
+			fSource := path.Join(source, obj.Name())
+			fDest := path.Join(dest, obj.Name())
 			if obj.IsDir() {
-				if obj.Name() != "rubix-edge" {
-					err = CopyDir(fsource, fdest)
+				if obj.Name() != "rubix-edge" && obj.Name() != "tmp" && obj.Name() != "store" && obj.Name() != "backup" {
+					err = CopyDir(fSource, fDest)
 					if err != nil {
 						errs = append(errs, err)
 					}
 				}
 			} else {
-				err = fileutils.CopyFile(fsource, fdest)
+				err = fileutils.CopyFile(fSource, fDest)
 				if err != nil {
 					errs = append(errs, err)
 				}
