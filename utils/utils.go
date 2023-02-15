@@ -78,16 +78,15 @@ func CopyFiles(srcFiles []string, dest string) {
 	var wg sync.WaitGroup
 	for _, srcFile := range srcFiles {
 		wg.Add(1)
-		srcFile := srcFile
-		go func() {
+		go func(srcFile string) {
 			defer wg.Done()
-			if !strings.Contains(srcFile, "rubix-edge") {
+			if srcFile != "nubeio-rubix-edge.service" {
 				err := fileutils.CopyFile(srcFile, path.Join(dest, filepath.Base(srcFile)))
 				if err != nil {
 					log.Errorf("err: %s", err.Error())
 				}
 			}
-		}()
+		}(srcFile)
 	}
 	wg.Wait()
 }
