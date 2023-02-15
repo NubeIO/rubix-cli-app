@@ -1,4 +1,8 @@
 # CHANGELOG
+## [v0.6.0](https://github.com/NubeIO/rubix-edge/tree/v0.6.0) (2022-02-15)
+
+- Add create and restore snapshots API endpoints
+
 ## [v0.5.9](https://github.com/NubeIO/rubix-edge/tree/v0.5.9) (2022-02-14)
 
 - Create public device-info getter API
