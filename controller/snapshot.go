@@ -8,6 +8,7 @@ import (
 	"github.com/NubeIO/rubix-edge/model"
 	"github.com/NubeIO/rubix-edge/pkg/config"
 	"github.com/NubeIO/rubix-edge/utils"
+	"github.com/NubeIO/rubix-registry-go/rubixregistry"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"os"
@@ -84,12 +85,6 @@ func (inst *Controller) RestoreSnapshot(c *gin.Context) {
 		return
 	}
 	restoreStatus = model.Restoring
-	useGlobalUUID, err := utils.ToBool(c.Query("use_global_uuid"))
-	if err != nil {
-		restoreStatus = model.RestoreFailed
-		responseHandler(nil, err, c)
-		return
-	}
 	file, err := c.FormFile("file")
 	if err != nil {
 		restoreStatus = model.RestoreFailed
@@ -128,6 +123,26 @@ func (inst *Controller) RestoreSnapshot(c *gin.Context) {
 			return
 		}
 	}
+	rubixRegistryFile := path.Join(unzippedFolderPath, inst.RubixRegistry.RubixRegistryDeviceInfoFile)
+	rubixRegistryFileExist := false
+	if _, err = os.Stat(rubixRegistryFile); !errors.Is(err, os.ErrNotExist) {
+		rubixRegistryFileExist = true
+	}
+	if rubixRegistryFileExist {
+		deviceInfo, err := inst.RubixRegistry.GetDeviceInfo()
+		if err != nil {
+			restoreStatus = model.RestoreFailed
+			responseHandler(nil, err, c)
+			return
+		}
+		err = inst.retainGlobalUUID(deviceInfo.GlobalUUID, rubixRegistryFile)
+		if err != nil {
+			restoreStatus = model.RestoreFailed
+			responseHandler(nil, err, c)
+			return
+		}
+	}
+
 	err = utils.CopyDir(path.Join(unzippedFolderPath, dataFolder), config.Config.GetSnapshotDir())
 	if err != nil {
 		restoreStatus = model.RestoreFailed
@@ -135,9 +150,6 @@ func (inst *Controller) RestoreSnapshot(c *gin.Context) {
 		return
 	}
 	_ = os.RemoveAll(unzippedFolderPath)
-	if !useGlobalUUID {
-		inst.updateDeviceInfo()
-	}
 	if copySystemFiles {
 		err = inst.SystemCtl.DaemonReload()
 		if err != nil {
@@ -194,19 +206,24 @@ func (inst *Controller) enableAndRestartServices(services []string) {
 	wg.Wait()
 }
 
-func (inst *Controller) updateDeviceInfo() {
-	deviceInfo, err := inst.RubixRegistry.GetDeviceInfo()
+func (inst *Controller) retainGlobalUUID(globalUUID, rubixRegistryFile string) error {
+	content, err := fileutils.ReadFile(rubixRegistryFile)
 	if err != nil {
-		log.Errorf("err: %s", err.Error())
-	} else {
-		deviceInfo.GlobalUUID = ""
-		deviceInfoDefaultRaw, err := json.Marshal(deviceInfo)
-		if err != nil {
-			log.Errorf("err: %s", err.Error())
-		}
-		err = os.WriteFile(inst.RubixRegistry.RubixRegistryDeviceInfoFile, deviceInfoDefaultRaw, os.FileMode(inst.FileMode))
-		if err != nil {
-			log.Errorf("err: %s", err.Error())
-		}
+		return err
 	}
+	deviceInfoDefault := rubixregistry.DeviceInfoDefault{}
+	err = json.Unmarshal([]byte(content), &deviceInfoDefault)
+	if err != nil {
+		return err
+	}
+	deviceInfoDefault.DeviceInfoFirstRecord.DeviceInfo.GlobalUUID = globalUUID
+	deviceInfoDefaultRaw, err := json.Marshal(deviceInfoDefault)
+	if err != nil {
+		return err
+	}
+	err = os.WriteFile(rubixRegistryFile, deviceInfoDefaultRaw, os.FileMode(inst.FileMode))
+	if err != nil {
+		return err
+	}
+	return nil
 }
