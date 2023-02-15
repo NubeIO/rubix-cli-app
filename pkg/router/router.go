@@ -222,5 +222,12 @@ func Setup() *gin.Engine {
 		streamLog.DELETE("", api.DeleteStreamLogs)
 	}
 
+	device := apiRoutes.Group("/snapshots")
+	{
+		device.POST("create", api.CreateSnapshot)
+		device.POST("restore", api.RestoreSnapshot)
+		device.GET("status", api.SnapshotStatus)
+	}
+
 	return engine
 }

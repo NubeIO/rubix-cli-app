@@ -52,6 +52,14 @@ func (conf *Configuration) GetAbsConfigDir() string {
 	return path.Join(conf.getGlobalDir(), conf.getConfigDir())
 }
 
+func (conf *Configuration) GetAbsTempDir() string {
+	return "/tmp"
+}
+
+func (conf *Configuration) GetSnapshotDir() string {
+	return "/data"
+}
+
 func (conf *Configuration) getGlobalDir() string {
 	rootDir := RootCmd.PersistentFlags().Lookup("root-dir").Value.String()
 	appDir := RootCmd.PersistentFlags().Lookup("app-dir").Value.String()
