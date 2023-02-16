@@ -17,6 +17,7 @@ require (
 	github.com/NubeIO/rubix-registry-go v1.0.0
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.8.1
+	github.com/go-resty/resty/v2 v2.7.0
 	github.com/google/uuid v1.1.2
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/cobra v1.4.0

@@ -7,6 +7,7 @@ import (
 	"github.com/NubeIO/lib-files/fileutils"
 	"github.com/NubeIO/rubix-edge/model"
 	"github.com/NubeIO/rubix-edge/pkg/config"
+	"github.com/NubeIO/rubix-edge/service/clients/bioscli"
 	"github.com/NubeIO/rubix-edge/utils"
 	"github.com/NubeIO/rubix-registry-go/rubixregistry"
 	"github.com/gin-gonic/gin"
@@ -41,8 +42,16 @@ func (inst *Controller) CreateSnapshot(c *gin.Context) {
 	previousFiles, _ := filepath.Glob(path.Join(config.Config.GetAbsTempDir(), fmt.Sprintf("%s*", filePrefix)))
 	utils.DeleteFiles(previousFiles, config.Config.GetAbsTempDir())
 
-	destinationPath := fmt.Sprintf("%s/%s_%s", config.Config.GetAbsTempDir(), filePrefix,
-		time.Now().UTC().Format("20060102T150405"))
+	biosClient := bioscli.NewLocalBiosClient()
+	arch, err := biosClient.GetArch()
+	if err != nil {
+		createStatus = model.CreateFailed
+		responseHandler(nil, err, c)
+		return
+	}
+
+	destinationPath := fmt.Sprintf("%s/%s_%s_%s", config.Config.GetAbsTempDir(), filePrefix,
+		time.Now().UTC().Format("20060102T150405"), arch.Arch)
 	absDataFolder := path.Join(destinationPath, dataFolder)
 	err = os.MkdirAll(absDataFolder, os.FileMode(inst.FileMode)) // create empty folder even we don't have content
 	if err != nil {
