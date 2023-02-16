@@ -1,4 +1,11 @@
 # CHANGELOG
+## [v0.6.1](https://github.com/NubeIO/rubix-edge/tree/v0.6.1) (2022-02-16)
+
+- Exclude rubix-assist from snapping
+- Remove apps before adding in (#62)
+- Attach arch in snapshot filename
+- Add validation on restore
+
 ## [v0.6.0](https://github.com/NubeIO/rubix-edge/tree/v0.6.0) (2022-02-15)
 
 - Add create and restore snapshots API endpoints

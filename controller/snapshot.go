@@ -7,6 +7,7 @@ import (
 	"github.com/NubeIO/lib-files/fileutils"
 	"github.com/NubeIO/rubix-edge/model"
 	"github.com/NubeIO/rubix-edge/pkg/config"
+	"github.com/NubeIO/rubix-edge/service/clients/bioscli"
 	"github.com/NubeIO/rubix-edge/utils"
 	"github.com/NubeIO/rubix-registry-go/rubixregistry"
 	"github.com/gin-gonic/gin"
@@ -14,6 +15,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 )
@@ -41,8 +43,16 @@ func (inst *Controller) CreateSnapshot(c *gin.Context) {
 	previousFiles, _ := filepath.Glob(path.Join(config.Config.GetAbsTempDir(), fmt.Sprintf("%s*", filePrefix)))
 	utils.DeleteFiles(previousFiles, config.Config.GetAbsTempDir())
 
-	destinationPath := fmt.Sprintf("%s/%s_%s", config.Config.GetAbsTempDir(), filePrefix,
-		time.Now().UTC().Format("20060102T150405"))
+	biosClient := bioscli.NewLocalBiosClient()
+	arch, err := biosClient.GetArch()
+	if err != nil {
+		createStatus = model.CreateFailed
+		responseHandler(nil, err, c)
+		return
+	}
+
+	destinationPath := fmt.Sprintf("%s/%s_%s_%s", config.Config.GetAbsTempDir(), filePrefix,
+		time.Now().UTC().Format("20060102T150405"), arch.Arch)
 	absDataFolder := path.Join(destinationPath, dataFolder)
 	err = os.MkdirAll(absDataFolder, os.FileMode(inst.FileMode)) // create empty folder even we don't have content
 	if err != nil {
@@ -50,7 +60,7 @@ func (inst *Controller) CreateSnapshot(c *gin.Context) {
 		responseHandler(nil, err, c)
 		return
 	}
-	_ = utils.CopyDir(config.Config.GetSnapshotDir(), absDataFolder)
+	_ = utils.CopyDir(config.Config.GetSnapshotDir(), absDataFolder, "", 0)
 
 	systemFiles, err := filepath.Glob(path.Join(systemPath, "nubeio-*"))
 	if err != nil {
@@ -91,6 +101,26 @@ func (inst *Controller) RestoreSnapshot(c *gin.Context) {
 		responseHandler(nil, err, c)
 		return
 	}
+
+	biosClient := bioscli.NewLocalBiosClient()
+	arch, err := biosClient.GetArch()
+	if err != nil {
+		restoreStatus = model.RestoreFailed
+		responseHandler(nil, err, c)
+		return
+	}
+
+	fileParts := strings.Split(file.Filename, "_")
+	archParts := fileParts[len(fileParts)-1]
+	archFromSnapshot := strings.Split(archParts, ".")[0]
+	if archFromSnapshot != arch.Arch {
+		restoreStatus = model.RestoreFailed
+		err = errors.New(
+			fmt.Sprintf("arch mismatch: snapshot arch is %s & device arch is %s", archFromSnapshot, arch.Arch))
+		responseHandler(nil, err, c)
+		return
+	}
+
 	destinationFilePath := path.Join(config.Config.GetAbsTempDir(), file.Filename)
 	err = c.SaveUploadedFile(file, destinationFilePath)
 	if err != nil {
@@ -116,7 +146,7 @@ func (inst *Controller) RestoreSnapshot(c *gin.Context) {
 	if copySystemFiles {
 		services, _ = fileutils.ListFiles(path.Join(unzippedFolderPath, systemFolder))
 		inst.stopServices(services)
-		err = utils.CopyDir(path.Join(unzippedFolderPath, systemFolder), systemPath)
+		err = utils.CopyDir(path.Join(unzippedFolderPath, systemFolder), systemPath, "", 0)
 		if err != nil {
 			restoreStatus = model.RestoreFailed
 			responseHandler(nil, err, c)
@@ -143,13 +173,17 @@ func (inst *Controller) RestoreSnapshot(c *gin.Context) {
 		}
 	}
 
-	err = utils.CopyDir(path.Join(unzippedFolderPath, dataFolder), config.Config.GetSnapshotDir())
+	err = utils.DeleteDir(path.Join(unzippedFolderPath, dataFolder), "", 0)
+	err = utils.CopyDir(path.Join(unzippedFolderPath, dataFolder), config.Config.GetSnapshotDir(), "", 0)
 	if err != nil {
 		restoreStatus = model.RestoreFailed
 		responseHandler(nil, err, c)
 		return
 	}
-	_ = os.RemoveAll(unzippedFolderPath)
+	err = os.RemoveAll(unzippedFolderPath)
+	if err != nil {
+		log.Errorf("failed to remove file %s", unzippedFolderPath)
+	}
 	if copySystemFiles {
 		err = inst.SystemCtl.DaemonReload()
 		if err != nil {
@@ -174,10 +208,10 @@ func (inst *Controller) stopServices(services []string) {
 		wg.Add(1)
 		go func(service string) {
 			defer wg.Done()
-			if service != "nubeio-rubix-edge.service" {
+			if !utils.Contains([]string{"nubeio-rubix-edge.service", "nubeio-rubix-assist.service"}, service) {
 				err := inst.SystemCtl.Stop(service)
 				if err != nil {
-					log.Errorf("err: %s", err.Error())
+					log.Errorf("failed to stop service %s", service)
 				}
 			}
 		}(service)
@@ -191,14 +225,14 @@ func (inst *Controller) enableAndRestartServices(services []string) {
 		wg.Add(1)
 		go func(service string) {
 			defer wg.Done()
-			if service != "nubeio-rubix-edge.service" {
+			if !utils.Contains([]string{"nubeio-rubix-edge.service", "nubeio-rubix-assist.service"}, service) {
 				err := inst.SystemCtl.Enable(service)
 				if err != nil {
-					log.Errorf("err: %s", err.Error())
+					log.Errorf("failed to enable service %s", service)
 				}
 				err = inst.SystemCtl.Restart(service)
 				if err != nil {
-					log.Errorf("err: %s", err.Error())
+					log.Errorf("failed to restart service %s", service)
 				}
 			}
 		}(service)
