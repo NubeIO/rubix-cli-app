@@ -25,7 +25,7 @@ func FileNameWithoutExtension(fileName string) string {
 	return strings.TrimSuffix(fileName, filepath.Ext(fileName))
 }
 
-func CopyDir(source string, dest string) error {
+func CopyDir(source string, dest string, depth int) error {
 	srcInfo, err := os.Stat(source)
 	if err != nil {
 		return err
@@ -49,8 +49,13 @@ func CopyDir(source string, dest string) error {
 			fSource := path.Join(source, obj.Name())
 			fDest := path.Join(dest, obj.Name())
 			if obj.IsDir() {
-				if obj.Name() != "rubix-edge" && obj.Name() != "tmp" && obj.Name() != "store" && obj.Name() != "backup" {
-					err = CopyDir(fSource, fDest)
+				if obj.Name() != "rubix-edge" &&
+					obj.Name() != "rubix-assist" &&
+					obj.Name() != "tmp" &&
+					obj.Name() != "store" &&
+					obj.Name() != "backup" &&
+					depth == 0 {
+					err = CopyDir(fSource, fDest, depth+1)
 					if err != nil {
 						errs = append(errs, err)
 					}
@@ -80,7 +85,7 @@ func CopyFiles(srcFiles []string, dest string) {
 		wg.Add(1)
 		go func(srcFile string) {
 			defer wg.Done()
-			if srcFile != "nubeio-rubix-edge.service" {
+			if srcFile != "nubeio-rubix-edge.service" && srcFile != "nubeio-rubix-assist.service" {
 				err := fileutils.CopyFile(srcFile, path.Join(dest, filepath.Base(srcFile)))
 				if err != nil {
 					log.Errorf("err: %s", err.Error())

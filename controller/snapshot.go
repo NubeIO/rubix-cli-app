@@ -50,7 +50,7 @@ func (inst *Controller) CreateSnapshot(c *gin.Context) {
 		responseHandler(nil, err, c)
 		return
 	}
-	_ = utils.CopyDir(config.Config.GetSnapshotDir(), absDataFolder)
+	_ = utils.CopyDir(config.Config.GetSnapshotDir(), absDataFolder, 0)
 
 	systemFiles, err := filepath.Glob(path.Join(systemPath, "nubeio-*"))
 	if err != nil {
@@ -116,7 +116,7 @@ func (inst *Controller) RestoreSnapshot(c *gin.Context) {
 	if copySystemFiles {
 		services, _ = fileutils.ListFiles(path.Join(unzippedFolderPath, systemFolder))
 		inst.stopServices(services)
-		err = utils.CopyDir(path.Join(unzippedFolderPath, systemFolder), systemPath)
+		err = utils.CopyDir(path.Join(unzippedFolderPath, systemFolder), systemPath, 0)
 		if err != nil {
 			restoreStatus = model.RestoreFailed
 			responseHandler(nil, err, c)
@@ -143,7 +143,7 @@ func (inst *Controller) RestoreSnapshot(c *gin.Context) {
 		}
 	}
 
-	err = utils.CopyDir(path.Join(unzippedFolderPath, dataFolder), config.Config.GetSnapshotDir())
+	err = utils.CopyDir(path.Join(unzippedFolderPath, dataFolder), config.Config.GetSnapshotDir(), 0)
 	if err != nil {
 		restoreStatus = model.RestoreFailed
 		responseHandler(nil, err, c)
@@ -174,7 +174,7 @@ func (inst *Controller) stopServices(services []string) {
 		wg.Add(1)
 		go func(service string) {
 			defer wg.Done()
-			if service != "nubeio-rubix-edge.service" {
+			if service != "nubeio-rubix-edge.service" && service != "nubeio-rubix-assist.service" {
 				err := inst.SystemCtl.Stop(service)
 				if err != nil {
 					log.Errorf("err: %s", err.Error())
@@ -191,7 +191,7 @@ func (inst *Controller) enableAndRestartServices(services []string) {
 		wg.Add(1)
 		go func(service string) {
 			defer wg.Done()
-			if service != "nubeio-rubix-edge.service" {
+			if service != "nubeio-rubix-edge.service" && service != "nubeio-rubix-assist.service" {
 				err := inst.SystemCtl.Enable(service)
 				if err != nil {
 					log.Errorf("err: %s", err.Error())
