@@ -50,7 +50,7 @@ func (inst *Controller) CreateSnapshot(c *gin.Context) {
 		responseHandler(nil, err, c)
 		return
 	}
-	_ = utils.CopyDir(config.Config.GetSnapshotDir(), absDataFolder, 0)
+	_ = utils.CopyDir(config.Config.GetSnapshotDir(), absDataFolder, "", 0)
 
 	systemFiles, err := filepath.Glob(path.Join(systemPath, "nubeio-*"))
 	if err != nil {
@@ -116,7 +116,7 @@ func (inst *Controller) RestoreSnapshot(c *gin.Context) {
 	if copySystemFiles {
 		services, _ = fileutils.ListFiles(path.Join(unzippedFolderPath, systemFolder))
 		inst.stopServices(services)
-		err = utils.CopyDir(path.Join(unzippedFolderPath, systemFolder), systemPath, 0)
+		err = utils.CopyDir(path.Join(unzippedFolderPath, systemFolder), systemPath, "", 0)
 		if err != nil {
 			restoreStatus = model.RestoreFailed
 			responseHandler(nil, err, c)
@@ -143,13 +143,17 @@ func (inst *Controller) RestoreSnapshot(c *gin.Context) {
 		}
 	}
 
-	err = utils.CopyDir(path.Join(unzippedFolderPath, dataFolder), config.Config.GetSnapshotDir(), 0)
+	err = utils.DeleteDir(path.Join(unzippedFolderPath, dataFolder), "", 0)
+	err = utils.CopyDir(path.Join(unzippedFolderPath, dataFolder), config.Config.GetSnapshotDir(), "", 0)
 	if err != nil {
 		restoreStatus = model.RestoreFailed
 		responseHandler(nil, err, c)
 		return
 	}
-	_ = os.RemoveAll(unzippedFolderPath)
+	err = os.RemoveAll(unzippedFolderPath)
+	if err != nil {
+		log.Errorf("failed to remove file %s", unzippedFolderPath)
+	}
 	if copySystemFiles {
 		err = inst.SystemCtl.DaemonReload()
 		if err != nil {
@@ -174,10 +178,10 @@ func (inst *Controller) stopServices(services []string) {
 		wg.Add(1)
 		go func(service string) {
 			defer wg.Done()
-			if service != "nubeio-rubix-edge.service" && service != "nubeio-rubix-assist.service" {
+			if !utils.Contains([]string{"nubeio-rubix-edge.service", "nubeio-rubix-assist.service"}, service) {
 				err := inst.SystemCtl.Stop(service)
 				if err != nil {
-					log.Errorf("err: %s", err.Error())
+					log.Errorf("failed to stop service %s", service)
 				}
 			}
 		}(service)
@@ -191,14 +195,14 @@ func (inst *Controller) enableAndRestartServices(services []string) {
 		wg.Add(1)
 		go func(service string) {
 			defer wg.Done()
-			if service != "nubeio-rubix-edge.service" && service != "nubeio-rubix-assist.service" {
+			if !utils.Contains([]string{"nubeio-rubix-edge.service", "nubeio-rubix-assist.service"}, service) {
 				err := inst.SystemCtl.Enable(service)
 				if err != nil {
-					log.Errorf("err: %s", err.Error())
+					log.Errorf("failed to enable service %s", service)
 				}
 				err = inst.SystemCtl.Restart(service)
 				if err != nil {
-					log.Errorf("err: %s", err.Error())
+					log.Errorf("failed to restart service %s", service)
 				}
 			}
 		}(service)
