@@ -15,6 +15,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 )
@@ -100,6 +101,26 @@ func (inst *Controller) RestoreSnapshot(c *gin.Context) {
 		responseHandler(nil, err, c)
 		return
 	}
+
+	biosClient := bioscli.NewLocalBiosClient()
+	arch, err := biosClient.GetArch()
+	if err != nil {
+		restoreStatus = model.RestoreFailed
+		responseHandler(nil, err, c)
+		return
+	}
+
+	fileParts := strings.Split(file.Filename, "_")
+	archParts := fileParts[len(fileParts)-1]
+	archFromSnapshot := strings.Split(archParts, ".")[0]
+	if archFromSnapshot != arch.Arch {
+		restoreStatus = model.RestoreFailed
+		err = errors.New(
+			fmt.Sprintf("arch mismatch: snapshot arch is %s & device arch is %s", archFromSnapshot, arch.Arch))
+		responseHandler(nil, err, c)
+		return
+	}
+
 	destinationFilePath := path.Join(config.Config.GetAbsTempDir(), file.Filename)
 	err = c.SaveUploadedFile(file, destinationFilePath)
 	if err != nil {
