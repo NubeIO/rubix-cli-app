@@ -69,7 +69,7 @@ func CopyDir(source, dest, parentDirectory string, depth int) error {
 			fSource := path.Join(source, obj.Name())
 			fDest := path.Join(dest, obj.Name())
 			if obj.IsDir() {
-				excludesData := []string{"rubix-edge", "rubix-assist", "tmp", "store", "backup"}
+				excludesData := []string{"rubix-edge", "rubix-assist", "tmp", "store", "backup", "socat"}
 				excludesApps := []string{
 					"rubix-service/apps/install/rubix-edge",
 					"rubix-service/apps/install/rubix-assist",

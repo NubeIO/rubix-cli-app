@@ -28,6 +28,7 @@ var createStatus = model.CreateNotAvailable
 var restoreStatus = model.RestoreNotAvailable
 
 func (inst *Controller) CreateSnapshot(c *gin.Context) {
+	log.Infof("creating snapshot...")
 	if createStatus == model.Creating {
 		responseHandler(nil, errors.New("snapshot creation process is in progress"), c)
 		return
@@ -39,7 +40,19 @@ func (inst *Controller) CreateSnapshot(c *gin.Context) {
 		responseHandler(nil, err, c)
 		return
 	}
-	filePrefix := fmt.Sprintf("%s-%s-%s", deviceInfo.ClientName, deviceInfo.SiteName, deviceInfo.DeviceName)
+	clientName := strings.Replace(deviceInfo.ClientName, "/", "", -1)
+	siteName := strings.Replace(deviceInfo.SiteName, "/", "", -1)
+	deviceName := strings.Replace(deviceInfo.DeviceName, "/", "", -1)
+	if clientName == "" || clientName == "-" {
+		clientName = "na"
+	}
+	if siteName == "" || siteName == "-" {
+		siteName = "na"
+	}
+	if deviceName == "" || deviceName == "-" {
+		deviceName = "na"
+	}
+	filePrefix := fmt.Sprintf("%s-%s-%s", clientName, siteName, deviceName)
 	previousFiles, _ := filepath.Glob(path.Join(config.Config.GetAbsTempDir(), fmt.Sprintf("%s*", filePrefix)))
 	utils.DeleteFiles(previousFiles, config.Config.GetAbsTempDir())
 
@@ -78,6 +91,7 @@ func (inst *Controller) CreateSnapshot(c *gin.Context) {
 	utils.CopyFiles(systemFiles, absSystemFolder)
 
 	zipDestinationPath := destinationPath + ".zip"
+	log.Infof("zipping snapshot: %s...", zipDestinationPath)
 	err = fileutils.RecursiveZip(destinationPath, zipDestinationPath)
 	if err != nil {
 		createStatus = model.CreateFailed
@@ -86,6 +100,7 @@ func (inst *Controller) CreateSnapshot(c *gin.Context) {
 	}
 	_ = os.RemoveAll(destinationPath)
 	createStatus = model.Created
+	log.Info("sending snapshot data...")
 	c.FileAttachment(zipDestinationPath, filepath.Base(zipDestinationPath))
 }
 
