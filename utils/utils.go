@@ -11,6 +11,12 @@ import (
 	"sync"
 )
 
+var ExcludedServices = []string{
+	"nubeio-rubix-edge-bios.service",
+	"nubeio-rubix-edge.service",
+	"nubeio-rubix-assist.service",
+}
+
 func FileNameWithoutExtension(fileName string) string {
 	return strings.TrimSuffix(fileName, filepath.Ext(fileName))
 }
@@ -60,36 +66,39 @@ func CopyDir(source, dest, parentDirectory string, depth int) error {
 	if err != nil {
 		return err
 	}
-	var wg sync.WaitGroup
 	var errs []error
 	for _, obj := range obs {
-		wg.Add(1)
-		go func(obj os.FileInfo) {
-			defer wg.Done()
-			fSource := path.Join(source, obj.Name())
-			fDest := path.Join(dest, obj.Name())
-			if obj.IsDir() {
-				excludesData := []string{"rubix-edge", "rubix-assist", "tmp", "store", "backup"}
-				excludesApps := []string{
-					"rubix-service/apps/install/rubix-edge",
-					"rubix-service/apps/install/rubix-assist",
-				}
-				if !((Contains(excludesData, obj.Name()) && depth == 0) ||
-					(Contains(excludesApps, path.Join(parentDirectory, obj.Name())) && depth == 3)) {
-					err = CopyDir(fSource, fDest, path.Join(parentDirectory, obj.Name()), depth+1)
-					if err != nil {
-						errs = append(errs, err)
-					}
-				}
-			} else {
-				err = fileutils.CopyFile(fSource, fDest)
+		fSource := path.Join(source, obj.Name())
+		fDest := path.Join(dest, obj.Name())
+		if obj.IsDir() {
+			excludesData := []string{
+				"rubix-edge",
+				"rubix-assist",
+				"tmp",
+				"store",
+				"backup",
+				"socat",
+			}
+			excludesApps := []string{
+				"rubix-service/apps/install/rubix-edge",
+				"rubix-service/apps/install/rubix-assist",
+			}
+			if !((Contains(excludesData, obj.Name()) && depth == 0) ||
+				(Contains(excludesApps, path.Join(parentDirectory, obj.Name())) && depth == 3)) {
+				err = CopyDir(fSource, fDest, path.Join(parentDirectory, obj.Name()), depth+1)
 				if err != nil {
+					log.Error(err)
 					errs = append(errs, err)
 				}
 			}
-		}(obj)
+		} else {
+			err = fileutils.CopyFile(fSource, fDest)
+			if err != nil {
+				log.Error(err)
+				errs = append(errs, err)
+			}
+		}
 	}
-	wg.Wait()
 	var errString string
 	for _, err := range errs {
 		errString += err.Error() + "\n"
@@ -106,7 +115,7 @@ func CopyFiles(srcFiles []string, dest string) {
 		wg.Add(1)
 		go func(srcFile string) {
 			defer wg.Done()
-			if !Contains([]string{"nubeio-rubix-edge.service", "nubeio-rubix-assist.service"}, srcFile) {
+			if !Contains(ExcludedServices, srcFile) {
 				err := fileutils.CopyFile(srcFile, path.Join(dest, filepath.Base(srcFile)))
 				if err != nil {
 					log.Errorf("failed to copy file %s to %s", srcFile, path.Join(dest, filepath.Base(srcFile)))

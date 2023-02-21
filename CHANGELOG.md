@@ -1,4 +1,12 @@
 # CHANGELOG
+
+## [v0.6.2](https://github.com/NubeIO/rubix-edge/tree/v0.6.2) (2022-02-21)
+
+- Exclude socat files & improvement on zip file name
+- Exclude nubeio-rubix-edge-bios.service
+- Don't run CopyDir in parallel (#65)
+- Upgrade ubuntu-20.04 as runner (ubuntu-18.04 is discontinued)
+
 ## [v0.6.1](https://github.com/NubeIO/rubix-edge/tree/v0.6.1) (2022-02-16)
 
 - Exclude rubix-assist from snapping
