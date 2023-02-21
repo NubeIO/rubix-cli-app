@@ -1,4 +1,9 @@
 # CHANGELOG
+
+## [v0.6.2](https://github.com/NubeIO/rubix-edge/tree/v0.6.2) (2022-02-21)
+
+- Exclude socat files & improvement on zip file name
+
 ## [v0.6.1](https://github.com/NubeIO/rubix-edge/tree/v0.6.1) (2022-02-16)
 
 - Exclude rubix-assist from snapping
