@@ -66,45 +66,39 @@ func CopyDir(source, dest, parentDirectory string, depth int) error {
 	if err != nil {
 		return err
 	}
-	var wg sync.WaitGroup
 	var errs []error
 	for _, obj := range obs {
-		wg.Add(1)
-		go func(obj os.FileInfo) {
-			defer wg.Done()
-			fSource := path.Join(source, obj.Name())
-			fDest := path.Join(dest, obj.Name())
-			if obj.IsDir() {
-				excludesData := []string{
-					"rubix-edge",
-					"rubix-assist",
-					"tmp",
-					"store",
-					"backup",
-					"socat",
-				}
-				excludesApps := []string{
-					"rubix-service/apps/install/rubix-edge",
-					"rubix-service/apps/install/rubix-assist",
-				}
-				if !((Contains(excludesData, obj.Name()) && depth == 0) ||
-					(Contains(excludesApps, path.Join(parentDirectory, obj.Name())) && depth == 3)) {
-					err = CopyDir(fSource, fDest, path.Join(parentDirectory, obj.Name()), depth+1)
-					if err != nil {
-						log.Error(err)
-						errs = append(errs, err)
-					}
-				}
-			} else {
-				err = fileutils.CopyFile(fSource, fDest)
+		fSource := path.Join(source, obj.Name())
+		fDest := path.Join(dest, obj.Name())
+		if obj.IsDir() {
+			excludesData := []string{
+				"rubix-edge",
+				"rubix-assist",
+				"tmp",
+				"store",
+				"backup",
+				"socat",
+			}
+			excludesApps := []string{
+				"rubix-service/apps/install/rubix-edge",
+				"rubix-service/apps/install/rubix-assist",
+			}
+			if !((Contains(excludesData, obj.Name()) && depth == 0) ||
+				(Contains(excludesApps, path.Join(parentDirectory, obj.Name())) && depth == 3)) {
+				err = CopyDir(fSource, fDest, path.Join(parentDirectory, obj.Name()), depth+1)
 				if err != nil {
 					log.Error(err)
 					errs = append(errs, err)
 				}
 			}
-		}(obj)
+		} else {
+			err = fileutils.CopyFile(fSource, fDest)
+			if err != nil {
+				log.Error(err)
+				errs = append(errs, err)
+			}
+		}
 	}
-	wg.Wait()
 	var errString string
 	for _, err := range errs {
 		errString += err.Error() + "\n"
