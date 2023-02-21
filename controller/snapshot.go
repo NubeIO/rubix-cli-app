@@ -28,14 +28,17 @@ var createStatus = model.CreateNotAvailable
 var restoreStatus = model.RestoreNotAvailable
 
 func (inst *Controller) CreateSnapshot(c *gin.Context) {
-	log.Infof("creating snapshot...")
+	log.Info("creating snapshot...")
 	if createStatus == model.Creating {
-		responseHandler(nil, errors.New("snapshot creation process is in progress"), c)
+		err := errors.New("snapshot creation process is in progress")
+		log.Error(err)
+		responseHandler(nil, err, c)
 		return
 	}
 	createStatus = model.Creating
 	deviceInfo, err := inst.RubixRegistry.GetDeviceInfo()
 	if err != nil {
+		log.Error(err)
 		createStatus = model.CreateFailed
 		responseHandler(nil, err, c)
 		return
@@ -59,6 +62,7 @@ func (inst *Controller) CreateSnapshot(c *gin.Context) {
 	biosClient := bioscli.NewLocalBiosClient()
 	arch, err := biosClient.GetArch()
 	if err != nil {
+		log.Error(err)
 		createStatus = model.CreateFailed
 		responseHandler(nil, err, c)
 		return
@@ -69,6 +73,7 @@ func (inst *Controller) CreateSnapshot(c *gin.Context) {
 	absDataFolder := path.Join(destinationPath, dataFolder)
 	err = os.MkdirAll(absDataFolder, os.FileMode(inst.FileMode)) // create empty folder even we don't have content
 	if err != nil {
+		log.Error(err)
 		createStatus = model.CreateFailed
 		responseHandler(nil, err, c)
 		return
@@ -77,6 +82,7 @@ func (inst *Controller) CreateSnapshot(c *gin.Context) {
 
 	systemFiles, err := filepath.Glob(path.Join(systemPath, "nubeio-*"))
 	if err != nil {
+		log.Error(err)
 		createStatus = model.CreateFailed
 		responseHandler(nil, err, c)
 		return
@@ -84,6 +90,7 @@ func (inst *Controller) CreateSnapshot(c *gin.Context) {
 	absSystemFolder := path.Join(destinationPath, systemFolder)
 	err = os.MkdirAll(absSystemFolder, os.FileMode(inst.FileMode)) // create empty folder even we don't have content
 	if err != nil {
+		log.Error(err)
 		createStatus = model.CreateFailed
 		responseHandler(nil, err, c)
 		return
@@ -94,6 +101,7 @@ func (inst *Controller) CreateSnapshot(c *gin.Context) {
 	log.Infof("zipping snapshot: %s...", zipDestinationPath)
 	err = fileutils.RecursiveZip(destinationPath, zipDestinationPath)
 	if err != nil {
+		log.Error(err)
 		createStatus = model.CreateFailed
 		responseHandler(nil, err, c)
 		return
@@ -105,13 +113,18 @@ func (inst *Controller) CreateSnapshot(c *gin.Context) {
 }
 
 func (inst *Controller) RestoreSnapshot(c *gin.Context) {
+	log.Info("restoring snapshot...")
 	if restoreStatus == model.Restoring {
-		responseHandler(nil, errors.New("snapshot restoring process is in progress"), c)
+		err := errors.New("snapshot restoring process is in progress")
+		log.Error(err)
+		responseHandler(nil, err, c)
 		return
 	}
+	log.Info("receiving file data...")
 	restoreStatus = model.Restoring
 	file, err := c.FormFile("file")
 	if err != nil {
+		log.Error(err)
 		restoreStatus = model.RestoreFailed
 		responseHandler(nil, err, c)
 		return
@@ -120,6 +133,7 @@ func (inst *Controller) RestoreSnapshot(c *gin.Context) {
 	biosClient := bioscli.NewLocalBiosClient()
 	arch, err := biosClient.GetArch()
 	if err != nil {
+		log.Error(err)
 		restoreStatus = model.RestoreFailed
 		responseHandler(nil, err, c)
 		return
@@ -132,19 +146,24 @@ func (inst *Controller) RestoreSnapshot(c *gin.Context) {
 		restoreStatus = model.RestoreFailed
 		err = errors.New(
 			fmt.Sprintf("arch mismatch: snapshot arch is %s & device arch is %s", archFromSnapshot, arch.Arch))
+		log.Error(err)
 		responseHandler(nil, err, c)
 		return
 	}
 
+	log.Info("saving received file data...")
 	destinationFilePath := path.Join(config.Config.GetAbsTempDir(), file.Filename)
 	err = c.SaveUploadedFile(file, destinationFilePath)
 	if err != nil {
+		log.Error(err)
 		restoreStatus = model.RestoreFailed
 		responseHandler(nil, err, c)
 		return
 	}
+	log.Info("unzipping file...")
 	_, err = fileutils.Unzip(destinationFilePath, config.Config.GetAbsTempDir(), os.FileMode(inst.FileMode))
 	if err != nil {
+		log.Error(err)
 		restoreStatus = model.RestoreFailed
 		responseHandler(nil, err, c)
 		return
@@ -163,6 +182,7 @@ func (inst *Controller) RestoreSnapshot(c *gin.Context) {
 		inst.stopServices(services)
 		err = utils.CopyDir(path.Join(unzippedFolderPath, systemFolder), systemPath, "", 0)
 		if err != nil {
+			log.Error(err)
 			restoreStatus = model.RestoreFailed
 			responseHandler(nil, err, c)
 			return
@@ -176,12 +196,14 @@ func (inst *Controller) RestoreSnapshot(c *gin.Context) {
 	if rubixRegistryFileExist {
 		deviceInfo, err := inst.RubixRegistry.GetDeviceInfo()
 		if err != nil {
+			log.Error(err)
 			restoreStatus = model.RestoreFailed
 			responseHandler(nil, err, c)
 			return
 		}
 		err = inst.retainGlobalUUID(deviceInfo.GlobalUUID, rubixRegistryFile)
 		if err != nil {
+			log.Error(err)
 			restoreStatus = model.RestoreFailed
 			responseHandler(nil, err, c)
 			return
@@ -189,6 +211,12 @@ func (inst *Controller) RestoreSnapshot(c *gin.Context) {
 	}
 
 	err = utils.DeleteDir(path.Join(unzippedFolderPath, dataFolder), "", 0)
+	if err != nil {
+		log.Error(err)
+		restoreStatus = model.RestoreFailed
+		responseHandler(nil, err, c)
+		return
+	}
 	err = utils.CopyDir(path.Join(unzippedFolderPath, dataFolder), config.Config.GetSnapshotDir(), "", 0)
 	if err != nil {
 		restoreStatus = model.RestoreFailed
@@ -202,12 +230,14 @@ func (inst *Controller) RestoreSnapshot(c *gin.Context) {
 	if copySystemFiles {
 		err = inst.SystemCtl.DaemonReload()
 		if err != nil {
+			log.Error(err)
 			restoreStatus = model.RestoreFailed
 			responseHandler(nil, err, c)
 			return
 		}
 		inst.enableAndRestartServices(services)
 	}
+	log.Info("snapshot is restored")
 	message := model.Message{Message: "snapshot is restored successfully"}
 	restoreStatus = model.Restored
 	responseHandler(message, err, c)
@@ -218,12 +248,13 @@ func (inst *Controller) SnapshotStatus(c *gin.Context) {
 }
 
 func (inst *Controller) stopServices(services []string) {
+	log.Info("stopping services...")
 	var wg sync.WaitGroup
 	for _, service := range services {
 		wg.Add(1)
 		go func(service string) {
 			defer wg.Done()
-			if !utils.Contains([]string{"nubeio-rubix-edge.service", "nubeio-rubix-assist.service"}, service) {
+			if !utils.Contains(utils.ExcludedServices, service) {
 				err := inst.SystemCtl.Stop(service)
 				if err != nil {
 					log.Errorf("failed to stop service %s", service)
@@ -235,12 +266,13 @@ func (inst *Controller) stopServices(services []string) {
 }
 
 func (inst *Controller) enableAndRestartServices(services []string) {
+	log.Info("enabling & restarting services")
 	var wg sync.WaitGroup
 	for _, service := range services {
 		wg.Add(1)
 		go func(service string) {
 			defer wg.Done()
-			if !utils.Contains([]string{"nubeio-rubix-edge.service", "nubeio-rubix-assist.service"}, service) {
+			if !utils.Contains(utils.ExcludedServices, service) {
 				err := inst.SystemCtl.Enable(service)
 				if err != nil {
 					log.Errorf("failed to enable service %s", service)
