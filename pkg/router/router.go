@@ -11,6 +11,7 @@ import (
 	"github.com/NubeIO/rubix-registry-go/rubixregistry"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/go-co-op/gocron"
 	"github.com/spf13/viper"
 	"io"
 	"net/http"
@@ -25,7 +26,7 @@ func NotFound() gin.HandlerFunc {
 	}
 }
 
-func Setup() *gin.Engine {
+func Setup(scheduler *gocron.Scheduler, systemCtl *systemctl.SystemCtl, system_ *system.System) *gin.Engine {
 	engine := gin.New()
 	// Set gin access logs
 	if viper.GetBool("gin.log.store") {
@@ -55,10 +56,11 @@ func Setup() *gin.Engine {
 	}))
 
 	api := controller.Controller{
-		SystemCtl:     systemctl.New(false, 30),
+		SystemCtl:     systemCtl,
 		RubixRegistry: rubixregistry.New(),
-		System:        system.New(&system.System{}),
+		System:        system_,
 		FileMode:      0755,
+		Scheduler:     scheduler,
 	}
 	engine.POST("/api/users/login", api.Login)
 	publicSystemApi := engine.Group("/api/system")
@@ -130,6 +132,9 @@ func Setup() *gin.Engine {
 		systemApi.POST("/scanner", api.RunScanner)
 		systemApi.GET("/network_interfaces", api.GetNetworkInterfaces)
 		systemApi.POST("/reboot", api.RebootHost)
+		systemApi.GET("/reboot/job", api.GetRebootHostJob)
+		systemApi.PUT("/reboot/job", api.UpdateRebootHostJob)
+		systemApi.DELETE("/reboot/job", api.DeleteRebootHostJob)
 	}
 
 	networking := apiRoutes.Group("/networking")
@@ -227,6 +232,13 @@ func Setup() *gin.Engine {
 		device.POST("create", api.CreateSnapshot)
 		device.POST("restore", api.RestoreSnapshot)
 		device.GET("status", api.SnapshotStatus)
+	}
+
+	restartJobApi := apiRoutes.Group("/restart_jobs")
+	{
+		restartJobApi.GET("", api.GetRestartJob)
+		restartJobApi.PUT("", api.UpdateRestartJob)
+		restartJobApi.DELETE("/:unit", api.DeleteRestartJob)
 	}
 
 	return engine
