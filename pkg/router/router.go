@@ -234,7 +234,7 @@ func Setup(scheduler *gocron.Scheduler, systemCtl *systemctl.SystemCtl, system_ 
 		device.GET("status", api.SnapshotStatus)
 	}
 
-	restartJobApi := apiRoutes.Group("/restart_jobs")
+	restartJobApi := apiRoutes.Group("/restart-jobs")
 	{
 		restartJobApi.GET("", api.GetRestartJob)
 		restartJobApi.PUT("", api.UpdateRestartJob)

@@ -2,6 +2,8 @@ package controller
 
 import (
 	"errors"
+	"fmt"
+	"github.com/NubeIO/rubix-edge/model"
 	"github.com/NubeIO/rubix-edge/pkg/interfaces"
 	"github.com/NubeIO/rubix-edge/utils"
 	"github.com/gin-gonic/gin"
@@ -57,7 +59,7 @@ func (inst *Controller) UpdateRestartJob(c *gin.Context) {
 		responseHandler(nil, err, c)
 		return
 	}
-	responseHandler(body, err, c)
+	responseHandler(body, nil, c)
 }
 
 func (inst *Controller) DeleteRestartJob(c *gin.Context) {
@@ -86,5 +88,5 @@ func (inst *Controller) DeleteRestartJob(c *gin.Context) {
 		responseHandler(nil, err, c)
 		return
 	}
-	responseHandler(deleted, err, c)
+	responseHandler(model.Message{Message: fmt.Sprintf("deleted %s restart job successfully", unit)}, nil, c)
 }

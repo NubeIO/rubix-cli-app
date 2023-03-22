@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"github.com/NubeIO/rubix-edge/model"
 	"github.com/NubeIO/rubix-edge/pkg/interfaces"
 	"github.com/NubeIO/rubix-edge/utils"
 	"github.com/gin-gonic/gin"
@@ -47,7 +48,7 @@ func (inst *Controller) UpdateRebootHostJob(c *gin.Context) {
 		responseHandler(nil, err, c)
 		return
 	}
-	responseHandler(body, err, c)
+	responseHandler(body, nil, c)
 }
 
 func (inst *Controller) DeleteRebootHostJob(c *gin.Context) {
@@ -61,5 +62,5 @@ func (inst *Controller) DeleteRebootHostJob(c *gin.Context) {
 		responseHandler(nil, err, c)
 		return
 	}
-	responseHandler(true, err, c)
+	responseHandler(model.Message{Message: "deleted system reboot job successfully"}, nil, c)
 }

@@ -3,7 +3,7 @@ module github.com/NubeIO/rubix-edge
 //replace github.com/NubeIO/lib-files => /Users/raibnod/Enviro/lib-files
 //replace github.com/NubeIO/lib-systemctl-go => /Users/raibnod/Enviro/lib-systemctl-go
 
-go 1.17
+go 1.18
 
 require (
 	github.com/NubeIO/lib-date v0.0.6
