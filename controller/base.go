@@ -7,6 +7,7 @@ import (
 	"github.com/NubeIO/rubix-edge/service/system"
 	"github.com/NubeIO/rubix-registry-go/rubixregistry"
 	"github.com/gin-gonic/gin"
+	"github.com/go-co-op/gocron"
 	"net/http"
 )
 
@@ -15,6 +16,7 @@ type Controller struct {
 	RubixRegistry *rubixregistry.RubixRegistry
 	System        *system.System
 	FileMode      int
+	Scheduler     *gocron.Scheduler
 }
 
 type Response struct {

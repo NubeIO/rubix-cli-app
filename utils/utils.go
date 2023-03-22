@@ -1,9 +1,15 @@
 package utils
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/NubeIO/lib-files/fileutils"
+	"github.com/NubeIO/rubix-edge/pkg/config"
+	"github.com/NubeIO/rubix-edge/pkg/interfaces"
+	"github.com/robfig/cron/v3"
 	log "github.com/sirupsen/logrus"
+	"io/fs"
+	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -16,6 +22,9 @@ var ExcludedServices = []string{
 	"nubeio-rubix-edge.service",
 	"nubeio-rubix-assist.service",
 }
+
+var RestartJobFile = "restart_job.json"
+var RebootJobFile = "reboot_job.json"
 
 func FileNameWithoutExtension(fileName string) string {
 	return strings.TrimSuffix(fileName, filepath.Ext(fileName))
@@ -148,4 +157,61 @@ func Contains(s []string, str string) bool {
 		}
 	}
 	return false
+}
+
+func ValidateCornExpression(exp string) error {
+	expFields := strings.Fields(exp)
+	if len(expFields) != 5 {
+		return errors.New("invalid expression")
+	}
+	_, err := cron.ParseStandard(exp)
+	if err != nil {
+		return errors.New("invalid expression")
+	}
+	if (expFields[0] == "*" || strings.Contains(expFields[0], "*/")) && expFields[1] == "*" &&
+		expFields[2] == "*" && expFields[3] == "*" && expFields[4] == "*" {
+		return errors.New("you cannot schedule under an hour")
+	}
+	return nil
+}
+
+func GetRestartJobs() []*interfaces.RestartJob {
+	var restartJobs []*interfaces.RestartJob
+	data, err := ioutil.ReadFile(path.Join(config.Config.GetAbsDataDir(), RestartJobFile))
+	if err != nil {
+		return []*interfaces.RestartJob{}
+	}
+	err = json.Unmarshal(data, &restartJobs)
+	if err != nil {
+		return []*interfaces.RestartJob{}
+	}
+	return restartJobs
+}
+
+func SaveRestartJobs(restartJobs []*interfaces.RestartJob, fileMode int) error {
+	mRestartJobs, err := json.Marshal(restartJobs)
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(path.Join(config.Config.GetAbsDataDir(), RestartJobFile), mRestartJobs,
+		fs.FileMode(fileMode))
+}
+
+func GetRebootJob() *interfaces.RebootJob {
+	var rebootJob *interfaces.RebootJob
+	data, err := ioutil.ReadFile(path.Join(config.Config.GetAbsDataDir(), RebootJobFile))
+	if err != nil {
+		return rebootJob
+	}
+	_ = json.Unmarshal(data, &rebootJob)
+	return rebootJob
+}
+
+func SaveRebootJob(rebootJob *interfaces.RebootJob, fileMode int) error {
+	mRebootJob, err := json.Marshal(rebootJob)
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(path.Join(config.Config.GetAbsDataDir(), RebootJobFile), mRebootJob,
+		fs.FileMode(fileMode))
 }
