@@ -118,13 +118,13 @@ func (inst *System) GetMemoryUsage() (*MemoryUsage, error) {
 
 	return &MemoryUsage{
 		MemoryPercentageUsed: m.PercentageUsed,
-		MemoryPercentage:     fmt.Sprintf("%s", betterFormat(float32(m.PercentageUsed))) + "%",
+		MemoryPercentage:     fmt.Sprintf("%s", format(float32(m.PercentageUsed))) + "%",
 		MemoryAvailable:      bytePretty(kbToByte(m.Available)),
 		MemoryFree:           bytePretty(kbToByte(m.Free)),
 		MemoryUsed:           bytePretty(kbToByte(m.Used)),
 		MemoryTotal:          bytePretty(kbToByte(m.Total)),
 		SwapPercentageUsed:   s.PercentageUsed,
-		SwapPercentage:       fmt.Sprintf("%s", betterFormat(float32(s.PercentageUsed))) + "%",
+		SwapPercentage:       fmt.Sprintf("%s", format(float32(s.PercentageUsed))) + "%",
 		SwapFree:             bytePretty(kbToByte(s.Free)),
 		SwapUsed:             bytePretty(kbToByte(s.Used)),
 		SwapTotal:            bytePretty(kbToByte(s.Total)),
@@ -147,7 +147,7 @@ func kbToByte(input uint64) uint64 {
 	return uint64(float64(input) * 1024)
 }
 
-func betterFormat(num float32) string {
+func format(num float32) string {
 	s := fmt.Sprintf("%.2f", num)
 	return strings.TrimRight(strings.TrimRight(s, "0"), ".")
 }
