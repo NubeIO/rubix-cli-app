@@ -5,6 +5,7 @@ import (
 	"github.com/NubeIO/lib-dhcpd/dhcpd"
 	"github.com/NubeIO/lib-networking/networking"
 	"github.com/NubeIO/lib-ufw/ufw"
+	"github.com/dhamith93/systats"
 	log "github.com/sirupsen/logrus"
 	"os/exec"
 	"strings"
@@ -14,6 +15,7 @@ type System struct {
 	ufw     *ufw.System
 	datectl *datectl.DateCTL
 	dhcp    *dhcpd.DHCP
+	syStats systats.SyStats
 }
 
 var debug = true
@@ -30,6 +32,7 @@ func New(inst *System) *System {
 	inst.ufw = ufw.New(&ufw.System{})
 	inst.datectl = datectl.New(&datectl.DateCTL{})
 	inst.dhcp = dhcpd.New(&dhcpd.DHCP{})
+	inst.syStats = systats.New()
 	return inst
 }
 
