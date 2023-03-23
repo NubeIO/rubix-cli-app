@@ -11,6 +11,11 @@ func (inst *Controller) GetSystem(c *gin.Context) {
 	responseHandler(system.ConvertJSONKeys(data), err, c)
 }
 
+func (inst *Controller) GetMemoryUsage(c *gin.Context) {
+	data, err := inst.System.GetMemoryUsage()
+	responseHandler(system.ConvertJSONKeys(data), err, c)
+}
+
 func (inst *Controller) GetMemory(c *gin.Context) {
 	data, err := inst.System.GetMemory()
 	responseHandler(system.ConvertJSONKeys(data), err, c)

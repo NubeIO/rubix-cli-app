@@ -91,6 +91,46 @@ func (inst *System) GetTopProcesses(body TopProcesses) ([]systats.Process, error
 	return inst.syStats.GetTopProcesses(count, sort)
 }
 
+type MemoryUsage struct {
+	MemoryPercentageUsed float64
+	MemoryPercentage     string
+	MemoryAvailable      string
+	MemoryFree           string
+	MemoryUsed           string
+	MemoryTotal          string
+	SwapPercentageUsed   float64
+	SwapPercentage       string
+	SwapFree             string
+	SwapUsed             string
+	SwapTotal            string
+}
+
+func (inst *System) GetMemoryUsage() (*MemoryUsage, error) {
+
+	m, err := inst.syStats.GetMemory(systats.Kilobyte)
+	if err != nil {
+		return nil, err
+	}
+	s, err := inst.syStats.GetSwap(systats.Kilobyte)
+	if err != nil {
+		return nil, err
+	}
+
+	return &MemoryUsage{
+		MemoryPercentageUsed: m.PercentageUsed,
+		MemoryPercentage:     fmt.Sprintf("%s", betterFormat(float32(m.PercentageUsed))) + "%",
+		MemoryAvailable:      bytePretty(kbToByte(m.Available)),
+		MemoryFree:           bytePretty(kbToByte(m.Free)),
+		MemoryUsed:           bytePretty(kbToByte(m.Used)),
+		MemoryTotal:          bytePretty(kbToByte(m.Total)),
+		SwapPercentageUsed:   s.PercentageUsed,
+		SwapPercentage:       fmt.Sprintf("%s", betterFormat(float32(s.PercentageUsed))) + "%",
+		SwapFree:             bytePretty(kbToByte(s.Free)),
+		SwapUsed:             bytePretty(kbToByte(s.Used)),
+		SwapTotal:            bytePretty(kbToByte(s.Total)),
+	}, nil
+}
+
 func (inst *System) GetMemory() (systats.Memory, error) {
 	return inst.syStats.GetMemory(systats.Megabyte)
 }
@@ -101,6 +141,15 @@ func (inst *System) GetSwap() (systats.Swap, error) {
 
 func ConvertJSONKeys(s interface{}) json.Marshaler {
 	return conjson.NewMarshaler(s, transform.ConventionalKeys())
+}
+
+func kbToByte(input uint64) uint64 {
+	return uint64(float64(input) * 1024)
+}
+
+func betterFormat(num float32) string {
+	s := fmt.Sprintf("%.2f", num)
+	return strings.TrimRight(strings.TrimRight(s, "0"), ".")
 }
 
 const (

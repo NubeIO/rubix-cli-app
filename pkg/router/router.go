@@ -137,6 +137,7 @@ func Setup(scheduler *gocron.Scheduler, systemCtl *systemctl.SystemCtl, system_ 
 		systemApi.DELETE("/reboot/job", api.DeleteRebootHostJob)
 
 		systemApi.GET("/info", api.GetSystem)
+		systemApi.GET("/usage", api.GetMemoryUsage)
 		systemApi.GET("/memory", api.GetMemory)
 		systemApi.GET("/processes", api.GetTopProcesses) // /processes?sort=cpu&count=3
 		systemApi.GET("/swap", api.GetSwap)
