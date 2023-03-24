@@ -1,4 +1,9 @@
 # CHANGELOG
+## [v0.6.4](https://github.com/NubeIO/rubix-edge/tree/v0.6.4) (2022-03-24)
+
+- Updates to get system info
+
+
 ## [v0.6.3](https://github.com/NubeIO/rubix-edge/tree/v0.6.3) (2022-03-23)
 
 - Add cron for restarting services
