@@ -1,12 +1,8 @@
 package system
 
 import (
-	"encoding/json"
-	"errors"
 	"fmt"
-	"github.com/Rican7/conjson"
-	"github.com/Rican7/conjson/transform"
-	"github.com/dhamith93/systats"
+	systats "github.com/NubeIO/lib-system"
 	"strings"
 )
 
@@ -72,22 +68,6 @@ type TopProcesses struct {
 func (inst *System) GetTopProcesses(body TopProcesses) ([]systats.Process, error) {
 	count := body.Count
 	sort := body.Sort
-	if count == 0 {
-		count = 1
-	}
-	var correctSort bool
-	if sort == "" {
-		sort = "memory"
-	}
-	if sort != "memory" {
-		correctSort = true
-	}
-	if sort != "cpu" {
-		correctSort = true
-	}
-	if !correctSort {
-		return nil, errors.New("incorrect sort type try: cpu, memory")
-	}
 	return inst.syStats.GetTopProcesses(count, sort)
 }
 
@@ -137,10 +117,6 @@ func (inst *System) GetMemory() (systats.Memory, error) {
 
 func (inst *System) GetSwap() (systats.Swap, error) {
 	return inst.syStats.GetSwap(systats.Megabyte)
-}
-
-func ConvertJSONKeys(s interface{}) json.Marshaler {
-	return conjson.NewMarshaler(s, transform.ConventionalKeys())
 }
 
 func kbToByte(input uint64) uint64 {

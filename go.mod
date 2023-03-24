@@ -25,9 +25,8 @@ require (
 )
 
 require (
+	github.com/NubeIO/lib-system v0.0.1
 	github.com/NubeIO/lib-systemctl-go v0.2.0
-	github.com/Rican7/conjson v0.1.0
-	github.com/dhamith93/systats v0.2.0
 	github.com/go-co-op/gocron v1.18.1
 	github.com/robfig/cron/v3 v3.0.1
 	gopkg.in/yaml.v3 v3.0.1
@@ -53,6 +52,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml v1.9.4 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.1 // indirect
+	github.com/rvflash/elapsed v0.3.0 // indirect
 	github.com/spf13/afero v1.8.2 // indirect
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
