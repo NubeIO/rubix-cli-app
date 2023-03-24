@@ -8,17 +8,17 @@ import (
 
 func (inst *Controller) GetSystem(c *gin.Context) {
 	data, err := inst.System.GetSystem()
-	responseHandler(system.ConvertJSONKeys(data), err, c)
+	responseHandler(data, err, c)
 }
 
 func (inst *Controller) GetMemoryUsage(c *gin.Context) {
 	data, err := inst.System.GetMemoryUsage()
-	responseHandler(system.ConvertJSONKeys(data), err, c)
+	responseHandler(data, err, c)
 }
 
 func (inst *Controller) GetMemory(c *gin.Context) {
 	data, err := inst.System.GetMemory()
-	responseHandler(system.ConvertJSONKeys(data), err, c)
+	responseHandler(data, err, c)
 }
 
 func (inst *Controller) GetTopProcesses(c *gin.Context) {
@@ -28,12 +28,12 @@ func (inst *Controller) GetTopProcesses(c *gin.Context) {
 		Sort:  c.Query("sort"),
 	}
 	data, err := inst.System.GetTopProcesses(m)
-	responseHandler(system.ConvertJSONKeys(data), err, c)
+	responseHandler(data, err, c)
 }
 
 func (inst *Controller) GetSwap(c *gin.Context) {
 	data, err := inst.System.GetSwap()
-	responseHandler(system.ConvertJSONKeys(data), err, c)
+	responseHandler(data, err, c)
 }
 
 func (inst *Controller) DiscUsage(c *gin.Context) {
