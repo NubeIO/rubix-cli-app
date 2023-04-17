@@ -54,8 +54,8 @@ github.com/NubeIO/lib-networking v0.0.9 h1:4asbWZCOOUWvesFL+lSYlHrRgDm9nHciXnm0s
 github.com/NubeIO/lib-networking v0.0.9/go.mod h1:WVj1zTKJ4qYijtzNvu7N5w8+cXFlCjy+HxjnIvSFgNA=
 github.com/NubeIO/lib-system v0.0.1 h1:4fbHusnifJHv6KU1gH4/CKY/NzqqehkoXwzGcsVtoUs=
 github.com/NubeIO/lib-system v0.0.1/go.mod h1:6WxjOSs9NDjXMF2TAITmHrNwQeo8IPPBz3E1frb0stI=
-github.com/NubeIO/lib-systemctl-go v0.2.0 h1:Ch4UmA8LH+YoNVM02tfmb3olCyjmo+qKc7wCtxbq/aM=
-github.com/NubeIO/lib-systemctl-go v0.2.0/go.mod h1:P/Ij5pgTtjNnp/TQhsvwipk8sv+5cbZdtuvHiPAYXCE=
+github.com/NubeIO/lib-systemctl-go v0.3.0 h1:x6q9Dus5rltgSf4MpBXOJSh3dGJMaLV4matoRn328SI=
+github.com/NubeIO/lib-systemctl-go v0.3.0/go.mod h1:P/Ij5pgTtjNnp/TQhsvwipk8sv+5cbZdtuvHiPAYXCE=
 github.com/NubeIO/lib-ufw v0.0.3 h1:dHzhUFyG6AJ9g+iQ18cYJNU6qO5Ad6dAaXKIRoGDa28=
 github.com/NubeIO/lib-ufw v0.0.3/go.mod h1:DC6oevpW1CH8WrJJm0trAKWonGUvV/wKrxAp3Y/peYI=
 github.com/NubeIO/nubeio-rubix-lib-auth-go v1.0.3 h1:BG93vRFMgL+b7BDX0IgTot8S9eE9GPbj40nb8qzHy1Y=
@@ -67,8 +67,6 @@ github.com/NubeIO/rubix-registry-go v1.0.0 h1:EOklfvV3NP+zF6DmkRO4OmRttTMdN26LZS
 github.com/NubeIO/rubix-registry-go v1.0.0/go.mod h1:nz/USWqKNI5Gp6hTNW5V8/Md284fo4ii88gMnqQ7Y2E=
 github.com/PuerkitoBio/purell v1.1.1/go.mod h1:c11w/QuzBsJSee3cPx9rAFu61PvFxuPbtSwDGJws/X0=
 github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578/go.mod h1:uGdkoq3SwY9Y+13GIhn11/XLaGBb4BfwItxLd5jeuXE=
-github.com/Rican7/conjson v0.1.0 h1:8dNZzdy1mzwo9LOideWcOyY3PbKdsJPF7hj31/mrIiw=
-github.com/Rican7/conjson v0.1.0/go.mod h1:CL1oWzzC9Ox36F2ghCPmtNpdW/ZKRunAc4dEoCL4Qyc=
 github.com/THREATINT/go-net v1.2.10/go.mod h1:4n3ITWyUUfaEp8JNAompTT+PuPANXL9i9TyOUijGnwk=
 github.com/carlmjohnson/errutil v0.21.5/go.mod h1:DMNW3MBHsaV/EPm8pjs4sA/gNjNsG4rUzbAfOh++gSM=
 github.com/carlmjohnson/exitcode v0.20.2/go.mod h1:MZ6ThCDx517DQcrpYnnns1pLh8onjFl+B/AsrOrdmpc=
