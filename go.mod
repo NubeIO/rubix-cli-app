@@ -26,7 +26,7 @@ require (
 
 require (
 	github.com/NubeIO/lib-system v0.0.1
-	github.com/NubeIO/lib-systemctl-go v0.3.0
+	github.com/NubeIO/lib-systemctl-go v0.3.1
 	github.com/go-co-op/gocron v1.18.1
 	github.com/robfig/cron/v3 v3.0.1
 	gopkg.in/yaml.v3 v3.0.1
