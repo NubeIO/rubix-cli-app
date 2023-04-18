@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [v0.6.6](https://github.com/NubeIO/rubix-edge/tree/v0.6.6) (2022-04-18)
+
+- Upgrade lib-systemctl-go to v0.3.1 for the OS wise stats
+
 ## [v0.6.5](https://github.com/NubeIO/rubix-edge/tree/v0.6.5) (2022-04-17)
 
 - Upgrade lib-systemctl-go to v0.3.0 for the monotonic timestamps
