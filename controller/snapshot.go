@@ -55,7 +55,7 @@ func (inst *Controller) CreateSnapshot(c *gin.Context) {
 	if deviceName == "" || deviceName == "-" {
 		deviceName = "na"
 	}
-	filePrefix := fmt.Sprintf("%s-%s-%s", clientName, siteName, deviceName)
+	filePrefix := strings.ReplaceAll(fmt.Sprintf("%s-%s-%s", clientName, siteName, deviceName), " ", "")
 	previousFiles, _ := filepath.Glob(path.Join(config.Config.GetAbsTempDir(), fmt.Sprintf("%s*", filePrefix)))
 	utils.DeleteFiles(previousFiles, config.Config.GetAbsTempDir())
 
