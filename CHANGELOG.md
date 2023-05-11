@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [v0.6.7](https://github.com/NubeIO/rubix-edge/tree/v0.6.7) (2022-05-11)
+
+- Remove spaces from snapshots name
+
 ## [v0.6.6](https://github.com/NubeIO/rubix-edge/tree/v0.6.6) (2022-04-18)
 
 - Upgrade lib-systemctl-go to v0.3.1 for the OS wise stats
